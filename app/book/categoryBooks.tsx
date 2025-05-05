@@ -1,12 +1,12 @@
 import BookCard from "@/components/BookCard";
 import { fetchBooks } from "@/services/api";
-import { saveToken } from "@/services/notificationApi";
-import { EventSubscription } from 'expo-modules-core';
+import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 import * as Notifications from 'expo-notifications';
 import { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
-import { Snackbar } from "react-native-paper";
 import { registerForPushNotificationsAsync } from "../utils/notifications";
+import { EventSubscription } from 'expo-modules-core'
+import { saveToken } from "@/services/notificationApi";
+import { useLocalSearchParams, useNavigation } from 'expo-router'
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -17,49 +17,19 @@ Notifications.setNotificationHandler({
 });
 
 export default function Index() {
-  const notificationListener = useRef<EventSubscription | null>(null);
-  const responseListener = useRef<EventSubscription | null>(null);
-
-  useEffect(() => {
-    registerForPushNotificationsAsync().then(token => {
-      if (token) {
-        saveToken(token, 1)
-      }
-      console.log(token);
-    });
-
-    // Listener when a notification is received
-    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-      console.log('Notification Received:', notification);
-    });
-
-    // Listener when user taps the notification
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log('User interacted with notification:', response);
-    });
-
-    return () => {
-      notificationListener.current?.remove();
-      responseListener.current?.remove();
-    };
-  }, []);
-  
-  /*** end notification ***/
-
+  const {category} = useLocalSearchParams();
   const [books, setBooks] = useState([] as any[]);
   const [initialLoading, setInitialLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [toastVisible, setToastVisible] = useState(false)
-  const [snackMessage, setSnackMessage] = useState('')
 
   const fetchChunks = async (pageNumber: number) => {
       if (loading || !hasMore) return;
         setLoading(true);
 
         try {
-          const data = await fetchBooks({pageNumber: pageNumber, limit: 8})
+          const data = await fetchBooks({pageNumber: pageNumber, limit: 8, categoryName: category as string})
           if (data.length <= 0) {
             setHasMore(false);
           } else {
@@ -86,18 +56,12 @@ export default function Index() {
           <FlatList
             data={books}
             keyExtractor={(item) => item.id.toString()}
-            renderItem={({item}) => <BookCard book={item} snackMessage={(value: string) => {
-              setSnackMessage(value)
-              setToastVisible(true)
-            }} /> }
+            renderItem={({item}) => <BookCard {...item} /> }
             onEndReached={() => fetchChunks(page)}
             onEndReachedThreshold={0.5}
             ListFooterComponent={loading ? <ActivityIndicator size="small" /> : null}
             style={styles.list}
           />
-          <Snackbar visible={toastVisible} onDismiss={() => setToastVisible(false)} duration={2000}>
-              {snackMessage}
-          </Snackbar>
         </>
       )}
     </View>
