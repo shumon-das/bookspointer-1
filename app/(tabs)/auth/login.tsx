@@ -1,12 +1,14 @@
-import { View, Text, TextInput, Image, StyleSheet, TouchableOpacity } from 'react-native'
-import React, { useState, useLayoutEffect } from 'react'
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import { useAuthStore } from '@/app/store/auth'
 import { login } from '@/services/api'
-import { useRouter, useNavigation, Stack } from 'expo-router'
-import Icon from 'react-native-vector-icons/FontAwesome'
+import { Stack, useNavigation, useRouter } from 'expo-router'
+import React, { useLayoutEffect, useState } from 'react'
+import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
+
+import { labels } from '@/app/utils/labels'
+import { User } from '@/components/types/User'
 import { styles } from '@/styles/writeBook.styles'
-import { labels } from '../utils/labels'
+import FontAwesome from '@expo/vector-icons/FontAwesome'
 
 const Login = () => {
     const router = useRouter()
@@ -45,14 +47,15 @@ const Login = () => {
         options={{
           headerLeft: () => (
             <TouchableOpacity onPress={() => router.replace('/')}>
-              <Icon name="arrow-left" size={20} style={{ marginLeft: 10, marginRight: 20, color: '#4B5945' }} />
+              {/* <Icon name="arrow-left" size={20} style={{ marginLeft: 10, marginRight: 20, color: '#4B5945' }} /> */}
+              <FontAwesome name="arrow-left" size={20} style={{paddingHorizontal: 15}} />
             </TouchableOpacity>
           ),
         }}
       />
         <View>
             <Image
-                source={require('../../assets/images/logo.png')}
+                source={require('../../../assets/images/logo.png')}
                 style={{ width: 100, height: 100, borderRadius: 50, alignSelf: 'center', marginTop: 20 }}
             />
             <Text style={{ fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginTop: 10, marginBottom: 30 }}>

@@ -1,13 +1,14 @@
-import { View, Text, TouchableOpacity, Image, TextInput, KeyboardAvoidingView, Platform, ScrollView } from 'react-native'
-import React, { useLayoutEffect, useState } from 'react'
-import { Stack, useNavigation, useRouter } from 'expo-router'
-import Icon from 'react-native-vector-icons/FontAwesome'
-import { styles } from '@/styles/writeBook.styles'
-import { labels } from '../utils/labels'
-import { saveNewUser } from '@/services/savesApi'
-import { Snackbar } from 'react-native-paper'
+import { useAuthStore } from '@/app/store/auth'
+import { labels } from '@/app/utils/labels'
+import { User } from '@/components/types/User'
 import { login } from '@/services/api'
-import { useAuthStore } from '../store/auth'
+import { saveNewUser } from '@/services/savesApi'
+import { styles } from '@/styles/writeBook.styles'
+import FontAwesome from '@expo/vector-icons/FontAwesome'
+import { Stack, useNavigation, useRouter } from 'expo-router'
+import React, { useLayoutEffect, useState } from 'react'
+import { Image, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Snackbar } from 'react-native-paper'
 
 const registration = () => {
     const navigation = useNavigation()
@@ -87,14 +88,14 @@ const registration = () => {
             options={{
               headerLeft: () => (
                 <TouchableOpacity onPress={() => router.replace('/')}>
-                  <Icon name="arrow-left" size={20} style={{ marginLeft: 10, marginRight: 20, color: '#4B5945' }} />
+                  <FontAwesome name="arrow-left" size={20} style={{ marginLeft: 10, marginRight: 20, color: '#4B5945' }} />
                 </TouchableOpacity>
               ),
             }}
           />
             <View>
                 <Image
-                    source={require('../../assets/images/logo.png')}
+                    source={require('../../../assets/images/logo.png')}
                     style={{ width: 100, height: 100, borderRadius: 50, alignSelf: 'center', marginTop: 20 }}
                 />
                 <Text style={{ fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginTop: 10, marginBottom: 30 }}>

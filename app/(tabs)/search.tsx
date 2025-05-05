@@ -1,10 +1,10 @@
-import { View, Text, SafeAreaView, TouchableOpacity, TextInput, FlatList, StyleSheet } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { searchData } from '@/services/searchapi'
+import FontAwesome from '@expo/vector-icons/FontAwesome'
 import { Stack, useRouter } from 'expo-router'
-import Icon from 'react-native-vector-icons/FontAwesome'
-import { labels } from '../utils/labels'
-import { searchData } from '@/services/searchApi'
+import React, { useEffect, useState } from 'react'
+import { FlatList, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { useCacheStore } from '../store/search'
+import { labels } from '../utils/labels'
 
 interface SearchItem {
     id: number;
@@ -37,7 +37,7 @@ const search = () => {
     }
 
     const Item = ({searchItem}: {searchItem: SearchItem}) => (
-        <View style={{borderBottomWidth: 1, borderBottomColor: 'lightgray', backgroundColor: '#fff'}}>
+        <View style={{backgroundColor: '#fff'}}>
             <Text style={{marginLeft: 10, paddingTop: 8, paddingBottom: 3, fontSize: 15, fontWeight: '600'}}>{searchItem.title}</Text>
             <Text style={{marginLeft: 10, paddingBottom: 8, fontSize: 12}}>{searchItem.fullName}</Text>
         </View>
@@ -57,7 +57,8 @@ const search = () => {
             justifyContent: 'center', 
             alignItems: 'center',
             height: 50,
-            marginVertical: 10,
+            marginTop: 50,
+            marginBottom: 10,
             marginHorizontal: 10,
             borderWidth: 1,
             padding: 10,
@@ -66,7 +67,7 @@ const search = () => {
             borderRadius: 25
          }, focusStyle]}>
             <View style={{width: '15%', flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-                <Icon name='search' size={20} color='gray'></Icon>
+                <FontAwesome name="search" size={20} color='gray' />
             </View>
             <TextInput
                 style={{

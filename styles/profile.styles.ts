@@ -50,5 +50,12 @@ export const styles = StyleSheet.create({
       flexDirection: 'row', 
       flexWrap: 'wrap', 
       gap: 5
+    },
+    settingsItem: {
+      width: 160,
+      paddingVertical: 10, 
+      paddingLeft: 10, 
+      paddingRight: 25,
+      flexDirection: 'row',
     }
   })

@@ -1,10 +1,9 @@
-import { ActivityIndicator, FlatList, Image, Text, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { useLayoutEffect } from "react";
-import { useLocalSearchParams, useNavigation } from 'expo-router'
-import { singleBook } from '@/services/api';
 import HtmlContent from '@/components/micro/HtmlContent';
-import { styles } from '@/styles/postDetails.styles'
+import { singleBook } from '@/services/api';
+import { styles } from '@/styles/postDetails.styles';
+import { useLocalSearchParams, useNavigation } from 'expo-router';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
+import { ActivityIndicator, FlatList, Text, View } from 'react-native';
 
 
 const BookDetails = () => {
@@ -17,7 +16,7 @@ const BookDetails = () => {
             <Text style={{ fontSize: 16, fontWeight: 'bold', textAlign: 'center' }}>
               {title}
             </Text>
-            <Text style={{ fontSize: 14, color: '#666', textAlign: 'center' }}>
+            <Text style={{ fontSize: 14, color: '#666' }}>
               {author}
             </Text>
           </View>

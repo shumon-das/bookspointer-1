@@ -1,11 +1,14 @@
+import { useCategoryStore } from '@/app/store/categories';
+import { useUserStore } from '@/app/store/user';
+import { labels } from '@/app/utils/labels';
+import { fetchCategories } from '@/services/api';
+import { fetchFilteredAuthorsData, fetchIniitialCategories, fetchInitialAuthors } from '@/services/searchapi';
+import { styles } from '@/styles/dropdownList.styles';
+import AntDesign from '@expo/vector-icons/AntDesign';
 import React, { useEffect, useState } from 'react';
 import { Dropdown } from 'react-native-element-dropdown';
-import AntDesign from '@expo/vector-icons/AntDesign';
-import { fetchFilteredAuthorsData, fetchIniitialCategories, fetchInitialAuthors } from '@/services/searchapi';
-import { fetchCategories } from '@/services/api';
-import { useCategoryStore } from '@/app/store/categories';
-import { styles } from '@/styles/dropdownList.styles';
-import { useUserStore } from '@/app/store/user';
+import { Category } from '../types/Category';
+import { User } from '../types/User';
 
 interface DATA {
   context: string,
@@ -19,7 +22,7 @@ const DropdownList = ({context, defaultOption, field, onChange}: DATA) => {
   const categories = useCategoryStore((state) => state.categories)
   const setCategories = useCategoryStore((state) => state.setCategories)
   const authors = useUserStore((state) => state.authors)
-  const selectItem = `Select ${context}`;
+  const selectItem = 'authors' === context ? labels.selectAuthor : labels.selectCategory;
   const [options, setOptions] = useState('categories' === context ? authors : categories)
 
   const [loading, setLoading] = useState(false)

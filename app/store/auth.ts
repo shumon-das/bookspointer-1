@@ -1,3 +1,4 @@
+import { User } from '@/components/types/User';
 import { create } from 'zustand';
 
 interface AuthStore {

@@ -1,12 +1,9 @@
 import BookCard from "@/components/BookCard";
 import { fetchBooks } from "@/services/api";
-import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 import * as Notifications from 'expo-notifications';
-import { useEffect, useRef, useState } from "react";
-import { registerForPushNotificationsAsync } from "../utils/notifications";
-import { EventSubscription } from 'expo-modules-core'
-import { saveToken } from "@/services/notificationApi";
-import { useLocalSearchParams, useNavigation } from 'expo-router'
+import { useLocalSearchParams } from 'expo-router';
+import { useEffect, useState } from "react";
+import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({

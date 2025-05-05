@@ -76,27 +76,37 @@ const profile = () => {
           from={headerMoreIcon}
           onRequestClose={() => setShowPopover(false)}
         >
-          <Text style={{ width: 160,paddingVertical: 10, paddingLeft: 10, paddingRight: 25 }}
-            onPress={() => alert('')}
-          > 
+          <View style={styles.settingsItem}> 
             <FontAwesome name="lock" size={18} />
-            {labels.resetPassword}
-          </Text>
-          <Text style={{ width: 160,paddingVertical: 10, paddingLeft: 10, paddingRight: 25 }}
-            onPress={() => alert('should update the publish status')}
-          > 
+            <Text onPress={() => { 
+                router.push({pathname: '/(tabs)/user/resetPassword', params: {
+                  userId: user.id,
+                  token: token
+                }})
+                setShowPopover(false)
+              }
+            } style={{marginLeft: 10}}>{labels.resetPassword.header}</Text>
+          </View>
+          <View style={styles.settingsItem}> 
             <FontAwesome name="user" size={18} />
-            {labels.editProfile}
-          </Text>
-          <Text style={{ width: 160,paddingVertical: 10, paddingLeft: 10, paddingRight: 25 }}
-            onPress={() => {
+            <Text onPress={() => {
+                router.push({pathname: '/(tabs)/user/updateProfile', params: {
+                userId: user.id,
+                token: token
+                }})
+                setShowPopover(false)
+              }
+            } style={{marginLeft: 10}}>{labels.editProfile}</Text>
+          </View>
+          <View style={styles.settingsItem}> 
+            <FontAwesome name="sign-out" size={18} />
+            <Text style={{marginLeft: 10}} onPress={() => {
               logout()
-              router.push('/')
-            }}
-          > 
-            <FontAwesome name="sign-out" size={18} style={{marginRight: 10}} />
-            <Text style={{marginLeft: 10, paddingLeft: 10}}>{labels.signOut}</Text>
-          </Text>
+              // @todo have to complete from profile logout
+              router.push('/(tabs)/auth/login')
+              setShowPopover(false)
+            }}>{labels.signOut}</Text>
+          </View>
         </Popover>
       </View>
 

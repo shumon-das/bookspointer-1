@@ -32,10 +32,10 @@ const _layout = () => {
             },
             headerRight: () => (
                 <View style={styles.header}>
-                    <TouchableOpacity  onPress={() => router.push('/book/search')}>
+                    <TouchableOpacity  onPress={() => router.push('/(tabs)/search')}>
                         <FontAwesome name="search"  style={styles.marginLeft} size={20} color="black" />
                     </TouchableOpacity>
-                    <TouchableOpacity  onPress={() => router.push('/book/writeNewBook')}>
+                    <TouchableOpacity  onPress={() => router.push('/(tabs)/book/writeNewBook')}>
                         <Text style={styles.marginLeft}>{labels.writeBook}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity  onPress={() => router.push(user ? '/profile' : '/auth/login')} style={styles.loginBtn}>
@@ -102,12 +102,16 @@ const _layout = () => {
                 )
             }}
         />
-        <Tabs.Screen
-            name="profile"
-            options={{
-                href: null 
-            }}
-        />
+        <Tabs.Screen name="profile" options={{ href: null }} />
+        <Tabs.Screen name="user/resetPassword" options={{ href: null }} />
+        <Tabs.Screen name="user/updateProfile" options={{ href: null }} />
+        <Tabs.Screen name="book/[id]" options={{ href: null }} />
+        <Tabs.Screen name="book/update/[id]" options={{ href: null }} />
+        <Tabs.Screen name="book/categoryBooks" options={{ href: null }} />
+        <Tabs.Screen name="book/writeNewBook" options={{ href: null }} />
+        <Tabs.Screen name="auth/login" options={{ href: null }} />
+        <Tabs.Screen name="auth/registration" options={{ href: null }} />
+        <Tabs.Screen name="search" options={{ href: null }} />
     </Tabs>
   )
 }

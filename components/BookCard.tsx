@@ -45,7 +45,7 @@ const BookCard = ({book, snackMessage}: {book: BookCardProps, snackMessage: (val
            </View>
          </View>
          
-         <TouchableOpacity onPress={() => router.push({pathname: "/book/[id]", params: {id: book.id, title: book.title, author: book.author.fullName}})}>
+         <TouchableOpacity onPress={() => router.push({pathname: "/(tabs)/book/[id]", params: {id: book.id, title: book.title, author: book.author.fullName}})}>
             <ScrollView style={styles.postContent}>
               <HtmlContent content={book.content} />
             </ScrollView>

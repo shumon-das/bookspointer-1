@@ -1,25 +1,28 @@
-import { View, Text, TouchableOpacity, TextInput, ScrollView, KeyboardAvoidingView, Platform } from 'react-native'
-import React, { useEffect, useRef, useState } from 'react'
-import { Stack } from 'expo-router'
-import { styles } from '@/styles/writeBook.styles'
-import Icon from 'react-native-vector-icons/FontAwesome'
-import { labels } from '../utils/labels'
-import ImagePicker from '@/components/micro/ImagePicker'
-import { useLocalSearchParams } from 'expo-router/build/hooks'
-import { fullBook, saveBookWithFile } from '@/services/api'
-import { WebView } from 'react-native-webview';
-import { htmlString } from '@/app/utils/richEditorHtml';
-import DropdownList from '@/components/micro/DropdownList'
 import { useAuthStore } from "@/app/store/auth";
+import { labels } from "@/app/utils/labels";
+import { htmlString } from '@/app/utils/richEditorHtml';
+import DropdownList from '@/components/micro/DropdownList';
+import ImagePicker from '@/components/micro/ImagePicker';
+import { Category } from '@/components/types/Category';
+import { User } from '@/components/types/User';
+import { fullBook, saveBookWithFile } from '@/services/api';
+import { styles } from '@/styles/writeBook.styles';
+import { useNavigation, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router/build/hooks';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Snackbar } from 'react-native-paper';
-import { useRouter } from "expo-router";
+import { WebView } from 'react-native-webview';
 
 const writeNewBook = () => {
   const token = useAuthStore((state) => state.token)
   const router = useRouter()
+  const navigation = useNavigation()
+  const title = labels.writeNewBook
+  useLayoutEffect(() => navigation.setOptions({ title }), [navigation, title]);
   
   const [image, setImage] = useState('default_post_image.jpg')
-  const [title, setTitle] = useState('')
+  const [bookTitle, setBookTitle] = useState('')
   const [category, setCategory] = useState(null as Category | null)
   const [author, setAuthor] = useState(null as User | null)
   const [content, setContent] = useState('')
@@ -45,7 +48,7 @@ const writeNewBook = () => {
     const data = await fullBook(uuid)
     setBookId(data.id)
     setImage(data.image)
-    setTitle(data.title)
+    setBookTitle(data.title)
     setCategory(data.category)
     setAuthor(data.author)
     setContent(data.content)
@@ -77,7 +80,7 @@ const writeNewBook = () => {
 
     let value = {
       image: image.includes('file:') ? image : null,
-      title: title,
+      title: bookTitle,
       category: category,
       author: author,
       content: content,
@@ -91,7 +94,7 @@ const writeNewBook = () => {
 
     setReadyToSave(false)
     setToastVisible(true)
-    setTimeout(() => router.push('/user/profile'), 2000)
+    setTimeout(() => router.push('/profile'), 2000)
   } 
 
   return (
@@ -101,15 +104,6 @@ const writeNewBook = () => {
          keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 60}
      >
       <ScrollView style={{flex: 1}}  keyboardShouldPersistTaps="handled">
-        <Stack.Screen
-        options={{
-          headerLeft: () => (
-            <TouchableOpacity onPress={() => router.replace('/')}>
-              <Icon name="arrow-left" size={20} style={{ marginLeft: 10, marginRight: 20, color: '#4B5945' }} />
-            </TouchableOpacity>
-          ),
-        }}
-        />
         <View style={{flexDirection: 'row'}}>
             <View style={styles.imageContainer}>
                 <ImagePicker 
@@ -124,8 +118,8 @@ const writeNewBook = () => {
         <View style={{ width: '90%', marginHorizontal: 'auto', flex: 1, }}>
             <TextInput
                 style={styles.input}
-                onChangeText={(value) => setTitle(value)}
-                value={title}
+                onChangeText={(value) => setBookTitle(value)}
+                value={bookTitle}
                 placeholder={labels.bookCreate.title}
             /> 
 
