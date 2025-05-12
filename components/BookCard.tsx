@@ -1,9 +1,10 @@
 import { labels } from '@/app/utils/labels';
 import { userRole } from '@/app/utils/userRole';
+import { styles } from '@/styles/bookCard.styles';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import SaveButton from './micro/bookCardFooter/SaveButton';
 import ShareButton from './micro/bookCardFooter/ShareButton';
 import HtmlContent from './micro/HtmlContent';
@@ -15,7 +16,7 @@ interface BookCardProps {
   image: string;
   title: string;
   content: string;
-  author: { fullName: string };
+  author: { id: number; fullName: string };
   createdBy: { fullName: string; image: string, roles: string[] };
   category: { label: string }|string;
   url: string;
@@ -31,7 +32,9 @@ const BookCard = ({book, snackMessage}: {book: BookCardProps, snackMessage: (val
       <View className='postHeader' style={styles.postHeader}>
         <Image  source={{ uri: createdByImg }} style={styles.image} />
         <View>
-          <Text style={styles.userName}>{book.createdBy.fullName}</Text>
+          <TouchableOpacity onPress={() => router.push({pathname: "/(tabs)/profile", params: {authorId: book.author.id}})}>
+            <Text style={styles.userName}>{book.createdBy.fullName}</Text>
+          </TouchableOpacity>
           <Text style={styles.userRole}>{userRole(book.createdBy.roles)}</Text>
         </View>
       </View>
@@ -70,81 +73,5 @@ const BookCard = ({book, snackMessage}: {book: BookCardProps, snackMessage: (val
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  cardBackground: {
-    backgroundColor: "white",
-    marginVertical: 5,
-  },
-  postHeader: {
-    flex: 1,
-    flexDirection: "row",
-    borderBottomWidth: 0.5,
-    borderBottomColor: "gray",
-    marginBottom: 10,
-    paddingVertical: 12,
-  },
-  image: {
-    width: 40, // Image width
-    height: 40, // Image height
-    borderRadius: 25, // Makes it circular
-    marginLeft: 12,
-    marginRight: 10, // Space between image and text
-    paddingLeft: 16
-  },
-  userName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  userRole: {
-    fontSize: 12,
-    // color: 'gray',
-  },
-
-  postImageAndTitle: {
-    flex: 1,
-    flexDirection: "row",
-  },
-
-  postImage: {
-    width: 70,
-    height: 80,
-    marginRight: 12,
-  },
-
-  postTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-
-  postAuthorName: {
-    fontSize: 12,
-    fontWeight: "bold",
-  },
-
-  postCategory: {
-    fontSize: 10,
-    fontWeight: "600"
-  },
-
-  postBodyHeader: {
-    paddingHorizontal: 10,
-  },
-  postContent: {
-    paddingHorizontal: 0
-  },
-
-  postFooter: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: "space-around",
-    paddingVertical: 6,
-    borderTopWidth: 0.2,
-    borderTopColor: "gray",
-    // borderBottomWidth: 0.2,
-    // borderBottomColor: "gray",
-    marginBottom: 10
-  }
-})
 
 export default BookCard

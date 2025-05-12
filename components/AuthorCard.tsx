@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
-import React from 'react'
-import { View, Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import React from 'react';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { User } from './types/User';
 
 export default function AuthorCard(author: User) {
     const authorImg = `https://api.bookspointer.com/uploads/${author.image}`
@@ -8,7 +9,7 @@ export default function AuthorCard(author: User) {
   return (
     <View className='postHeader'>
         <TouchableOpacity  style={styles.postHeader} onPress={() => router.push({
-            pathname: '/user/profile', 
+            pathname: '/(tabs)/profile', 
             params: { authorId: author.id }
           })}>
           <Image  source={{ uri: authorImg }} style={styles.image} />

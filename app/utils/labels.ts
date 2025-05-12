@@ -13,6 +13,9 @@ export const labels = {
         error: "পাসওয়ার্ড রিসেট করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।",
     },
     register: "রেজিস্টার করুন",
+    firstName: "নামের প্রথম অংশ",
+    lastName: "নামের শেষ অংশ",
+    email: "ইমেইল",
     noAccount: "একাউন্ট নেই?",
     invalidEmail: "ইমেইলটি সঠিক হয়নি। সঠিক ইমেইল দিয়ে আবার চেষ্টা করুন।",
     passswordConfirmNotMatch: "পাসওয়ার্ড আর কনফার্ম পাসওয়ার্ডে মিল নেই।",
@@ -24,6 +27,7 @@ export const labels = {
     userRoleUser: "ব্যাবহারকারী",
     userRoleAuthor: "লেখক",
     userRolePublisher: "পাবলিশার",
+    userDescription: "আপনার নিজের সম্পর্কে লিখুন...",
     userBookTypes: {
         books: "বইসমূহ",
         library: "লাইব্রেরী",

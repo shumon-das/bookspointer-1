@@ -1,5 +1,5 @@
 // EditorHtml.ts
-export const htmlString = (initialContent: string): string => { 
+export const htmlString = (initialContent: string, placeholder?: string): string => { 
   return `
     <!DOCTYPE html>
     <html>
@@ -57,7 +57,7 @@ export const htmlString = (initialContent: string): string => {
               modules: {
                 toolbar: '#toolbar'
               },
-              placeholder: 'Write something...',
+              placeholder: ${placeholder || 'লিখুন...'},
             });
 
             // quill.on('text-change', function (e) {

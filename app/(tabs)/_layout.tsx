@@ -33,10 +33,10 @@ const _layout = () => {
             headerRight: () => (
                 <View style={styles.header}>
                     <TouchableOpacity  onPress={() => router.push('/(tabs)/search')}>
-                        <FontAwesome name="search"  style={styles.marginLeft} size={20} color="black" />
+                        <FontAwesome name="search"  style={styles.marginLeft} size={20} color="white" />
                     </TouchableOpacity>
                     <TouchableOpacity  onPress={() => router.push('/(tabs)/book/writeNewBook')}>
-                        <Text style={styles.marginLeft}>{labels.writeBook}</Text>
+                        <Text style={[styles.marginLeft, {color: 'white'}]}>{labels.writeBook}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity  onPress={() => router.push(user ? '/profile' : '/auth/login')} style={styles.loginBtn}>
                         {user 
@@ -59,7 +59,11 @@ const _layout = () => {
                     icon="home"
                     title={labels.home}
                    />
-                )
+                ),
+                headerStyle: {
+                    backgroundColor: '#085a80',
+                },
+                headerTintColor: '#ffffff', 
             }}
         />
         <Tabs.Screen

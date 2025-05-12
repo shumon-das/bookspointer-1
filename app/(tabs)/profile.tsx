@@ -21,7 +21,7 @@ const profile = () => {
   const router = useRouter()
   const user = author ? author : useAuthStore((state) => state.user)
   const token = useAuthStore((state) => state.token)
-  if (!user || !token) {
+  if (!user) {
     router.push('/')
     return
   }
@@ -114,7 +114,7 @@ const profile = () => {
         <Image source={require('../../assets/images/profile_cover.jpg')} style={styles.coverImg} />
         <View style={styles.userInfo}>
           <ImagePicker defaultImage={user ? user.image : 'default_post_image.jpg'} onChange={(value) => {
-            if (!user) return
+            if (!user || !token) return
             updateProfileImage(value, token, user.id)
           }} />
         </View>

@@ -1,3 +1,4 @@
+import { useAuthStore } from "@/app/store/auth";
 import { API_CONFIG } from "@/app/utils/config";
 
 export const updateProfileImage = async (image: string, token: string, userId: number) => {
@@ -44,7 +45,31 @@ export const resetUserPassword = async (token: string, newPassword: string) => {
             new_password: newPassword
         })
     })
-    console.log("response", response.status, "token", token, "newPassword", newPassword)
+    if (!response.ok) {
+        // @ts-ignore
+        throw new Error('Failed to save token', response.message)
+    }
+    const data = await response.json();
+    return data;
+}
+
+export const updateProfileInfo = async (value: any, description: string) => {
+    const token = useAuthStore((state) => state.token)
+    if (!token) return
+    
+    const endpoint = `${API_CONFIG.BASE_URL}/update-user`;
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+    }
+    const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify({
+            user: value,
+            details: {birthAt: null, deadAt: null, description: description},
+        })
+    })
     if (!response.ok) {
         // @ts-ignore
         throw new Error('Failed to save token', response.message)

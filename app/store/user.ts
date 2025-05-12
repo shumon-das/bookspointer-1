@@ -1,3 +1,5 @@
+import { Book } from '@/components/types/Book';
+import { User } from '@/components/types/User';
 import { create } from 'zustand';
 
 interface UserStore {

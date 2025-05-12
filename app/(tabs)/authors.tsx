@@ -1,12 +1,19 @@
-import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native'
-import { fetchAuthors } from '@/services/api';
 import AuthorCard from '@/components/AuthorCard';
+import { fetchAuthors } from '@/services/api';
 import useFetch from '@/services/useFetch';
+import { useEffect } from 'react';
+import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native';
 import { useUserStore } from '../store/user';
 
 const authors = () => {
   const setAuthors = useUserStore((state) => state.setAuthors);
   const { data: authors, loading: authorsLoading, error: booksError } = useFetch(() => fetchAuthors())
+
+  useEffect(() => {
+    if (authors) {
+      setAuthors(authors)
+    }
+  }, [authors, setAuthors])
 
   return (
     <View style={styles.container}>
@@ -15,7 +22,6 @@ const authors = () => {
         ? <ActivityIndicator size="large" color="#0000ff" className='mt-10 self-center' />
         : (
           <>
-            {setAuthors(authors)}
             <FlatList
               data={authors}
               renderItem={({item}) => <AuthorCard {...item} /> }
