@@ -67,12 +67,10 @@ export const styles = StyleSheet.create({
       flex: 1,
       flexDirection: 'row',
       justifyContent: "space-around",
+      alignItems: "center",
       paddingVertical: 6,
       borderTopWidth: 0.2,
       borderTopColor: "gray",
-      // borderBottomWidth: 0.2,
-      // borderBottomColor: "gray",
-      marginBottom: 10
     }
   })
   

@@ -14,7 +14,8 @@ export const styles = StyleSheet.create({
   container: {
     paddingVertical: 5,
     paddingBottom: 50,
-    paddingHorizontal: 8
+    paddingHorizontal: 8,
+    backgroundColor: 'white',
   },
   chunkText: {
     paddingHorizontal: 16,

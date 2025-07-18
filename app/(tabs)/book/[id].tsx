@@ -13,18 +13,19 @@ const BookDetails = () => {
       navigation.setOptions({
         headerTitle: () => (
           <View>
-            <Text style={{ fontSize: 16, fontWeight: 'bold', textAlign: 'center' }}>
+            <Text style={{ color: 'white', fontSize: 16, fontWeight: 'bold' }}>
               {title}
             </Text>
-            <Text style={{ fontSize: 14, color: '#666' }}>
+            <Text style={{ fontSize: 14, color: 'lightgray' }}>
               {author}
             </Text>
           </View>
         ),
         headerStyle: {
           height: 100,
+          backgroundColor: '#085a80',
         },
-        headerBackVisible: false,
+        headerBackVisible: true,
       });
     }, [navigation, title, author]);
   
@@ -34,16 +35,17 @@ const BookDetails = () => {
     const [hasMore, setHasMore] = useState(true);
 
     useEffect(() => {
-        fetchChunks(1);
-    }, []);
+      if (!id) return;
+      fetchChunks(parseInt(id as string), 1);
+    }, [id]);
 
-    const fetchChunks = async (pageNumber: number) => {
+    const fetchChunks = async (id: number, pageNumber: number) => {
         if (loading || !hasMore) return;
 
         setLoading(true);
 
         try {
-          const data = await singleBook({id: parseInt(id as string), page: pageNumber})
+          const data = await singleBook({id: id, page: pageNumber})
           if (texts.includes(data.text)) {
             setHasMore(false);
           } else {
@@ -65,7 +67,7 @@ const BookDetails = () => {
               data={texts}
               keyExtractor={(item, index) => index.toString()}
               renderItem={({ item }) => <HtmlContent style={styles.chunkText} content={item} /> }
-              onEndReached={() => fetchChunks(page)}
+              onEndReached={() => fetchChunks(parseInt(id as string), page)}
               onEndReachedThreshold={0.5}
               ListFooterComponent={loading ? <ActivityIndicator size="small" /> : null}
           />

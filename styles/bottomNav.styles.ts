@@ -11,6 +11,7 @@ export const styles = StyleSheet.create({
         flexDirection: 'row', 
         alignItems: 'center',
         // backgroundColor: '#085a80',
+        marginRight: 10,
     },
     userImg: { 
         width: 30, 

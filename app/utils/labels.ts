@@ -37,6 +37,7 @@ export const labels = {
     home: 'হোম', 
     authors: 'লেখকগণ',
     selectAuthor: ' লেখক নির্বাচন করুন',
+    audios: "অডিও বই",
     categories: 'ধরণ', 
     selectCategory: 'ধরণ নির্বাচন করুন',
     download: 'ডাউনলোড',
@@ -51,4 +52,8 @@ export const labels = {
     },
     saveBookIntoDb: "বইটি সফলভাবে সেভ হয়েছে।",
     saveBookIntoLibrary: "বইটি সফলভাবে লাইব্রেরীতে যুক্ত হয়েছে।",
+    share: "শেয়ার",
+    audioBook: "অডিও বই",
+    audioBookNotAvailable: "দুঃখিত, অডিও বইটি এখনো উপলব্ধ নয়।",
+    featureNotAvailable: "দুঃখিত, ডাউনলোদ সুবিধাটি এখনো যুক্ত করা হয়নি।"
 }

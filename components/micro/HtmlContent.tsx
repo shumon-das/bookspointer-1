@@ -7,7 +7,7 @@ const HtmlContent = ({ content }: any) => {
   const cleanHtml = (html: string) => html.replace(/<p>\s*<br\s*\/?>\s*<\/p>/g, "");
   
   return (
-    <ScrollView>
+    <ScrollView style={{ backgroundColor: 'white' }}>
         <HTMLView
           value={cleanHtml(content)}
           stylesheet={{ p: { fontSize: 16 }, br: { height: 0 } }}

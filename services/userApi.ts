@@ -1,6 +1,17 @@
 import { useAuthStore } from "@/app/store/auth";
 import { API_CONFIG } from "@/app/utils/config";
 
+export const getAuthor = async (uuid: string) => {
+    const endpoint = `${API_CONFIG.BASE_URL}/single-user/${uuid}`;
+    const response = await fetch(endpoint);
+    if (!response.ok) {
+        // @ts-ignore
+        throw new Error('Failed to fetch author', response.message);
+    }
+    const data = await response.json();
+    return data;
+}
+
 export const updateProfileImage = async (image: string, token: string, userId: number) => {
     const endpoint = `${API_CONFIG.BASE_URL}/upload-book`;
     const headers = {

@@ -1,4 +1,5 @@
 import { API_CONFIG } from "@/app/utils/config";
+import { SaveRequestParams } from "@/components/types/Book";
 
 export const fetchBooks = async ({pageNumber, limit, categoryName}: {pageNumber: number, limit: number, categoryName?: string}) => {
     let endpoint = API_CONFIG.BASE_URL + '/books';

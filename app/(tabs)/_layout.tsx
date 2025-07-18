@@ -35,16 +35,16 @@ const _layout = () => {
                     <TouchableOpacity  onPress={() => router.push('/(tabs)/search')}>
                         <FontAwesome name="search"  style={styles.marginLeft} size={20} color="white" />
                     </TouchableOpacity>
-                    <TouchableOpacity  onPress={() => router.push('/(tabs)/book/writeNewBook')}>
+                    {/* <TouchableOpacity  onPress={() => router.push('/(tabs)/book/writeNewBook')}>
                         <Text style={[styles.marginLeft, {color: 'white'}]}>{labels.writeBook}</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity  onPress={() => router.push(user ? '/profile' : '/auth/login')} style={styles.loginBtn}>
+                    </TouchableOpacity> */}
+                    {/* <TouchableOpacity  onPress={() => router.push(user ? '/profile' : '/auth/login')} style={styles.loginBtn}>
                         {user 
                             ? <Image source={{uri: `https://api.bookspointer.com/uploads/${user?.image}`}} style={styles.userImg} />
                             : <Text>{labels.signIn}</Text>
                             
                         }
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                 </View>
             ),
         }}
@@ -110,12 +110,14 @@ const _layout = () => {
         <Tabs.Screen name="user/resetPassword" options={{ href: null }} />
         <Tabs.Screen name="user/updateProfile" options={{ href: null }} />
         <Tabs.Screen name="book/[id]" options={{ href: null }} />
+        <Tabs.Screen name="book/details" options={{ href: null }} />
         <Tabs.Screen name="book/update/[id]" options={{ href: null }} />
         <Tabs.Screen name="book/categoryBooks" options={{ href: null }} />
         <Tabs.Screen name="book/writeNewBook" options={{ href: null }} />
         <Tabs.Screen name="auth/login" options={{ href: null }} />
         <Tabs.Screen name="auth/registration" options={{ href: null }} />
         <Tabs.Screen name="search" options={{ href: null }} />
+        <Tabs.Screen name="authorProfile" options={{ href: null }} />
     </Tabs>
   )
 }

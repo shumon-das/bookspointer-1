@@ -9,10 +9,10 @@ export default function AuthorCard(author: User) {
   return (
     <View className='postHeader'>
         <TouchableOpacity  style={styles.postHeader} onPress={() => router.push({
-            pathname: '/(tabs)/profile', 
-            params: { authorId: author.id }
+            pathname: '/(tabs)/authorProfile', 
+            params: { authorUuid: author.uuid }
           })}>
-          <Image  source={{ uri: authorImg }} style={styles.image} />
+          {/* <Image  source={{ uri: authorImg }} style={styles.image} /> */}
           <View>
               <Text style={styles.userName}>{author.fullName}</Text>
               <Text style={styles.userRole}>লেখক</Text>
@@ -30,6 +30,7 @@ const styles = StyleSheet.create({
     borderBottomColor: "gray",
     paddingVertical: 12,
     backgroundColor: 'white',
+    paddingHorizontal: 12
   },
   image: {
     width: 40, // Image width

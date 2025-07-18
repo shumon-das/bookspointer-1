@@ -1,32 +1,61 @@
 import BookCard from "@/components/BookCard";
 import { fetchBooks } from "@/services/api";
-import * as Notifications from 'expo-notifications';
-import { useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from "react";
+// import * as Notifications from 'expo-notifications';
+import { useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
+import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-  }),
-});
+// Notifications.setNotificationHandler({
+//   handleNotification: async () => ({
+//     shouldShowAlert: true,
+//     shouldPlaySound: true,
+//     shouldSetBadge: false,
+//   }),
+// });
 
-export default function Index() {
-  const {category} = useLocalSearchParams();
+export default function CategoryBooks() {
+  const {category, categoryLabel} = useLocalSearchParams();
+  const navigation = useNavigation()
+  
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: categoryLabel,
+      headerStyle: {
+        backgroundColor: '#085a80',
+      },
+      headerTintColor: '#d4d4d4',
+      headerTitleStyle: {
+        fontWeight: 'bold',
+      },
+    });
+  }, [navigation, categoryLabel]);
+
+  const [currentCategory, setCurrentCategory] = useState("");
   const [books, setBooks] = useState([] as any[]);
   const [initialLoading, setInitialLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [toastVisible, setToastVisible] = useState(false)
+  const [snackMessage, setSnackMessage] = useState('')
 
-  const fetchChunks = async (pageNumber: number) => {
+  useFocusEffect(useCallback(() => {
+    if (category) {
+      setCurrentCategory(category as string);
+      setInitialLoading(true)
+      fetchChunks(1, category as string);
+      setInitialLoading(false)
+      setPage(page + 1);
+    }
+
+  }, [navigation, category]))
+
+  const fetchChunks = async (pageNumber: number, category: string) => {
       if (loading || !hasMore) return;
         setLoading(true);
 
         try {
-          const data = await fetchBooks({pageNumber: pageNumber, limit: 8, categoryName: category as string})
+          const data = await fetchBooks({pageNumber: pageNumber, limit: 8, categoryName: category})
           if (data.length <= 0) {
             setHasMore(false);
           } else {
@@ -40,12 +69,13 @@ export default function Index() {
         }
       };
 
-    useEffect(() => {
-        setInitialLoading(true)
-        fetchChunks(1);
-        setInitialLoading(false)
-        setPage(page + 1);
-    }, []);
+    // useEffect(() => {
+    //     setInitialLoading(true)
+    //     fetchChunks(1);
+    //     setInitialLoading(false)
+    //     setPage(page + 1);
+    // }, [category]);
+
   return (
     <View style={styles.container}>
       {initialLoading ? (<ActivityIndicator size="large" color="#0000ff" className="mt-10 self-center" /> ) : (
@@ -53,8 +83,11 @@ export default function Index() {
           <FlatList
             data={books}
             keyExtractor={(item) => item.id.toString()}
-            renderItem={({item}) => <BookCard {...item} /> }
-            onEndReached={() => fetchChunks(page)}
+            renderItem={({item}) => <BookCard book={item} snackMessage={(value: string) => {
+              setSnackMessage(value)
+              setToastVisible(true)
+            }} /> }
+            onEndReached={() => fetchChunks(page, currentCategory)}
             onEndReachedThreshold={0.5}
             ListFooterComponent={loading ? <ActivityIndicator size="small" /> : null}
             style={styles.list}

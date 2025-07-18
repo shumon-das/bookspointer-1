@@ -16,7 +16,7 @@ export default function CategoryCard(category: CategoryProps) {
     <View className='postHeader' style={styles.postHeader}>
       <TouchableOpacity  style={styles.postHeader} onPress={() => router.push({
                   pathname: '/book/categoryBooks', 
-                  params: { category: category.name }
+                  params: { category: category.name, categoryLabel: category.label }
                 })}>
         <Icon name='file'></Icon>
         <View>

@@ -2,6 +2,7 @@ import { Book } from "./Book";
 
 export interface User {
   id: number;
+  uuid: string;
   firstName: string;
   lastName: string;
   fullName: string;

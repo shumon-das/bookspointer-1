@@ -1,5 +1,6 @@
+import { labels } from '@/app/utils/labels';
 import React from 'react';
-import { View, Button, Share, TouchableOpacity } from 'react-native';
+import { View, Button, Share, TouchableOpacity, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 
@@ -29,8 +30,9 @@ const ShareButton = ({ title, message, url }: {title: string; message: string; u
 
   return (
     <View>
-      <TouchableOpacity onPress={onShare} >
+      <TouchableOpacity onPress={onShare} style={{ flexDirection: 'column', alignItems: 'center' }}  >
         <Icon name="share-alt" size={20} color="gray" />
+        <Text>{labels.share}</Text>
       </TouchableOpacity>
     </View>
   );

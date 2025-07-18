@@ -8,6 +8,7 @@ import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import SaveButton from './micro/bookCardFooter/SaveButton';
 import ShareButton from './micro/bookCardFooter/ShareButton';
 import HtmlContent from './micro/HtmlContent';
+import AudioBookButton from './micro/bookCardFooter/AudioBookButton';
 
 
 interface BookCardProps {
@@ -17,7 +18,7 @@ interface BookCardProps {
   title: string;
   content: string;
   author: { id: number; fullName: string };
-  createdBy: { fullName: string; image: string, roles: string[] };
+  createdBy: { id: number; fullName: string; image: string, roles: string[] };
   category: { label: string }|string;
   url: string;
 }
@@ -32,9 +33,9 @@ const BookCard = ({book, snackMessage}: {book: BookCardProps, snackMessage: (val
       <View className='postHeader' style={styles.postHeader}>
         <Image  source={{ uri: createdByImg }} style={styles.image} />
         <View>
-          <TouchableOpacity onPress={() => router.push({pathname: "/(tabs)/profile", params: {authorId: book.author.id}})}>
+          {/* <TouchableOpacity onPress={() => router.push({pathname: "/(tabs)/userProfile", params: {authorId: book.createdBy.id}})}> */}
             <Text style={styles.userName}>{book.createdBy.fullName}</Text>
-          </TouchableOpacity>
+          {/* </TouchableOpacity> */}
           <Text style={styles.userRole}>{userRole(book.createdBy.roles)}</Text>
         </View>
       </View>
@@ -48,17 +49,18 @@ const BookCard = ({book, snackMessage}: {book: BookCardProps, snackMessage: (val
            </View>
          </View>
          
-         <TouchableOpacity onPress={() => router.push({pathname: "/(tabs)/book/[id]", params: {id: book.id, title: book.title, author: book.author.fullName}})}>
-            <ScrollView style={styles.postContent}>
-              <HtmlContent content={book.content} />
-            </ScrollView>
+         <TouchableOpacity onPress={() => router.push({pathname: "/(tabs)/book/details", params: {id: book.id, title: book.title, author: book.author.fullName}})}>
+            <HtmlContent content={book.content} />
          </TouchableOpacity>
       </View>
 
       <View className='postFooter' style={styles.postFooter}>
-        <Text>
-          <FontAwesome name="heart-o" size={20} color="gray" />
-        </Text>
+        <TouchableOpacity onPress={() => alert(labels.featureNotAvailable)}>
+          <Text style={{textAlign: 'center'}}>
+            <FontAwesome name="download" size={24} color="gray" />
+          </Text>
+          <Text style={{fontSize: 10}}>{labels.download}</Text>
+        </TouchableOpacity>
         <Text>
           <ShareButton
             title="Check this out!"
@@ -67,7 +69,8 @@ const BookCard = ({book, snackMessage}: {book: BookCardProps, snackMessage: (val
           />
         </Text>
         <Text>
-          <SaveButton bookId={book.id} onSaveToLibrary={() => snackMessage(labels.saveBookIntoLibrary)} />
+          <AudioBookButton bookId={book.id} onClickToPlay={() => snackMessage(labels.audioBookNotAvailable)} />
+          {/* <SaveButton bookId={book.id} onSaveToLibrary={() => snackMessage(labels.saveBookIntoLibrary)} /> */}
         </Text>
       </View>
     </View>
