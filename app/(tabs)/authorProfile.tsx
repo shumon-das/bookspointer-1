@@ -31,6 +31,7 @@ const authorProfile = () => {
   }
 
   useEffect(() => {
+    setChoosedSeries(null);
     getAuthorFromDb(authorUuid as string);
   }, [authorUuid]);
 

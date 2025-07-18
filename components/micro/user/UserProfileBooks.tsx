@@ -24,7 +24,7 @@ const UserProfileBooks = ({series, authorId, onBackToSeries}: {series: string, a
   }, [series, authorId])
 
   const onChooseBook = (book: Book) => {
-    router.push({pathname: "/(tabs)/book/[id]", params: {id: book.id, title: book.title, author: book.author.fullName}})
+    router.push({pathname: "/(tabs)/book/details", params: {id: book.id, title: book.title, author: book.author.fullName}})
   }
   
   return (

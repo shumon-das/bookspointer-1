@@ -96,7 +96,7 @@ const search = () => {
             <FlatList
                 data={data}
                 renderItem={({item}) => <TouchableOpacity onPress={() => {
-                    router.push({pathname: "/book/[id]", params: {id: item.id, title: item.title, author: item.fullName}})
+                    router.push({pathname: "/(tabs)/book/details", params: {id: item.id, title: item.title, author: item.fullName}})
                 }}>
                     <Item searchItem={item} />
                     </TouchableOpacity>
