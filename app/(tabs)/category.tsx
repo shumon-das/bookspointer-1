@@ -1,13 +1,34 @@
 import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native'
-import React from 'react'
+import React, { useLayoutEffect } from 'react'
 import useFetch from '@/services/useFetch'
 import { fetchCategories } from '@/services/api'
 import CategoryCard from '@/components/CategoryCard'
 import { useCategoryStore } from '../store/categories'
+import { labels } from '../utils/labels'
+import { useNavigation } from 'expo-router'
 
 const category = () => {
   const setCategories = useCategoryStore((state) => state.setCategories)
   const { data: categories, loading: categoriesLoading, error: booksError } = useFetch(() => fetchCategories())
+
+  const navigation = useNavigation();
+  useLayoutEffect(() => {
+    // Set the header title for the download screen
+    navigation.setOptions({
+      headerLeft: () => (<></>),
+      title: labels.categories,
+      headerTitleAlign: 'center',
+        headerStyle: {
+            height: 100,
+            backgroundColor: '#085a80',
+        },
+        headerTintColor: '#d4d4d4',
+        headerTitleStyle: {
+            fontWeight: 'bold',
+        },
+        headerRight: () => (<></>),
+    });
+  }, [])
   
   return (
     <View style={styles.container}>

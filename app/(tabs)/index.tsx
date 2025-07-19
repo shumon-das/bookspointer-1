@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 import { Snackbar } from "react-native-paper";
 import { registerForPushNotificationsAsync } from "../utils/notifications";
+import QuoteCard from "@/components/QuoteCard";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -79,6 +80,19 @@ export default function Index() {
         setInitialLoading(false)
         setPage(page + 1);
     }, []);
+
+    const handleSnackMessage = (value: string) => {
+      setSnackMessage(value);
+      setToastVisible(true);
+      setTimeout(() => setToastVisible(false), 2000);
+    };
+
+    const renderItem = ({item}: {item: any}) => {
+      if (item.title === 'quote-song-poem' || item.title.includes('quote')) {
+        return <QuoteCard key={item.id} book={item} snackMessage={handleSnackMessage} />
+      }
+      return <BookCard book={item} snackMessage={handleSnackMessage} />
+    }
   return (
     <View style={styles.container}>
       {initialLoading ? (<ActivityIndicator size="large" color="#0000ff" className="mt-10 self-center" /> ) : (
@@ -86,10 +100,7 @@ export default function Index() {
           <FlatList
             data={books}
             keyExtractor={(item) => item.id.toString()}
-            renderItem={({item}) => <BookCard book={item} snackMessage={(value: string) => {
-              setSnackMessage(value)
-              setToastVisible(true)
-            }} /> }
+            renderItem={renderItem}
             onEndReached={() => fetchChunks(page)}
             onEndReachedThreshold={0.5}
             ListFooterComponent={loading ? <ActivityIndicator size="small" /> : null}

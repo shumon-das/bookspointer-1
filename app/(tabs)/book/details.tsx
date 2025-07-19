@@ -1,7 +1,6 @@
 import HtmlContent from '@/components/micro/HtmlContent';
 import { singleBook } from '@/services/api';
-// import { COLORS } from '@app/utils/colors';
-// import { decryptBook } from '@/utils/download';
+import { decryptBook } from '@/app/utils/download';
 import { useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
 import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Text, useColorScheme, View } from 'react-native';
@@ -9,8 +8,6 @@ import { ActivityIndicator, FlatList, Text, useColorScheme, View } from 'react-n
 const details = () => {
     const {id, title, author, content = null, isQuote = 'no'} = useLocalSearchParams();
     const navigation = useNavigation();
-    // const colorScheme = useColorScheme() || 'light';
-    // const isDarkMode = colorScheme === 'dark';
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -83,29 +80,29 @@ const details = () => {
         }
     };
     
-    // const fetchDecryptChunks = async (pageNumber: number) => {
-    //     if (loading || !hasMore) return;
+    const fetchDecryptChunks = async (pageNumber: number) => {
+        if (loading || !hasMore) return;
 
-    //     setLoading(true);
-    //     try {
-    //       const texts = await decryptBook(parseInt(id as string), title as string, author as string, pageNumber) as string
-    //       setTexts(prevTexts => {
-    //         if (prevTexts.includes(texts)) {
-    //           setHasMore(false);
-    //           return prevTexts;
-    //         } else {
-    //           setPage(pageNumber + 1);
-    //           return [...prevTexts, texts];
-    //         }
-    //       });
+        setLoading(true);
+        try {
+          const texts = await decryptBook(parseInt(id as string), title as string, author as string, pageNumber) as string
+          setTexts(prevTexts => {
+            if (prevTexts.includes(texts)) {
+              setHasMore(false);
+              return prevTexts;
+            } else {
+              setPage(pageNumber + 1);
+              return [...prevTexts, texts];
+            }
+          });
           
-    //       setPage(pageNumber + 1);
-    //     } catch (error) {
-    //       console.log(error);
-    //     } finally {
-    //       setLoading(false)
-    //     }
-    // }
+          setPage(pageNumber + 1);
+        } catch (error) {
+          console.log(error);
+        } finally {
+          setLoading(false)
+        }
+    }
 
     return (
     <View>
@@ -123,7 +120,7 @@ const details = () => {
                 fetchChunks(page)
             }
             if (content) {
-              // fetchDecryptChunks(page)
+              fetchDecryptChunks(page)
             }
             }}
             onEndReachedThreshold={0.5}

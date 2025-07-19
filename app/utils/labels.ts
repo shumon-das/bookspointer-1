@@ -41,6 +41,11 @@ export const labels = {
     categories: 'ধরণ', 
     selectCategory: 'ধরণ নির্বাচন করুন',
     download: 'ডাউনলোড',
+    downloadedAlready: 'ডাউনলোড হয়েছে',
+    noBooksFound: "কোন বই পাওয়া যায়নি।",
+    deleteBook: "বইটি সফলভাবে মুছে ফেলা হয়েছে।",
+    removingBookWarning: "বইটি মুছে ফেলতে যাচ্ছেন।",
+    removeBookWarning: "এই বইটি মুছে ফেলতে চান?",
     bookCreate: {
         coverMessage: 'আপনি চাইলে একটি ছবিও যুক্ত করতে পারেন বইটির প্রচ্ছদ এর জন্য। (না দিলেও অসুবিধা নেই।)',
         title: 'বইটির নাম', 

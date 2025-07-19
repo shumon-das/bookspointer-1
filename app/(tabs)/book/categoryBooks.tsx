@@ -1,17 +1,9 @@
 import BookCard from "@/components/BookCard";
+import QuoteCard from "@/components/QuoteCard";
 import { fetchBooks } from "@/services/api";
-// import * as Notifications from 'expo-notifications';
 import { useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
-
-// Notifications.setNotificationHandler({
-//   handleNotification: async () => ({
-//     shouldShowAlert: true,
-//     shouldPlaySound: true,
-//     shouldSetBadge: false,
-//   }),
-// });
 
 export default function CategoryBooks() {
   const {category, categoryLabel} = useLocalSearchParams();
@@ -69,12 +61,18 @@ export default function CategoryBooks() {
         }
       };
 
-    // useEffect(() => {
-    //     setInitialLoading(true)
-    //     fetchChunks(1);
-    //     setInitialLoading(false)
-    //     setPage(page + 1);
-    // }, [category]);
+  const handleSnackMessage = (value: string) => {
+    setSnackMessage(value);
+    setToastVisible(true);
+  };
+
+  const renderItem = ({item}: {item: any}) => {
+    if (item.title.includes('quote song poem') || item.title.includes('quote-song-poem')) {
+      return <QuoteCard key={item.id} book={item} snackMessage={handleSnackMessage} />
+    }
+
+    return <BookCard book={item} snackMessage={handleSnackMessage} />
+  }
 
   return (
     <View style={styles.container}>
@@ -83,10 +81,7 @@ export default function CategoryBooks() {
           <FlatList
             data={books}
             keyExtractor={(item) => item.id.toString()}
-            renderItem={({item}) => <BookCard book={item} snackMessage={(value: string) => {
-              setSnackMessage(value)
-              setToastVisible(true)
-            }} /> }
+            renderItem={renderItem}
             onEndReached={() => fetchChunks(page, currentCategory)}
             onEndReachedThreshold={0.5}
             ListFooterComponent={loading ? <ActivityIndicator size="small" /> : null}

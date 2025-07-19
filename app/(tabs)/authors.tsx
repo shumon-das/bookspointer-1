@@ -1,13 +1,34 @@
 import AuthorCard from '@/components/AuthorCard';
 import { fetchAuthors } from '@/services/api';
 import useFetch from '@/services/useFetch';
-import { useEffect } from 'react';
+import { useEffect, useLayoutEffect } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native';
 import { useUserStore } from '../store/user';
+import { useNavigation } from 'expo-router';
+import { labels } from '../utils/labels';
 
 const authors = () => {
   const setAuthors = useUserStore((state) => state.setAuthors);
   const { data: authors, loading: authorsLoading, error: booksError } = useFetch(() => fetchAuthors())
+
+  const navigation = useNavigation();
+  useLayoutEffect(() => {
+    // Set the header title for the download screen
+    navigation.setOptions({
+      headerLeft: () => (<></>),
+      title: labels.authors,
+      headerTitleAlign: 'center',
+        headerStyle: {
+            height: 100,
+            backgroundColor: '#085a80',
+        },
+        headerTintColor: '#d4d4d4',
+        headerTitleStyle: {
+            fontWeight: 'bold',
+        },
+        headerRight: () => (<></>),
+    });
+  }, [])
 
   useEffect(() => {
     if (authors) {

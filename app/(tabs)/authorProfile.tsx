@@ -21,7 +21,19 @@ const authorProfile = () => {
   useLayoutEffect(() => {
     if (author) {
       const title = author ? author.fullName : "Author Profile"
-      navigation.setOptions({ title }), [navigation, title]
+      navigation.setOptions({
+        title,
+        headerTitleAlign: 'center',
+        headerStyle: {
+            height: 100,
+            backgroundColor: '#085a80',
+        },
+        headerTintColor: '#d4d4d4',
+        headerTitleStyle: {
+            fontWeight: 'bold',
+        },
+        headerRight: () => (<></>),
+      }), [navigation, title]
     }
   }, [navigation, author]);
 
@@ -57,13 +69,13 @@ const authorProfile = () => {
         </View>
       </View>
 
-      <ScrollView>
+      <ScrollView style={{ backgroundColor: 'white' }}>
          <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
           <View style={{width: '60%', marginLeft: 6}}>
             <Text style={styles.userName}>{author?.fullName}</Text>
             <Text style={styles.userRole}>@{labels.userRoleAuthor}</Text>
           </View>
-        <View style={{ width: '15%', alignItems: 'center' }}>
+          <View style={{ width: '15%', alignItems: 'center' }}>
             <Text>{author ? author.totalBooks : 0}</Text>
             <Image source={ require('../../assets/images/books_logo.png')} style={styles.booksLogo} />
           </View>

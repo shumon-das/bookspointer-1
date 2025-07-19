@@ -9,6 +9,7 @@ import SaveButton from './micro/bookCardFooter/SaveButton';
 import ShareButton from './micro/bookCardFooter/ShareButton';
 import HtmlContent from './micro/HtmlContent';
 import AudioBookButton from './micro/bookCardFooter/AudioBookButton';
+import DownloadButton from './micro/bookCardFooter/DownloadButton';
 
 
 interface BookCardProps {
@@ -55,12 +56,15 @@ const BookCard = ({book, snackMessage}: {book: BookCardProps, snackMessage: (val
       </View>
 
       <View className='postFooter' style={styles.postFooter}>
-        <TouchableOpacity onPress={() => alert(labels.featureNotAvailable)}>
+        {/* <TouchableOpacity onPress={() => alert(labels.featureNotAvailable)}>
           <Text style={{textAlign: 'center'}}>
             <FontAwesome name="download" size={24} color="gray" />
           </Text>
           <Text style={{fontSize: 10}}>{labels.download}</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
+        <Text>
+          <DownloadButton bookId={book.id} title={book.title} author={book.author.fullName} uuid={book.uuid} onDownloaded={() => snackMessage(labels.downloadedAlready)}/>
+        </Text>
         <Text>
           <ShareButton
             title="Check this out!"
