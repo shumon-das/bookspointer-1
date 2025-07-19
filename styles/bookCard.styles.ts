@@ -62,7 +62,7 @@ export const styles = StyleSheet.create({
     postContent: {
       paddingHorizontal: 0
     },
-  
+
     postFooter: {
       flex: 1,
       flexDirection: 'row',
