@@ -10,6 +10,7 @@ import ShareButton from './micro/bookCardFooter/ShareButton';
 import HtmlContent from './micro/HtmlContent';
 import AudioBookButton from './micro/bookCardFooter/AudioBookButton';
 import DownloadButton from './micro/bookCardFooter/DownloadButton';
+import DefaultPostImage from './micro/DefaultPostImage';
 
 
 interface BookCardProps {
@@ -18,7 +19,7 @@ interface BookCardProps {
   image: string;
   title: string;
   content: string;
-  author: { id: number; fullName: string };
+  author: { id: number; image: string; fullName: string };
   createdBy: { id: number; fullName: string; image: string, roles: string[] };
   category: { label: string }|string;
   url: string;
@@ -30,7 +31,7 @@ const BookCard = ({book, snackMessage}: {book: BookCardProps, snackMessage: (val
   const router = useRouter();
 
   return (
-    <View style={styles.cardBackground}>
+    <View style={styles.cardBackground} key={book.id}>
       <View className='postHeader' style={styles.postHeader}>
         <Image  source={{ uri: createdByImg }} style={styles.image} />
         <View>
@@ -42,7 +43,9 @@ const BookCard = ({book, snackMessage}: {book: BookCardProps, snackMessage: (val
       </View>
       <View className='postBody' style={styles.postBodyHeader}>
          <View style={styles.postImageAndTitle}>
-           <Image source={{ uri: postImg }} style={styles.postImage} />
+           {/* <Image source={{ uri: postImg }} style={styles.postImage} /> */}
+           {/* <Image source={require('../assets/images/default_post_image.jpg')} style={styles.postImage} /> */}
+           <DefaultPostImage book={book} />
            <View>
               <Text style={styles.postTitle}>{book.title}</Text>
               <Text style={styles.postAuthorName}>{book.author.fullName}</Text>
@@ -56,12 +59,6 @@ const BookCard = ({book, snackMessage}: {book: BookCardProps, snackMessage: (val
       </View>
 
       <View className='postFooter' style={styles.postFooter}>
-        {/* <TouchableOpacity onPress={() => alert(labels.featureNotAvailable)}>
-          <Text style={{textAlign: 'center'}}>
-            <FontAwesome name="download" size={24} color="gray" />
-          </Text>
-          <Text style={{fontSize: 10}}>{labels.download}</Text>
-        </TouchableOpacity> */}
         <Text>
           <DownloadButton bookId={book.id} title={book.title} author={book.author.fullName} uuid={book.uuid} onDownloaded={() => snackMessage(labels.downloadedAlready)}/>
         </Text>

@@ -1,6 +1,6 @@
 import HtmlContent from '@/components/micro/HtmlContent';
 import { singleBook } from '@/services/api';
-import { decryptBook } from '@/app/utils/download';
+import { decryptBook, encryptedPagesNumbers } from '@/app/utils/download';
 import { useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
 import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Text, useColorScheme, View } from 'react-native';
@@ -82,6 +82,9 @@ const details = () => {
     
     const fetchDecryptChunks = async (pageNumber: number) => {
         if (loading || !hasMore) return;
+
+        const pagesLength = await encryptedPagesNumbers(parseInt(id as string), title as string, author as string);
+        if (pageNumber === pagesLength) return;
 
         setLoading(true);
         try {

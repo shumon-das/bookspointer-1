@@ -35,6 +35,7 @@ export default function CategoryBooks() {
     if (category) {
       setCurrentCategory(category as string);
       setInitialLoading(true)
+      setBooks([]);
       fetchChunks(1, category as string);
       setInitialLoading(false)
       setPage(page + 1);
@@ -47,12 +48,13 @@ export default function CategoryBooks() {
         setLoading(true);
 
         try {
+          console.log(category)
           const data = await fetchBooks({pageNumber: pageNumber, limit: 8, categoryName: category})
           if (data.length <= 0) {
             setHasMore(false);
           } else {
-            setBooks([...data, ...books]);
-            setPage(page + 1);
+            setBooks(prevBooks => [...prevBooks, ...data]);
+            setPage(prevPage => prevPage + 1);
           }
         } catch (error) {
           console.log(error);
@@ -71,7 +73,7 @@ export default function CategoryBooks() {
       return <QuoteCard key={item.id} book={item} snackMessage={handleSnackMessage} />
     }
 
-    return <BookCard book={item} snackMessage={handleSnackMessage} />
+    return <BookCard key={item.id} book={item} snackMessage={handleSnackMessage} />
   }
 
   return (

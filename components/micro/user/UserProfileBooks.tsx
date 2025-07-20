@@ -26,6 +26,10 @@ const UserProfileBooks = ({series, authorId, onBackToSeries}: {series: string, a
   const onChooseBook = (book: Book) => {
     router.push({pathname: "/(tabs)/book/details", params: {id: book.id, title: book.title, author: book.author.fullName}})
   }
+
+  const title = (title: string) => {
+    return title.length > 20 ? title.slice(0, 20) + '...' : title;
+  }
   
   return (
     <ScrollView style={{ paddingHorizontal: 5, flex: 1, marginTop: 10 }}>
@@ -35,7 +39,7 @@ const UserProfileBooks = ({series, authorId, onBackToSeries}: {series: string, a
                 <TouchableOpacity key={i} style={styles.series} onPress={() => onChooseBook(books[i])}>
                     <Image source={require('../../../assets/images/default_post_image.jpg')} style={styles.image} />
                     <View style={styles.content}>
-                        <Text style={styles.seriesName}>{books[i].title}</Text>
+                        <Text style={styles.seriesName}>{title(books[i].title)}</Text>
                         <Image style={styles.contentAuthorImage} source={{ uri: `https://api.bookspointer.com/uploads/${books[i].author.image}` }} />
                         <Text style={styles.authorName}>{books[i].author.fullName}</Text>
                     </View>

@@ -64,8 +64,8 @@ export default function Index() {
           if (data.length <= 0) {
             setHasMore(false);
           } else {
-            setBooks([...data, ...books]);
-            setPage(page + 1);
+            setBooks(prevBooks => [...prevBooks, ...data]);
+            setPage(prevPage => prevPage + 1);
           }
         } catch (error) {
           console.log(error);
@@ -91,7 +91,7 @@ export default function Index() {
       if (item.title === 'quote-song-poem' || item.title.includes('quote')) {
         return <QuoteCard key={item.id} book={item} snackMessage={handleSnackMessage} />
       }
-      return <BookCard book={item} snackMessage={handleSnackMessage} />
+      return <BookCard key={item.id} book={item} snackMessage={handleSnackMessage} />
     }
   return (
     <View style={styles.container}>

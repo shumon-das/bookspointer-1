@@ -29,6 +29,15 @@ export async function encryptAndSaveBook(bookId: number, title: string, author: 
   }
 }
 
+export async function encryptedPagesNumbers(bookId: number, title: string, author: string) {
+  const path = `${FileSystem.documentDirectory}${bookId}.${title.replace(/\s+/g, '_')}.${author.replace(/\s+/g, '_')}.book`;
+    const encrypted = await FileSystem.readAsStringAsync(path, {
+      encoding: FileSystem.EncodingType.UTF8,
+    });
+
+  return JSON.parse(encrypted).length;
+}
+
 export async function decryptBook(bookId: number, title: string, author: string, pageNumber=0) {
   try {
     const path = `${FileSystem.documentDirectory}${bookId}.${title.replace(/\s+/g, '_')}.${author.replace(/\s+/g, '_')}.book`;

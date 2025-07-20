@@ -40,7 +40,7 @@ const QuoteCard = React.memo(({book, snackMessage}: {book: BookCardProps, snackM
   } 
 
   return (
-    <View style={styles.cardBackground}>
+    <View style={styles.cardBackground} key={book.id}>
       <View className='postHeader' style={styles.postHeader}>
         <Image  source={{ uri: createdByImg }} style={styles.image} />
         <View>
