@@ -8,6 +8,8 @@ import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 import { Snackbar } from "react-native-paper";
 import { registerForPushNotificationsAsync } from "../utils/notifications";
 import QuoteCard from "@/components/QuoteCard";
+import { useNetworkStatus } from "@/components/network/networkConnectionStatus";
+import Offline from "@/components/every/Offline";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -18,6 +20,11 @@ Notifications.setNotificationHandler({
 });
 
 export default function Index() {
+
+  const isConnected = useNetworkStatus(() => {
+    console.log('✅ Online again, syncing data...');
+  });
+
   const notificationListener = useRef<EventSubscription | null>(null);
   const responseListener = useRef<EventSubscription | null>(null);
 
@@ -89,30 +96,35 @@ export default function Index() {
 
     const renderItem = ({item}: {item: any}) => {
       if (item.title === 'quote-song-poem' || item.title.includes('quote')) {
-        return <QuoteCard key={item.id} book={item} snackMessage={handleSnackMessage} />
+        return <QuoteCard book={item} snackMessage={handleSnackMessage} />
       }
-      return <BookCard key={item.id} book={item} snackMessage={handleSnackMessage} />
+      return <BookCard book={item} snackMessage={handleSnackMessage} />
     }
-  return (
-    <View style={styles.container}>
-      {initialLoading ? (<ActivityIndicator size="large" color="#0000ff" className="mt-10 self-center" /> ) : (
-        <>
-          <FlatList
-            data={books}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={renderItem}
-            onEndReached={() => fetchChunks(page)}
-            onEndReachedThreshold={0.5}
-            ListFooterComponent={loading ? <ActivityIndicator size="small" /> : null}
-            style={styles.list}
-          />
-          <Snackbar visible={toastVisible} onDismiss={() => setToastVisible(false)} duration={2000}>
-              {snackMessage}
-          </Snackbar>
-        </>
-      )}
-    </View>
-  );
+
+    if (!isConnected) {
+      return (<Offline />)
+    } else {
+      return (
+        <View style={styles.container}>
+          {initialLoading ? (<ActivityIndicator size="large" color="#0000ff" className="mt-10 self-center" /> ) : (
+            <>
+              <FlatList
+                data={books}
+                keyExtractor={(item) => item.id.toString()}
+                renderItem={renderItem}
+                onEndReached={() => fetchChunks(page)}
+                onEndReachedThreshold={0.5}
+                ListFooterComponent={loading ? <ActivityIndicator size="small" /> : null}
+                style={styles.list}
+              />
+              <Snackbar visible={toastVisible} onDismiss={() => setToastVisible(false)} duration={2000}>
+                  {snackMessage}
+              </Snackbar>
+            </>
+          )}
+        </View>
+      );
+    }  
 }
 
 const styles = StyleSheet.create({
