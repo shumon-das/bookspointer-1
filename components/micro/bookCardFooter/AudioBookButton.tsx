@@ -1,13 +1,17 @@
 import { labels } from '@/app/utils/labels';
+import { BookCardProps } from '@/components/types/BookCard';
 import Entypo from '@expo/vector-icons/Entypo';
 import Feather from '@expo/vector-icons/Feather';
+import { useRouter } from 'expo-router';
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
-const AudioBookButton = ({ bookId, onClickToPlay }: {bookId: number, onClickToPlay: (isSave: Boolean) => void}) => {
+const AudioBookButton = ({ book, onClickToPlay }: {book: BookCardProps, onClickToPlay: (isSave: Boolean) => void}) => {
+  const router = useRouter();
+  
   return (
     <View style={{}}>
-        <TouchableOpacity onPress={() => alert(labels.audioBookNotAvailable)} >
+        <TouchableOpacity onPress={() => router.push({pathname: '/(tabs)/audio', params: { book: JSON.stringify(book) }})} >
             <Text style={{position: 'relative', textAlign: 'center'}}>
                 <Feather name="book" size={20} color={'#282C35'} />
             </Text>

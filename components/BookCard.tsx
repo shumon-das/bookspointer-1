@@ -1,29 +1,16 @@
 import { labels } from '@/app/utils/labels';
 import { userRole } from '@/app/utils/userRole';
 import { styles } from '@/styles/bookCard.styles';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import SaveButton from './micro/bookCardFooter/SaveButton';
-import ShareButton from './micro/bookCardFooter/ShareButton';
-import HtmlContent from './micro/HtmlContent';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
 import AudioBookButton from './micro/bookCardFooter/AudioBookButton';
 import DownloadButton from './micro/bookCardFooter/DownloadButton';
+import ShareButton from './micro/bookCardFooter/ShareButton';
 import DefaultPostImage from './micro/DefaultPostImage';
+import HtmlContent from './micro/HtmlContent';
+import { BookCardProps } from './types/BookCard';
 
-
-interface BookCardProps {
-  id: number;
-  uuid: string;
-  image: string;
-  title: string;
-  content: string;
-  author: { id: number; image: string; fullName: string };
-  createdBy: { id: number; fullName: string; image: string, roles: string[] };
-  category: { label: string }|string;
-  url: string;
-}
 
 const BookCard = ({book, snackMessage}: {book: BookCardProps, snackMessage: (value: string) => void}) => {
   const createdByImg = `https://api.bookspointer.com/uploads/${book.createdBy.image}`;
@@ -70,7 +57,7 @@ const BookCard = ({book, snackMessage}: {book: BookCardProps, snackMessage: (val
           />
         </Text>
         <Text>
-          <AudioBookButton bookId={book.id} onClickToPlay={() => snackMessage(labels.audioBookNotAvailable)} />
+          <AudioBookButton book={book} onClickToPlay={() => snackMessage(labels.audioBookNotAvailable)} />
           {/* <SaveButton bookId={book.id} onSaveToLibrary={() => snackMessage(labels.saveBookIntoLibrary)} /> */}
         </Text>
       </View>
