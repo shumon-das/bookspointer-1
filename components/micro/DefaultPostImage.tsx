@@ -1,5 +1,5 @@
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native'
-import React from 'react'
+import React from 'react';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 // import { styles } from '@/styles/bookCard.styles';
 // import { Book } from '../types/Book';
 
@@ -67,6 +67,7 @@ const styles2 = StyleSheet.create({
   },
   authorName: {
     fontSize: 10, 
-    color: '#F6F7F9'
+    color: '#F6F7F9',
+    textAlign: 'center',
   },
 })
