@@ -4,10 +4,13 @@ import HTMLView from "react-native-htmlview";
 
 
 const HtmlContent = ({ content }: any) => {
-  const cleanHtml = (html: string) => html.replace(/<p>\s*<br\s*\/?>\s*<\/p>/g, "<p></p>")
-                                          .replace(/<img[^>]*>/g, '')
-                                          .replace(new RegExp('<p>', 'g'), '<span>')
-                                          .replace(new RegExp('</p>', 'g'), '</span>');
+  const cleanHtml = (html: string) => {
+    if (!html) return '';
+    return html.replace(/<p>\s*<br\s*\/?>\s*<\/p>/g, "<p></p>")
+        .replace(/<img[^>]*>/g, '')
+        .replace(new RegExp('<p>', 'g'), '<span>')
+        .replace(new RegExp('</p>', 'g'), '</span>');
+  }
 
   const styles = { span: { fontSize: 16 }, p: { fontSize: 16 }, br: { height: 0 } };
   

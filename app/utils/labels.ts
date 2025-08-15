@@ -1,5 +1,6 @@
 export const labels = {
     booksPointer: "বুকস পয়েন্টার",
+    book: "বই",
     search: "খুঁজুন...",
     editProfile: "আপডেট প্রোফাইল",
     resetPassword: {

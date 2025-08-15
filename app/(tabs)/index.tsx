@@ -64,22 +64,28 @@ export default function Index() {
 
   const fetchChunks = async (pageNumber: number) => {
       if (loading || !hasMore) return;
-        setLoading(true);
+      setLoading(true);
 
-        try {
-          const data = await fetchBooks({pageNumber: pageNumber, limit: 8})
-          if (data.length <= 0) {
-            setHasMore(false);
-          } else {
-            setBooks(prevBooks => [...prevBooks, ...data]);
-            setPage(prevPage => prevPage + 1);
-          }
-        } catch (error) {
-          console.log(error);
-        } finally {
-          setLoading(false)
+      try {
+        const data = await fetchBooks({pageNumber: pageNumber, limit: 8})
+         if (data.length <= 0) {
+           setHasMore(false);
+         } else {
+           setBooks(prevBooks => {
+              const allBooks = [...prevBooks, ...data];
+              const uniqueBooks = Array.from(
+                new Map(allBooks.map(book => [book.id, book])).values()
+              );
+              return uniqueBooks;
+           });
+          setPage(prevPage => prevPage + 1);
         }
-      };
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false)
+      }
+  };
 
     useEffect(() => {
         setInitialLoading(true)

@@ -53,7 +53,13 @@ export default function CategoryBooks() {
           if (data.length <= 0) {
             setHasMore(false);
           } else {
-            setBooks(prevBooks => [...prevBooks, ...data]);
+            setBooks(prevBooks => {
+                const allBooks = [...prevBooks, ...data];
+                const uniqueBooks = Array.from(
+                  new Map(allBooks.map(book => [book.id, book])).values()
+                );
+                return uniqueBooks;
+            });
             setPage(prevPage => prevPage + 1);
           }
         } catch (error) {

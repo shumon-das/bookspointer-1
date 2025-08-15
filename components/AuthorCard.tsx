@@ -2,6 +2,8 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { User } from './types/User';
+import { labels } from '@/app/utils/labels';
+import { englishNumberToBengali } from '@/app/utils/englishNumberToBengali';
 
 export default function AuthorCard(author: User) {
     const authorImg = `https://api.bookspointer.com/uploads/${author.image}`
@@ -12,10 +14,10 @@ export default function AuthorCard(author: User) {
             pathname: '/(tabs)/authorProfile', 
             params: { authorUuid: author.uuid }
           })}>
-          {/* <Image  source={{ uri: authorImg }} style={styles.image} /> */}
+          <Image  source={{ uri: authorImg }} style={styles.image} />
           <View>
               <Text style={styles.userName}>{author.fullName}</Text>
-              <Text style={styles.userRole}>লেখক</Text>
+              <Text style={styles.userRole}> {englishNumberToBengali(author.totalBooks)} টি {labels.book}</Text>
           </View>
         </TouchableOpacity>
     </View>
