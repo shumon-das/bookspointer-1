@@ -41,7 +41,7 @@ const QuoteCard = React.memo(({book, snackMessage}: {book: BookCardProps, snackM
 
   return (
     <View style={styles.cardBackground} key={book.id}>
-      <View className='postHeader' style={styles.postHeader}>
+      <View className='postHeader' style={QuoteStyles.postHeader}>
         <Image  source={{ uri: createdByImg }} style={styles.image} />
         <View>
           <TouchableOpacity onPress={() => router.navigate({pathname: "/(tabs)/authorProfile", params: {authorId: book.createdBy.id}})}>
@@ -78,17 +78,16 @@ const QuoteCard = React.memo(({book, snackMessage}: {book: BookCardProps, snackM
 
 const QuoteStyles = StyleSheet.create({
   card: {
-    marginBottom: 10,
-    marginHorizontal: 16,
     padding: 20,
-    borderRadius: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 4,
     minHeight: 200,
   },
+  postHeader: {
+      flex: 1,
+      flexDirection: "row",
+      borderBottomWidth: 0.5,
+      borderBottomColor: "gray",
+      paddingVertical: 12,
+    },
   quote: {
     fontSize: 20,
     fontStyle: 'italic',

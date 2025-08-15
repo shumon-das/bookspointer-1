@@ -44,6 +44,7 @@ export const styles = StyleSheet.create({
     postTitle: {
       fontSize: 16,
       fontWeight: "bold",
+      paddingRight: 130
     },
   
     postAuthorName: {
