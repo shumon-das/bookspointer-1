@@ -44,7 +44,7 @@ export const styles = StyleSheet.create({
     postTitle: {
       fontSize: 16,
       fontWeight: "bold",
-      paddingRight: 130
+      width: 250,
     },
   
     postAuthorName: {
@@ -58,7 +58,7 @@ export const styles = StyleSheet.create({
     },
   
     postBodyHeader: {
-      paddingHorizontal: 10,
+      paddingHorizontal: 2,
     },
     postContent: {
       paddingHorizontal: 0

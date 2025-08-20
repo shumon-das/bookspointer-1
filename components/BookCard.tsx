@@ -41,7 +41,8 @@ const BookCard = ({book, snackMessage}: {book: BookCardProps, snackMessage: (val
           <Text style={styles.userRole}>{userRole(book.createdBy.roles)}</Text>
         </View>
       </View>
-      <View className='postBody' style={styles.postBodyHeader}>
+      <TouchableOpacity style={styles.postBodyHeader} onPress={() => router.push({pathname: "/(tabs)/book/details", params: {id: book.id, title: book.title, author: book.author.fullName}})}>
+      {/* <View className='postBody' style={styles.postBodyHeader}> */}
          <View style={styles.postImageAndTitle}>
            {/* <Image source={{ uri: postImg }} style={styles.postImage} /> */}
            {/* <Image source={require('../assets/images/default_post_image.jpg')} style={styles.postImage} /> */}
@@ -56,7 +57,8 @@ const BookCard = ({book, snackMessage}: {book: BookCardProps, snackMessage: (val
          <TouchableOpacity onPress={() => router.push({pathname: "/(tabs)/book/details", params: {id: book.id, title: book.title, author: book.author.fullName}})}>
             <HtmlContent content={book.content} />
          </TouchableOpacity>
-      </View>
+      {/* </View> */}
+      </TouchableOpacity>
 
       <View className='postFooter' style={styles.postFooter}>
         <Text>

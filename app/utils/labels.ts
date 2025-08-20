@@ -36,6 +36,7 @@ export const labels = {
     writeBook: "বই লিখুন",
     writeNewBook: "লিখুন",
     home: 'হোম', 
+    author: 'লেখক',
     authors: 'লেখকগণ',
     selectAuthor: ' লেখক নির্বাচন করুন',
     audios: "অডিও বই",

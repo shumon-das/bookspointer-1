@@ -10,6 +10,8 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import UserSeries from '@/components/micro/user/UserSeries';
 import { labels } from '../utils/labels';
 import UserProfileBooks from '@/components/micro/user/UserProfileBooks';
+import { ActivityIndicator } from 'react-native-paper';
+import { englishNumberToBengali } from '../utils/englishNumberToBengali';
 
 const authorProfile = () => {
   const {authorUuid} = useLocalSearchParams();
@@ -20,7 +22,7 @@ const authorProfile = () => {
   const navigation = useNavigation()
   useLayoutEffect(() => {
     if (author) {
-      const title = author ? author.fullName : "Author Profile"
+      const title = author ? author.fullName : labels.author;
       navigation.setOptions({
         title,
         headerTitleAlign: 'center',
@@ -53,7 +55,7 @@ const authorProfile = () => {
 
   if (!author) {
     return (<View>
-      <Text>Loading author...</Text>
+      <ActivityIndicator size="small" color="#0000ff" />
     </View>)
   }
 
@@ -76,12 +78,12 @@ const authorProfile = () => {
             <Text style={styles.userRole}>@{labels.userRoleAuthor}</Text>
           </View>
           <View style={{ width: '15%', alignItems: 'center' }}>
-            <Text>{author ? author.totalBooks : 0}</Text>
+            <Text>{englishNumberToBengali(author ? author.totalBooks : 0)}</Text>
             <Image source={ require('../../assets/images/books_logo.png')} style={styles.booksLogo} />
           </View>
           <View style={{ width: '15%', alignItems: 'center' }}>
-            <Text>0</Text>
-            <FontAwesome name="thumbs-up" size={20} color="gray" />
+            <Text>{ englishNumberToBengali(0)}</Text>
+            <FontAwesome name="download" size={20} color={'blue'} />
           </View>
         </View>
 
