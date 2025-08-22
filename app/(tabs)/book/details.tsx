@@ -1,13 +1,15 @@
 import HtmlContent from '@/components/micro/HtmlContent';
 import { singleBook } from '@/services/api';
 import { decryptBook, encryptedPagesNumbers } from '@/app/utils/download';
-import { useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Text, useColorScheme, View } from 'react-native';
+import { ActivityIndicator, BackHandler, FlatList, Text, useColorScheme, View } from 'react-native';
 
 const details = () => {
-    const {id, title, author, content = null, isQuote = 'no'} = useLocalSearchParams();
+    const {id, title, author, content = null, isQuote = 'no', backurl = null} = useLocalSearchParams();
     const navigation = useNavigation();
+    const backUrl = backurl && 'string' === typeof backurl ? JSON.parse(backurl as string) : ''
+    const router = useRouter();
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -40,6 +42,19 @@ const details = () => {
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
+
+    useEffect(() => {
+      const deviceBackButtonAction = () => {
+          if (backurl) {
+            console.log('details', backUrl.params)
+            router.push(backUrl.pathname, backUrl.params);
+          }
+          return true
+      }
+      
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', deviceBackButtonAction);
+      return () => backHandler.remove();
+    }, [backurl])
 
     useEffect(() => setHasMore(true))
     useFocusEffect(

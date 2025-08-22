@@ -104,7 +104,7 @@ export default function Index() {
       if (item.title === 'quote-song-poem' || item.title.includes('quote')) {
         return <QuoteCard book={item} snackMessage={handleSnackMessage} />
       }
-      return <BookCard book={item} snackMessage={handleSnackMessage} />
+      return <BookCard book={item} snackMessage={handleSnackMessage} backurl={JSON.stringify({ pathname: '/(tabs)/', params: {} })} />
     }
 
     if (!isConnected) {

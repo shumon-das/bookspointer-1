@@ -8,10 +8,11 @@ import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 export default function CategoryBooks() {
   const {category, categoryLabel} = useLocalSearchParams();
   const navigation = useNavigation()
+  const [label, setLabel] = useState(categoryLabel as string)
   
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: categoryLabel,
+      headerTitle: label,
       headerStyle: {
         backgroundColor: '#085a80',
       },
@@ -32,6 +33,10 @@ export default function CategoryBooks() {
   const [snackMessage, setSnackMessage] = useState('')
 
   useFocusEffect(useCallback(() => {
+    if (categoryLabel) {
+      setLabel(categoryLabel as string)
+    }
+
     if (category) {
       setCurrentCategory(category as string);
       setInitialLoading(true)
@@ -41,7 +46,7 @@ export default function CategoryBooks() {
       setPage(page + 1);
     }
 
-  }, [navigation, category]))
+  }, [navigation, category, categoryLabel]))
 
   const fetchChunks = async (pageNumber: number, category: string) => {
       if (loading || !hasMore) return;
@@ -79,7 +84,10 @@ export default function CategoryBooks() {
       return <QuoteCard key={item.id} book={item} snackMessage={handleSnackMessage} />
     }
 
-    return <BookCard key={item.id} book={item} snackMessage={handleSnackMessage} />
+    return <BookCard key={item.id} book={item} snackMessage={handleSnackMessage} backurl={JSON.stringify({
+                  pathname: '/book/categoryBooks', 
+                  params: { category: category, categoryLabel: categoryLabel }
+                })} />
   }
 
   return (

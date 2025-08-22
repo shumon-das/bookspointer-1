@@ -1,17 +1,16 @@
-import { View, Text, SafeAreaView, Image, ScrollView } from 'react-native'
-import React, { useEffect, useLayoutEffect, useState } from 'react'
-import { User } from '../../components/types/User'
-import { useLocalSearchParams, useNavigation } from 'expo-router';
+import ImagePicker from '@/components/micro/ImagePicker';
 import { getAuthor, updateProfileImage } from '@/services/userApi';
 import { styles } from '@/styles/profile.styles';
-import ImagePicker from '@/components/micro/ImagePicker';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { useLocalSearchParams, useNavigation } from 'expo-router';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
+import { Image, SafeAreaView, ScrollView, Text, View } from 'react-native';
+import { User } from '../../components/types/User';
 // import UserDescription from '@/components/micro/user/UserDescription';
-import UserSeries from '@/components/micro/user/UserSeries';
-import { labels } from '../utils/labels';
 import UserProfileBooks from '@/components/micro/user/UserProfileBooks';
+import UserSeries from '@/components/micro/user/UserSeries';
 import { ActivityIndicator } from 'react-native-paper';
 import { englishNumberToBengali } from '../utils/englishNumberToBengali';
+import { labels } from '../utils/labels';
 
 const authorProfile = () => {
   const {authorUuid} = useLocalSearchParams();
@@ -81,10 +80,10 @@ const authorProfile = () => {
             <Text>{englishNumberToBengali(author ? author.totalBooks : 0)}</Text>
             <Image source={ require('../../assets/images/books_logo.png')} style={styles.booksLogo} />
           </View>
-          <View style={{ width: '15%', alignItems: 'center' }}>
+          {/* <View style={{ width: '15%', alignItems: 'center' }}>
             <Text>{ englishNumberToBengali(0)}</Text>
             <FontAwesome name="download" size={20} color={'blue'} />
-          </View>
+          </View> */}
         </View>
 
         {

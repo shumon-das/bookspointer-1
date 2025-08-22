@@ -19,13 +19,13 @@ interface BookCardProps {
   image: string;
   title: string;
   content: string;
-  author: { id: number; image: string; fullName: string };
+  author: { id: number; uuid: string; image: string; fullName: string };
   createdBy: { id: number; fullName: string; image: string, roles: string[] };
   category: { label: string }|string;
   url: string;
 }
 
-const BookCard = ({book, snackMessage}: {book: BookCardProps, snackMessage: (value: string) => void}) => {
+const BookCard = ({book, snackMessage, backurl}: {book: BookCardProps, snackMessage: (value: string) => void, backurl: string}) => {
   const createdByImg = `https://api.bookspointer.com/uploads/${book.createdBy.image}`;
   const postImg = `https://api.bookspointer.com/uploads/${book.image}`;
   const router = useRouter();
@@ -54,7 +54,14 @@ const BookCard = ({book, snackMessage}: {book: BookCardProps, snackMessage: (val
            </View>
          </View>
          
-         <TouchableOpacity onPress={() => router.push({pathname: "/(tabs)/book/details", params: {id: book.id, title: book.title, author: book.author.fullName}})}>
+         <TouchableOpacity onPress={() => router.push({pathname: "/(tabs)/book/details", params: {
+            id: book.id, 
+            title: book.title, 
+            author: book.author.fullName,
+            content: null,
+            isQuote: 'no',
+            backurl: backurl
+          }})}>
             <HtmlContent content={book.content} />
          </TouchableOpacity>
       {/* </View> */}
