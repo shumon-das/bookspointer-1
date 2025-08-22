@@ -32,7 +32,6 @@ const styles = StyleSheet.create({
     borderBottomColor: "gray",
     paddingVertical: 12,
     backgroundColor: 'white',
-    paddingHorizontal: 12
   },
   image: {
     width: 40, // Image width
