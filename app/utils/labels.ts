@@ -61,6 +61,7 @@ export const labels = {
     saveBookIntoLibrary: "বইটি সফলভাবে লাইব্রেরীতে যুক্ত হয়েছে।",
     share: "শেয়ার",
     audioBook: "অডিও বই",
-    audioBookNotAvailable: "দুঃখিত, অডিও বইটি এখনো উপলব্ধ নয়।",
-    featureNotAvailable: "দুঃখিত, ডাউনলোদ সুবিধাটি এখনো যুক্ত করা হয়নি।"
+    audioBookNotAvailable: "অডিও বইটি এখনো উপলব্ধ নয়।",
+    featureNotAvailable: "দুঃখিত, ডাউনলোদ সুবিধাটি এখনো যুক্ত করা হয়নি।",
+    sorry: "দুঃখিত!",
 }

@@ -47,7 +47,7 @@ const BookCard = ({book, snackMessage, backurl}: {book: BookCardProps, snackMess
            {/* <Image source={{ uri: postImg }} style={styles.postImage} /> */}
            {/* <Image source={require('../assets/images/default_post_image.jpg')} style={styles.postImage} /> */}
            <DefaultPostImage book={book} />
-           <View>
+           <View style={{marginTop: 10}}>
               <Text style={styles.postTitle}>{book.title}</Text>
               <Text style={styles.postAuthorName}>{book.author.fullName}</Text>
               <Text style={styles.postCategory}>{typeof book.category === 'string' ? book.category : book.category.label}</Text>

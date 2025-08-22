@@ -16,7 +16,7 @@ const DefaultPostImage = (book: {book: BookCardProps}) => {
   const title = book.book.title.length > 20 ? book.book.title.slice(0, 20) + '...' : book.book.title;
   return (
     <TouchableOpacity key={book.book.id} style={styles2.series} onPress={() => console.log('')}>
-        <Image source={require('../../assets/images/default_post_image_1.jpg')} style={styles2.image} />
+        <Image source={require('../../assets/images/default_post_image_1.jpeg')} style={styles2.image} />
         <View style={styles2.content}>
             <Text style={styles2.seriesName}>{title}</Text>
             <Image style={styles2.contentAuthorImage} source={{ uri: `https://api.bookspointer.com/uploads/${book.book.author.image}` }} />
