@@ -4,21 +4,22 @@ import { Stack, useNavigation, useRouter } from 'expo-router'
 import React, { useLayoutEffect, useState } from 'react'
 import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
+import * as SecureStore from "expo-secure-store";
 
 import { labels } from '@/app/utils/labels'
 import { User } from '@/components/types/User'
 import { styles } from '@/styles/writeBook.styles'
 import FontAwesome from '@expo/vector-icons/FontAwesome'
 
-const Login = () => {
+const Login = async () => {
     const router = useRouter()
     const navigation = useNavigation()
     const title = "Login"
     useLayoutEffect(() => navigation.setOptions({ title }), [navigation, title]);
       
 
-    const setUser = useAuthStore((state) => state.setUser)
-    const setToken = useAuthStore((state) => state.setToken)
+    // const setUser = useAuthStore((state) => state.setUser)
+    // const setToken = useAuthStore((state) => state.setToken)
 
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
@@ -33,8 +34,11 @@ const Login = () => {
         }
         const response: {token: string; user: User} = await login(email.trim(), password.trim())
         if (response) {
-            setToken(response.token)
-            setUser(response.user)
+          SecureStore.setItemAsync("token", response.token)
+          SecureStore.setItemAsync("user", JSON.stringify(response.user))
+
+            // setToken(response.token)
+            // setUser(response.user)
             router.push('/')
         } else {
             alert("Invalid email or password")

@@ -2,9 +2,10 @@ import { useAuthStore } from '@/app/store/auth';
 import { styles } from '@/styles/bottomNav.styles';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs, useRouter } from 'expo-router';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { labels } from '../utils/labels';
+import * as SecureStore from "expo-secure-store";
 
 const TabIcon = ({focused, icon, title}: any) => {            
     return (
@@ -15,9 +16,33 @@ const TabIcon = ({focused, icon, title}: any) => {
     )
 }
 
+const goToProfile = async (user: any, router: any) => {
+    if (user) {
+        console.log('User is logged in:', JSON.parse(user))
+    } else {
+        router.push('/auth/login')
+    }
+    //router.push(user ? '/profile' : '/auth/login')
+    // alert('Go to profile function is not implemented yet.')
+}
+
 const _layout = () => {
-  const user = useAuthStore((state) => state.user)
-  const router = useRouter()
+  const router = useRouter();
+
+  useEffect(() => {
+    const loadUserAndToken = async () => {
+    const storedUser = await SecureStore.getItemAsync("user");
+        if (storedUser) {
+            // setUser(JSON.parse(storedUser));
+        }
+
+        const storedToken = await SecureStore.getItemAsync("token");
+        if (storedToken) {
+            // setToken(storedToken);
+        }
+    };
+    loadUserAndToken();
+  }, []);
 
   return (
     <Tabs
@@ -38,7 +63,7 @@ const _layout = () => {
                     {/* <TouchableOpacity  onPress={() => router.push('/(tabs)/book/writeNewBook')}>
                         <Text style={[styles.marginLeft, {color: 'white'}]}>{labels.writeBook}</Text>
                     </TouchableOpacity> */}
-                    {/* <TouchableOpacity  onPress={() => router.push(user ? '/profile' : '/auth/login')} style={styles.loginBtn}>
+                    {/* <TouchableOpacity  onPress={() => goToProfile(user, router)} style={styles.loginBtn}>
                         {user 
                             ? <Image source={{uri: `https://api.bookspointer.com/uploads/${user?.image}`}} style={styles.userImg} />
                             : <Text>{labels.signIn}</Text>
@@ -53,7 +78,7 @@ const _layout = () => {
             name="index"
             options={{ 
                 title: labels.booksPointer,
-                tabBarIcon: ({focused}) => (
+                tabBarIcon: ({ focused }: { focused: boolean }) => (
                    <TabIcon
                     focused={focused}
                     icon="home"
@@ -70,7 +95,7 @@ const _layout = () => {
             name="authors"
             options={{ 
                 title: labels.authors,
-                tabBarIcon: ({focused}) => (
+                tabBarIcon: ({ focused }: { focused: boolean }) => (
                     <TabIcon
                         focused={focused}
                         icon="users"
@@ -83,7 +108,7 @@ const _layout = () => {
             name="category"
             options={{ 
                 title: labels.categories,
-                tabBarIcon: ({focused}) => (
+                tabBarIcon: ({ focused }: { focused: boolean }) => (
                     <TabIcon
                         focused={focused}
                         icon="list"
@@ -97,7 +122,7 @@ const _layout = () => {
             options={{
                 // href: null 
                 title: labels.download,
-                tabBarIcon: ({focused}) => (
+                tabBarIcon: ({ focused }: { focused: boolean }) => (
                     <TabIcon
                         focused={focused}
                         icon="download"
