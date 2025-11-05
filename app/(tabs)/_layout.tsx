@@ -60,9 +60,9 @@ const _layout = () => {
                     <TouchableOpacity  onPress={() => router.push('/(tabs)/search')}>
                         <FontAwesome name="search"  style={styles.marginLeft} size={20} color="white" />
                     </TouchableOpacity>
-                    {/* <TouchableOpacity  onPress={() => router.push('/(tabs)/book/writeNewBook')}>
+                    <TouchableOpacity  onPress={() => router.push('/screens/book/write-book')}>
                         <Text style={[styles.marginLeft, {color: 'white'}]}>{labels.writeBook}</Text>
-                    </TouchableOpacity> */}
+                    </TouchableOpacity>
                     {/* <TouchableOpacity  onPress={() => goToProfile(user, router)} style={styles.loginBtn}>
                         {user 
                             ? <Image source={{uri: `https://api.bookspointer.com/uploads/${user?.image}`}} style={styles.userImg} />

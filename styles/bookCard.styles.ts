@@ -6,8 +6,9 @@ export const styles = StyleSheet.create({
       marginVertical: 5,
     },
     postHeader: {
-      flex: 1,
+      display: 'flex',
       flexDirection: "row",
+      justifyContent: "space-between",
       borderBottomWidth: 0.5,
       borderBottomColor: "gray",
       marginBottom: 10,

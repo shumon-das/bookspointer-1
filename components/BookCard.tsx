@@ -1,7 +1,6 @@
 import { labels } from '@/app/utils/labels';
 import { userRole } from '@/app/utils/userRole';
 import { styles } from '@/styles/bookCard.styles';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
@@ -11,6 +10,7 @@ import HtmlContent from './micro/HtmlContent';
 import AudioBookButton from './micro/bookCardFooter/AudioBookButton';
 import DownloadButton from './micro/bookCardFooter/DownloadButton';
 import DefaultPostImage from './micro/DefaultPostImage';
+import PopoverExample from './Popover';
 
 
 interface BookCardProps {
@@ -33,13 +33,25 @@ const BookCard = ({book, snackMessage, backurl}: {book: BookCardProps, snackMess
   return (
     <View style={styles.cardBackground} key={book.id}>
       <View className='postHeader' style={styles.postHeader}>
-        <Image  source={{ uri: createdByImg }} style={styles.image} />
-        <View>
-          {/* <TouchableOpacity onPress={() => router.push({pathname: "/(tabs)/userProfile", params: {authorId: book.createdBy.id}})}> */}
-            <Text style={styles.userName}>{book.createdBy.fullName}</Text>
-          {/* </TouchableOpacity> */}
-          <Text style={styles.userRole}>{userRole(book.createdBy.roles)}</Text>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <Image  source={{ uri: createdByImg }} style={styles.image} />
+          <View>
+            {/* <TouchableOpacity onPress={() => router.push({pathname: "/(tabs)/userProfile", params: {authorId: book.createdBy.id}})}> */}
+              <Text style={styles.userName}>{book.createdBy.fullName}</Text>
+            {/* </TouchableOpacity> */}
+            <Text style={styles.userRole}>{userRole(book.createdBy.roles)}</Text>
+          </View>
         </View>
+
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <TouchableOpacity style={{paddingRight: 20}} onPress={() => router.push({pathname: '/screens/book/write-book', params: {bookuuid: book.uuid}})}>
+            {/* <FontAwesome name="ellipsis-v" size={24} color="gray" /> */}
+            <PopoverExample menues={[
+              {label: 'Edit', onPressed: {pathname: "/screens/book/write-book", params: { bookuuid: book.uuid, }}}
+            ]} />
+          </TouchableOpacity>
+        </View>
+        
       </View>
       <TouchableOpacity style={styles.postBodyHeader} onPress={() => router.push({pathname: "/(tabs)/book/details", params: {id: book.id, title: book.title, author: book.author.fullName}})}>
       {/* <View className='postBody' style={styles.postBodyHeader}> */}

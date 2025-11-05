@@ -1,6 +1,8 @@
 export const labels = {
     booksPointer: "বুকস পয়েন্টার",
     book: "বই",
+    bookTitle: "বইয়ের নাম",
+    startWriting: "লেখা শুরু করুন...",
     search: "খুঁজুন...",
     editProfile: "আপডেট প্রোফাইল",
     resetPassword: {
@@ -64,4 +66,5 @@ export const labels = {
     audioBookNotAvailable: "অডিও বইটি এখনো উপলব্ধ নয়।",
     featureNotAvailable: "দুঃখিত, ডাউনলোদ সুবিধাটি এখনো যুক্ত করা হয়নি।",
     sorry: "দুঃখিত!",
+    saveBook: "পোষ্ট করুন",
 }

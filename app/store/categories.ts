@@ -1,11 +1,12 @@
 import { create } from 'zustand';
+import { CategoryInterface } from '../types/interfeces';
 
 interface CategoryStore {
-    categories: Category[];
-    setCategories: (value: Category[]) => Category[]
+    categories: CategoryInterface[];
+    setCategories: (value: CategoryInterface[]) => CategoryInterface[],
 }
 
 export const useCategoryStore = create<CategoryStore>((set: any) => ({
     categories: [],
-    setCategories: (categories: Category[]) => set({ categories }),
+    setCategories: (categories: CategoryInterface[]) => set({ categories }),
 }))
