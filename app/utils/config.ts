@@ -4,3 +4,5 @@ export const API_CONFIG = {
         'Content-Type': 'application/json',
     }
 }
+
+export default API_CONFIG;

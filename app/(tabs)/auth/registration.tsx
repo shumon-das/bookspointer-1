@@ -1,4 +1,3 @@
-import { useAuthStore } from '@/app/store/auth'
 import { labels } from '@/app/utils/labels'
 import { User } from '@/components/types/User'
 import { login } from '@/services/api'
@@ -9,14 +8,13 @@ import { Stack, useNavigation, useRouter } from 'expo-router'
 import React, { useLayoutEffect, useState } from 'react'
 import { Image, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { Snackbar } from 'react-native-paper'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const registration = () => {
     const navigation = useNavigation()
     const title = labels.register
     useLayoutEffect(() => navigation.setOptions({ title }), [navigation, title]);
     const router = useRouter()
-    const setUser = useAuthStore((state) => state.setUser)
-    const setToken = useAuthStore((state) => state.setToken)
 
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
@@ -54,8 +52,9 @@ const registration = () => {
                 if (response.message) {
                     const response: {token: string; user: User} = await login(email, password)
                     if (response) {
-                        setToken(response.token)
-                        setUser(response.user)
+                        AsyncStorage.setItem("auth-user", JSON.stringify(response.user))
+                        AsyncStorage.setItem("token", response.token)
+                    
                         router.push('/')
                     } else {
                         alert("Invalid email or password")
@@ -99,7 +98,7 @@ const registration = () => {
                     style={{ width: 100, height: 100, borderRadius: 50, alignSelf: 'center', marginTop: 20 }}
                 />
                 <Text style={{ fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginTop: 10, marginBottom: 30 }}>
-                    Welcome to the books world
+                    {labels.welcomeMessage}
                 </Text>
             </View>
             <View style={{ width: '90%', marginHorizontal: 'auto' }}>

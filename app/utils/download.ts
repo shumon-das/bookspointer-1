@@ -101,3 +101,12 @@ export async function isDownloaded(bookId: number) {
 
   return data.find((bookPath) => bookPath.id.includes(bookId.toString()));
 }
+
+export default {
+  encryptAndSaveBook,
+  decryptBook,
+  listDownloadedBooks,
+  deleteBook,
+  isDownloaded,
+  encryptedPagesNumbers
+};

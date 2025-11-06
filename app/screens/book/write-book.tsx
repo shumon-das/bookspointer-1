@@ -1,5 +1,5 @@
 import Dropdown from "@/components/micro/Dropdown";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import TextEditor from "@/components/micro/TextEditor";
 import { TextInput } from "react-native-paper";
 import React, { useEffect, useLayoutEffect } from "react";
@@ -87,7 +87,7 @@ const writeBook = () => {
     }
 
     return (
-        <View style={styles.screen}>
+        <ScrollView style={styles.screen}>
             <View style={styles.title}>
                 <TextInput
                     style={styles.input}
@@ -126,7 +126,7 @@ const writeBook = () => {
                     <Text style={styles.saveButton}>{ labels.saveBook }</Text>
                 </TouchableOpacity>
             </View>
-        </View>
+        </ScrollView>
     );
 }
 

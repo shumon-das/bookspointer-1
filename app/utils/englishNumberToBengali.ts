@@ -16,3 +16,5 @@ export const englishNumberToBengali = (englishNumber: number) => {
         ? englishNumber.toString().replace(/\d/g, (digit) => englishToBengaliMap[digit])
         : '০';
 }
+
+export default englishNumberToBengali;

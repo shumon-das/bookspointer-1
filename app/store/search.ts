@@ -18,3 +18,5 @@ export const useCacheStore = create<CacheStore>((set, get) => ({
     set({ cache }); // trigger update if needed
   },
 }));
+
+export default useCacheStore;

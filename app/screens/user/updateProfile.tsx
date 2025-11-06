@@ -1,5 +1,4 @@
 import { labels } from '@/app/utils/labels';
-import { htmlString } from '@/app/utils/richEditorHtml';
 import { updateProfileInfo } from '@/services/userApi';
 import { styles } from '@/styles/writeBook.styles';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
@@ -19,7 +18,6 @@ const updateProfile = () => {
     const [lastName, setLastName] = useState('')
     const [email, setEmail] = useState('')
     const [description, setDescription] = useState('')
-    const html = htmlString(description, labels.userDescription);
     const [readyToSave, setReadyToSave] = useState(false)
 
     useLayoutEffect(() => {
@@ -86,7 +84,7 @@ const updateProfile = () => {
             /> 
 
             <View style={{height: 300}}>
-              <WebView
+              {/* <WebView
                 ref={webviewRef}
                 originWhitelist={['*']}
                 source={{ html }}
@@ -97,7 +95,7 @@ const updateProfile = () => {
                 keyboardDisplayRequiresUserAction={false}
                 scrollEnabled={false}
                 nestedScrollEnabled={true}
-              />
+              /> */}
             </View>
 
             {readyToSave 

@@ -56,3 +56,11 @@ export function stripHtmlTags(html: any) {
 export function normalizeForSave(html: any) {
   return cleanBreaks(toQuillHtml(html));
 }
+
+export default {
+  toQuillHtml,
+  toPellHtml,
+  cleanBreaks,
+  stripHtmlTags,
+  normalizeForSave
+};

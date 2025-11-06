@@ -35,7 +35,7 @@ export default function ImagePickerExample({defaultImage, onChange}: defaultImag
       setImage(result.assets[0].uri);
     }
   };
-console.log(image)
+
   return (
     <View style={styles.container}>
       {image && <Image source={{ uri: image }} style={styles.image} />}

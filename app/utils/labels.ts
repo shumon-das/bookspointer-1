@@ -1,5 +1,6 @@
 export const labels = {
     booksPointer: "বুকস পয়েন্টার",
+    welcomeMessage: "বুকস পয়েন্টারে আপনাকে স্বাগতম!",
     book: "বই",
     bookTitle: "বইয়ের নাম",
     startWriting: "লেখা শুরু করুন...",
@@ -22,6 +23,7 @@ export const labels = {
     noAccount: "একাউন্ট নেই?",
     invalidEmail: "ইমেইলটি সঠিক হয়নি। সঠিক ইমেইল দিয়ে আবার চেষ্টা করুন।",
     passswordConfirmNotMatch: "পাসওয়ার্ড আর কনফার্ম পাসওয়ার্ডে মিল নেই।",
+    invalidLogin: "ইমেইল অথবা পাসওয়ার্ড ভুল হয়েছ। আবার চেষ্টা করুন।",
     signIn: "লগইন",
     signOut: "লগআউট",
     editBook: "আপডেট করুন",
@@ -47,6 +49,7 @@ export const labels = {
     download: 'ডাউনলোড',
     downloadedAlready: 'ডাউনলোড হয়েছে',
     noBooksFound: "কোন বই পাওয়া যায়নি।",
+    noBooksFoundForThisSeries: "এই সিরিজের জন্য কোন বই পাওয়া যায়নি।",
     deleteBook: "বইটি সফলভাবে মুছে ফেলা হয়েছে।",
     removingBookWarning: "বইটি মুছে ফেলতে যাচ্ছেন।",
     removeBookWarning: "এই বইটি মুছে ফেলতে চান?",
@@ -67,4 +70,7 @@ export const labels = {
     featureNotAvailable: "দুঃখিত, ডাউনলোদ সুবিধাটি এখনো যুক্ত করা হয়নি।",
     sorry: "দুঃখিত!",
     saveBook: "পোষ্ট করুন",
+    reader: "পাঠক",
 }
+
+export default labels;

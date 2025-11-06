@@ -1,25 +1,19 @@
-import { useAuthStore } from '@/app/store/auth'
 import { login } from '@/services/api'
 import { Stack, useNavigation, useRouter } from 'expo-router'
 import React, { useLayoutEffect, useState } from 'react'
 import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
-import * as SecureStore from "expo-secure-store";
-
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { labels } from '@/app/utils/labels'
 import { User } from '@/components/types/User'
 import { styles } from '@/styles/writeBook.styles'
 import FontAwesome from '@expo/vector-icons/FontAwesome'
 
-const Login = async () => {
+const Login = () => {
     const router = useRouter()
     const navigation = useNavigation()
     const title = "Login"
     useLayoutEffect(() => navigation.setOptions({ title }), [navigation, title]);
-      
-
-    // const setUser = useAuthStore((state) => state.setUser)
-    // const setToken = useAuthStore((state) => state.setToken)
 
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
@@ -34,14 +28,11 @@ const Login = async () => {
         }
         const response: {token: string; user: User} = await login(email.trim(), password.trim())
         if (response) {
-          SecureStore.setItemAsync("token", response.token)
-          SecureStore.setItemAsync("user", JSON.stringify(response.user))
-
-            // setToken(response.token)
-            // setUser(response.user)
-            router.push('/')
+          await AsyncStorage.setItem("token", response.token)
+          await AsyncStorage.setItem("auth-user", JSON.stringify(response.user))
+          router.push('/')
         } else {
-            alert("Invalid email or password")
+            alert(labels.invalidLogin)
         }
     }
   return (
@@ -51,7 +42,6 @@ const Login = async () => {
         options={{
           headerLeft: () => (
             <TouchableOpacity onPress={() => router.replace('/')}>
-              {/* <Icon name="arrow-left" size={20} style={{ marginLeft: 10, marginRight: 20, color: '#4B5945' }} /> */}
               <FontAwesome name="arrow-left" size={20} style={{paddingHorizontal: 15}} />
             </TouchableOpacity>
           ),
@@ -63,7 +53,7 @@ const Login = async () => {
                 style={{ width: 100, height: 100, borderRadius: 50, alignSelf: 'center', marginTop: 20 }}
             />
             <Text style={{ fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginTop: 10, marginBottom: 30 }}>
-                Welcome to the books world
+                {labels.welcomeMessage}
             </Text>
         </View>
         <View style={{ width: '90%', marginHorizontal: 'auto' }}>

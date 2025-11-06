@@ -7,3 +7,5 @@ export const userRole = (roles: string[]) => {
     else if (roles.includes('ROLE_PUBLISHER')) return labels.userRolePublisher
     else return labels.userRoleUser
 }
+
+export default userRole;

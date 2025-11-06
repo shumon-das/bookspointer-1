@@ -19,3 +19,5 @@ export const useUserStore = create<UserStore>((set: any) => ({
     authors: [],
     setAuthors: (authors) => set({ authors })
 }))
+
+export default useUserStore;

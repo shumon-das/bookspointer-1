@@ -12,14 +12,13 @@ export const fetchBooksBySeriesName = async (seriesName: string, authorId: numbe
             isCreator: isCreator,
         })
     })
-    console.log(response.status)
-
-    if (!response.ok) {
-        // @ts-ignore
-        throw new Error('Failed to fetch categories', response.message)
-    }
 
     const data = await response.json();
-    
+
+    if (data && data.status && data.status !== 200) {
+        // @ts-ignore
+        console.log('Failed to fetch ', response.message)
+    }
+
     return data;
 }

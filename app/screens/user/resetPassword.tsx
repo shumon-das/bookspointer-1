@@ -29,7 +29,7 @@ const resetPassword = () => {
         setToastVisible(true)
         if (response) {
           setTimeout(() => {
-            router.replace('/(tabs)/profile')
+            router.replace('./userProfile')
           }, 2000);
         } else {
             alert("Invalid email or password")
@@ -58,7 +58,7 @@ const resetPassword = () => {
         <Stack.Screen
         options={{
           headerLeft: () => (
-            <TouchableOpacity onPress={() => router.replace('/(tabs)/profile')}>
+            <TouchableOpacity onPress={() => router.replace('./userProfile')}>
               <FontAwesome name="arrow-left" size={20} style={{ marginLeft: 10, marginRight: 20, color: '#4B5945' }} />
             </TouchableOpacity>
           ),

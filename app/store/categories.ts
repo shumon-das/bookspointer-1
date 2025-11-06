@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { CategoryInterface } from '../types/interfeces';
+import { CategoryInterface } from '../../types/interfeces';
 
 interface CategoryStore {
     categories: CategoryInterface[];
@@ -10,3 +10,5 @@ export const useCategoryStore = create<CategoryStore>((set: any) => ({
     categories: [],
     setCategories: (categories: CategoryInterface[]) => set({ categories }),
 }))
+
+export default useCategoryStore;

@@ -50,3 +50,5 @@ export const quoteThemes = [
     authorColor: '#AFB42B'
   }
 ];
+
+export default quoteThemes;

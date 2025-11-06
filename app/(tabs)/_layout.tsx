@@ -1,11 +1,11 @@
-import { useAuthStore } from '@/app/store/auth';
 import { styles } from '@/styles/bottomNav.styles';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs, useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { labels } from '../utils/labels';
-import * as SecureStore from "expo-secure-store";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
 
 const TabIcon = ({focused, icon, title}: any) => {            
     return (
@@ -16,33 +16,32 @@ const TabIcon = ({focused, icon, title}: any) => {
     )
 }
 
-const goToProfile = async (user: any, router: any) => {
-    if (user) {
-        console.log('User is logged in:', JSON.parse(user))
-    } else {
-        router.push('/auth/login')
-    }
-    //router.push(user ? '/profile' : '/auth/login')
-    // alert('Go to profile function is not implemented yet.')
-}
-
 const _layout = () => {
   const router = useRouter();
+  const [user, setUser] = useState<any>(null);
+  const [token, setToken] = useState<string|null>(null);
 
-  useEffect(() => {
-    const loadUserAndToken = async () => {
-    const storedUser = await SecureStore.getItemAsync("user");
-        if (storedUser) {
-            // setUser(JSON.parse(storedUser));
-        }
+  useFocusEffect(
+    useCallback(() => {
+        const loadUserAndToken = async () => {
+            const storedUser = await AsyncStorage.getItem('auth-user');
+            const storedToken = await AsyncStorage.getItem('token');
+            setUser(storedUser ? JSON.parse(storedUser) : null);
+            setToken(storedToken);
+        };
+        loadUserAndToken();
+    }, [])
+  );
 
-        const storedToken = await SecureStore.getItemAsync("token");
-        if (storedToken) {
-            // setToken(storedToken);
-        }
-    };
-    loadUserAndToken();
-  }, []);
+  const goToProfile = async () => {
+    if (user) {
+        router.push({pathname: '/screens/user/userProfile', params: {useruuid: user.id}});
+     } else {
+        router.push('/auth/login')
+    }
+    // router.push(user ? '/profile' : '/auth/login')
+    // alert('Go to profile function is not implemented yet.')
+  }
 
   return (
     <Tabs
@@ -63,13 +62,13 @@ const _layout = () => {
                     <TouchableOpacity  onPress={() => router.push('/screens/book/write-book')}>
                         <Text style={[styles.marginLeft, {color: 'white'}]}>{labels.writeBook}</Text>
                     </TouchableOpacity>
-                    {/* <TouchableOpacity  onPress={() => goToProfile(user, router)} style={styles.loginBtn}>
+                    <TouchableOpacity  onPress={() => goToProfile()} style={styles.loginBtn}>
                         {user 
                             ? <Image source={{uri: `https://api.bookspointer.com/uploads/${user?.image}`}} style={styles.userImg} />
                             : <Text>{labels.signIn}</Text>
                             
                         }
-                    </TouchableOpacity> */}
+                    </TouchableOpacity>
                 </View>
             ),
         }}
@@ -131,14 +130,10 @@ const _layout = () => {
                 )
             }}
         />
-        <Tabs.Screen name="profile" options={{ href: null }} />
-        <Tabs.Screen name="user/resetPassword" options={{ href: null }} />
-        <Tabs.Screen name="user/updateProfile" options={{ href: null }} />
         <Tabs.Screen name="book/[id]" options={{ href: null }} />
         <Tabs.Screen name="book/details" options={{ href: null }} />
         <Tabs.Screen name="book/update/[id]" options={{ href: null }} />
         <Tabs.Screen name="book/categoryBooks" options={{ href: null }} />
-        <Tabs.Screen name="book/writeNewBook" options={{ href: null }} />
         <Tabs.Screen name="auth/login" options={{ href: null }} />
         <Tabs.Screen name="auth/registration" options={{ href: null }} />
         <Tabs.Screen name="search" options={{ href: null }} />
