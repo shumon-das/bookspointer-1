@@ -22,3 +22,15 @@ export const fetchBooksBySeriesName = async (seriesName: string, authorId: numbe
 
     return data;
 }
+
+export const fetchUserProfileData = async (userUuid: string) => {
+    const response = await fetch(`${API_CONFIG.BASE_URL}/single-user/${userUuid}`)
+    const data = await response.json();
+
+    if (data && data.status && !data.status) {
+        // @ts-ignore
+        console.log('Failed to fetch user profile', response.message)
+    }
+
+    return data;
+}

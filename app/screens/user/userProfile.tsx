@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams, useNavigation } from 'expo-router';
-import React, { useCallback, useLayoutEffect, useState } from 'react';
-import { SafeAreaView, View } from 'react-native';
+import React, { use, useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import { SafeAreaView, Touchable, TouchableOpacity, View } from 'react-native';
 import { UserInterface } from '../../../types/interfeces';
 // import UserDescription from '@/components/micro/user/UserDescription';
 import UserProfileHeader from '@/components/micro/user/profile/UserProfileHeader';
@@ -9,14 +9,21 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { ActivityIndicator } from 'react-native-paper';
 import { labels } from '../../utils/labels';
-
+import HeaderRightPopover from '@/components/micro/user/profile/HeaderRightPopover';
+import { fetchUserProfileData } from '@/services/profileApi';
+import useAuthStore from '@/app/store/auth';
+import Feather from '@expo/vector-icons/Feather';
 const authorProfile = () => {
   const {useruuid} = useLocalSearchParams();
   const [author, setAuthor] = useState<UserInterface|null>(null);
+  const [loggedInUser, setLoggedInUser] = React.useState<UserInterface|null>(null);
 
   const navigation = useNavigation()
   useLayoutEffect(() => {
     if (author) {
+      // const settings = !useruuid || loggedInUser && useruuid && loggedInUser.uuid === useruuid 
+      //   ? <HeaderRightPopover user={author} /> 
+      //   : <></>
       const title = author ? author.fullName : labels.author;
       navigation.setOptions({
         title,
@@ -29,7 +36,9 @@ const authorProfile = () => {
         headerTitleStyle: {
             fontWeight: 'bold',
         },
-        headerRight: () => (<></>),
+        headerRight: () => (<TouchableOpacity onPress={() => {
+          router.push({pathname: "/screens/user/profileUpdate", params: { }})
+        }}><Feather name="settings" size={18} color="#d4d4d4" /></TouchableOpacity>),
       }), [navigation, title]
     }
   }, [navigation, author]);
@@ -38,16 +47,43 @@ const authorProfile = () => {
     useCallback(() => {
       const loadUserAndToken = async () => {
           const storedUser = await AsyncStorage.getItem('auth-user');
-          // const storedToken = await AsyncStorage.getItem('token');
-          setAuthor(storedUser ? JSON.parse(storedUser) : null);
+          const user = storedUser ? JSON.parse(storedUser) : null
+
+          if (!useruuid && user) {
+            setLoggedInUser(user);
+            return;
+          }
+          if (useruuid && user && user.uuid === useruuid) {
+            setLoggedInUser(user);
+            setAuthor(user);
+            return;
+          }
+          if (!useruuid && !user) {
+            setLoggedInUser(null);
+          }
       };
       loadUserAndToken();
     }, [useruuid])
   );
 
-  useLayoutEffect(() => {
+  useEffect(() => {
+    if (!useruuid && loggedInUser) {
+      setAuthor(loggedInUser);
+      return;
+    }
 
-  }, [author]);
+    if (useruuid && author && author.uuid === useruuid) {
+      return;
+    }
+
+    const getNewUserDataFromDb = async () => {
+      const data = await fetchUserProfileData(useruuid as string);
+      setAuthor(data);
+      useAuthStore.getState().setUser(data);
+    }
+    
+    getNewUserDataFromDb();
+  }, [useruuid, author, loggedInUser]);
 
   if (!author) {
     return (<View>
@@ -61,7 +97,7 @@ const authorProfile = () => {
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      <UserProfileHeader uuid={author.uuid} />         
+      <UserProfileHeader />         
 
       <UserSeries series={author.series} onChooseSeries={(seriesName) => onSelectSeries(seriesName)} />
     </SafeAreaView>

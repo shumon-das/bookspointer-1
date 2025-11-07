@@ -28,7 +28,7 @@ const Login = () => {
         }
         const response: {token: string; user: User} = await login(email.trim(), password.trim())
         if (response) {
-          await AsyncStorage.setItem("token", response.token)
+          await AsyncStorage.setItem("auth-token", response.token)
           await AsyncStorage.setItem("auth-user", JSON.stringify(response.user))
           router.push('/')
         } else {

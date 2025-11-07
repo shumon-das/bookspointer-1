@@ -1,10 +1,10 @@
+import useAuthStore from "@/app/store/auth";
 import { labels } from "@/app/utils/labels";
 import UserProfileHeader from "@/components/micro/user/profile/UserProfileHeader";
 import { Book } from "@/components/types/Book";
 import { fetchBooksBySeriesName } from "@/services/profileApi";
 import { styles } from '@/styles/profilePageBooks.styles';
 import { UserInterface } from "@/types/interfeces";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
@@ -31,12 +31,8 @@ const UserProfilePageBooks = () => {
 
   useFocusEffect(
     useCallback(() => {
-      const loadUserAndToken = async () => {
-          const storedUser = await AsyncStorage.getItem('auth-user');
-          // const storedToken = await AsyncStorage.getItem('token');
-          setUser(storedUser ? JSON.parse(storedUser) : null);
-      };
-      loadUserAndToken();
+      const authUser = useAuthStore.getState().user;
+      if (authUser) setUser(authUser);
 
       if (series) {
         setSeriesName(series as unknown as string)
@@ -81,7 +77,7 @@ const UserProfilePageBooks = () => {
   
   return (
     <SafeAreaView style={{flex: 1}}>
-        <UserProfileHeader uuid={user ? user.uuid : ''} />
+        <UserProfileHeader />
 
         { booksNotFound ? (
             <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>

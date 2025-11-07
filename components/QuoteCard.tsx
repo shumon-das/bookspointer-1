@@ -47,7 +47,7 @@ const QuoteCard = React.memo(({book, snackMessage}: {book: BookCardProps, snackM
           <TouchableOpacity onPress={() => router.navigate({pathname: "/(tabs)/authorProfile", params: {authorId: book.createdBy.id}})}>
             <Text style={styles.userName}>{book.createdBy.fullName}</Text>
           </TouchableOpacity>
-          <Text style={styles.userRole}>{userRole(book.createdBy.roles)}</Text>
+          <Text style={styles.userRole}>{userRole(book.createdBy)}</Text>
         </View>
       </View>
       <View className='postBody' style={[QuoteStyles.card, {backgroundColor: quoteThemes[randomThemeIndex].backgroundColor,}]}>

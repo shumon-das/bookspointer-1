@@ -10,6 +10,7 @@ export interface User {
   roles: string[];
   series: string[];
   totalBooks: number;
+  totalReads: number;
   books: Book[];
   libraryBooks: Book[];
   details: UserDetails;

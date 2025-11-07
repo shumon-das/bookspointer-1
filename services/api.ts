@@ -151,13 +151,18 @@ export const fullBook = async (uuid: string) => {
 export const saveBook = async (value: SaveRequestParams, token: string) => {
     const endpoint = API_CONFIG.BASE_URL + '/admin/create-book';
     const headers = {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'accept': 'application/json',
         'Authorization': `Bearer ${token}` 
     }
+    const body = new URLSearchParams({
+        data: JSON.stringify(value)
+    }).toString();
+
     const response = await fetch(endpoint, {
         method: 'POST',
         headers: headers,
-        body: JSON.stringify(value)
+        body: body
     })
     
     if (401 === response.status) {

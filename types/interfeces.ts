@@ -10,6 +10,7 @@ export interface UserInterface {
     fullName: string;
     image: string;
     totalBooks: number;
+    totalReads: number;
     series: string[];
 }
 

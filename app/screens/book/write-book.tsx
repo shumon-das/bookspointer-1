@@ -7,7 +7,11 @@ import { labels } from "@/app/utils/labels";
 import { styles } from "@/styles/writeBookScreen.styles";
 import { useCategoryStore } from "@/app/store/categories";
 import { useUserStore } from "@/app/store/user";
-import { useLocalSearchParams, useNavigation } from 'expo-router'
+import { router, useLocalSearchParams, useNavigation } from 'expo-router'
+import { Category } from "@/components/types/Category";
+import { User } from "@/components/types/User";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { saveBook } from "@/services/api";
 
 const writeBook = () => {
     const {bookuuid} = useLocalSearchParams();
@@ -34,8 +38,8 @@ const writeBook = () => {
     const [authors, setAuthors] = React.useState(useUserStore((state) => state.authors))
 
     const [title, setTitle] = React.useState('');
-    const [category, setCategory] = React.useState('');
-    const [author, setAuthor] = React.useState('');
+    const [category, setCategory] = React.useState<Category|null>(null);
+    const [author, setAuthor] = React.useState<User|null>(null);
     const [content, setContent] = React.useState('');
 
     useEffect(() => {
@@ -76,18 +80,32 @@ const writeBook = () => {
         loadAuthors();
     }, [bookuuid]);
 
-    const saveBook = async () => {
-        // $data['title'] = $title;
-        // $data['content'] = $content;
-        // $data['category']['id'] = 20;
-        // $data['author']['id'] = $authorid;
-        // $data["estimatedReadTime"] = ["words" => 0, "minutes" => 1];
-        // $data['seriesName'] = '';
-        // $data['tags'] = [];
+    const saveBookData = async () => {
+        const storageUser = await AsyncStorage.getItem('auth-user');
+        const storedToken = await AsyncStorage.getItem('auth-token');
+        if (!storedToken) {
+            alert(labels.pleaseLoginToContinue);
+            return;
+        }
+
+        const data = {
+            title: title,
+            category: category,
+            author: author,
+            content: content,
+            estimatedReadTime: {words: 1, minutes: 1},
+            seriesName: '',
+            tags: [],
+        }
+
+        const response = await saveBook(data as any, storedToken);
+        if (response.status && storageUser) {
+            router.push({pathname: "/screens/user/userProfile", params: { useruuid: JSON.parse(storageUser).uuid }});
+        }
     }
 
     return (
-        <ScrollView style={styles.screen}>
+        <View style={styles.screen}>
             <View style={styles.title}>
                 <TextInput
                     style={styles.input}
@@ -117,16 +135,18 @@ const writeBook = () => {
                 />
             </View>
 
-            <View style={{height: 500}}>
+            <View style={{height: 400}}>
                 <TextEditor initialContent={content} onChange={(content: string) => setContent(content)} />
             </View>
 
             <View>
-                <TouchableOpacity onPress={saveBook}>
+                <TouchableOpacity onPress={saveBookData}>
                     <Text style={styles.saveButton}>{ labels.saveBook }</Text>
                 </TouchableOpacity>
             </View>
-        </ScrollView>
+
+            <View style={{ height: 200 }}></View>
+        </View>
     );
 }
 

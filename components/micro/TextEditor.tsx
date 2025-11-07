@@ -3,13 +3,28 @@ import { View } from 'react-native';
 import { RichEditor, RichToolbar, actions } from 'react-native-pell-rich-editor';
 import { toPellHtml, toQuillHtml } from '../../app/utils/htmlNormalizer'
 import { labels } from '@/app/utils/labels';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function TextEditor({initialContent, onChange}: any) {
   const richText = useRef<RichEditor | null>(null);
   const [html, setHtml] = React.useState(toPellHtml(initialContent) || '');
 
+  useFocusEffect(
+    React.useCallback(() => {
+      if (initialContent) {
+        const newHtml = toPellHtml(initialContent) || '';
+        setHtml(newHtml);
+        richText.current?.setContentHTML(newHtml);
+      }
+    }, [initialContent])
+  );
+
   useEffect(() => {
-    setHtml(toPellHtml(initialContent) || '');
+    const newHtml = toPellHtml(initialContent) || '';
+    setHtml(newHtml);
+    if (richText.current) {
+      richText.current.setContentHTML(newHtml);
+    }
   }, [initialContent]);
 
   const onEditorChange = (newHtml: any) => {
@@ -18,7 +33,7 @@ export default function TextEditor({initialContent, onChange}: any) {
   }
 
   return (
-    <View style={{ flex: 1, padding: 10 }}>
+    <View style={{ flex: 1, paddingHorizontal: 10, backgroundColor: '#fff' }}>
         <RichToolbar
           editor={richText}
           actions={[
@@ -34,6 +49,7 @@ export default function TextEditor({initialContent, onChange}: any) {
             actions.insertImage,
             actions.setTextColor
           ]}
+          style={{ backgroundColor: '##fff' }}
         />
         <RichEditor
             ref={richText}

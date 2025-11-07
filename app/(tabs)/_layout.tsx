@@ -35,7 +35,7 @@ const _layout = () => {
 
   const goToProfile = async () => {
     if (user) {
-        router.push({pathname: '/screens/user/userProfile', params: {useruuid: user.id}});
+        router.push({pathname: '/screens/user/userProfile', params: {useruuid: user.uuid}});
      } else {
         router.push('/auth/login')
     }

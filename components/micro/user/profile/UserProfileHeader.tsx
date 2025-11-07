@@ -1,30 +1,29 @@
+import useAuthStore from "@/app/store/auth";
 import { englishNumberToBengali } from "@/app/utils/englishNumberToBengali";
 import { labels } from "@/app/utils/labels";
 import ImagePicker from '@/components/micro/ImagePicker';
 import { updateProfileImage } from "@/services/userApi";
 import { styles } from "@/styles/profile.styles";
 import { UserInterface } from "@/types/interfeces";
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from "@react-navigation/native";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Image, Text, View } from "react-native";
 
 
-const UserProfileHeader = ({uuid}: {uuid: string}) => {
+const UserProfileHeader = () => {
     const [author, setAuthor] = useState<UserInterface|null>(null);
     const [token, setToken] = useState<string|null>(null);
 
     useFocusEffect(
         useCallback(() => {
-        const loadUserAndToken = async () => {
-            const storedUser = await AsyncStorage.getItem('auth-user');
-            const storedToken = await AsyncStorage.getItem('token');
-            setAuthor(storedUser ? JSON.parse(storedUser) : null);
-            setToken(storedToken);
-        };
-        loadUserAndToken();
-        }, [uuid])
+            const authUser = useAuthStore.getState().user;
+            if (authUser) setAuthor(authUser);
+        }, [useAuthStore.getState().user])
     );
+
+    useEffect(() => {
+
+    }, [author]);
     
     return (
         <View>
@@ -41,16 +40,16 @@ const UserProfileHeader = ({uuid}: {uuid: string}) => {
             <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', paddingBottom:10 }}>
                 <View style={{width: '60%', marginLeft: 6}}>
                     <Text style={styles.userName}>{author?.fullName}</Text>
-                    <Text style={styles.userRole}>@{labels.reader}</Text>
+                    <Text style={styles.userRole}>@{labels.reader}{author && author?.totalBooks > 0 ? `| ${labels.publisher}` : ''}</Text>
+                </View>
+                <View style={{ width: '20%', alignItems: 'center' }}>
+                    <Text>{ englishNumberToBengali(author ? author.totalReads : 0)}</Text>
+                    <Text style={{fontSize: 12}}>{labels.reads}</Text>
                 </View>
                 <View style={{ width: '15%', alignItems: 'center' }}>
                     <Text>{englishNumberToBengali(author ? author.totalBooks : 0)}</Text>
-                    <Image source={ require('../../../../assets/images/books_logo.png')} style={styles.booksLogo} />
+                    <Text style={{fontSize: 12}}>{labels.books}</Text>
                 </View>
-                {/* <View style={{ width: '15%', alignItems: 'center' }}>
-                    <Text>{ englishNumberToBengali(0)}</Text>
-                    <FontAwesome name="download" size={20} color={'blue'} />
-                </View> */}
             </View>
         </View>
     )
