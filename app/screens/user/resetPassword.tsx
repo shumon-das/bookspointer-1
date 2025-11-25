@@ -4,22 +4,25 @@ import { resetUserPassword } from '@/services/userApi';
 import { styles } from '@/styles/writeBook.styles';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Stack, useNavigation, useRouter } from 'expo-router';
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Image, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Snackbar } from 'react-native-paper';
+import { useHeaderOptions } from '@/helper/setHeaderOptions';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const resetPassword = () => {
     const router = useRouter()
     const navigation = useNavigation()
-    const token = useAuthStore((state) => state.token)
+    useHeaderOptions(navigation, labels.resetPassword.header)
     
     const [toastVisible, setToastVisible] = useState(false)
     const [oldPassword, setOldPassword] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
     const [passwordError, setPasswordError] = useState(false)
-
+    
     const handleUpdate = async () => {
+        const token = await AsyncStorage.getItem('auth-token')
         if (password !== confirmPassword) {
             setPasswordError(true)
             return
@@ -29,24 +32,12 @@ const resetPassword = () => {
         setToastVisible(true)
         if (response) {
           setTimeout(() => {
-            router.replace('./userProfile')
+            router.replace('./profileUpdate')
           }, 2000);
         } else {
             alert("Invalid email or password")
         }
     }
-
-    useLayoutEffect(() => {
-      const title = labels.resetPassword.header
-      navigation.setOptions({ title }), [title]
-      navigation.setOptions({
-        headerRight: () => (
-          <TouchableOpacity onPress={() => console.log('Settings')}>
-            <FontAwesome name="gear" size={20} style={{paddingHorizontal: 15}} />
-          </TouchableOpacity>
-        ),
-      })
-    })
     
   return (
     <KeyboardAvoidingView

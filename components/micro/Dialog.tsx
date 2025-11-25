@@ -1,49 +1,49 @@
-import { View, Text, Modal, StyleSheet, Alert, Pressable } from 'react-native'
+import { View, Text, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
+import labels from '@/app/utils/labels';
+import Modal from 'react-native-modal';
 
 interface ModalProps {
     visible: boolean;
+    message: string;
+    onChange: (value: any) => void;
 }
 
-const Dialog = ({visible}: ModalProps) => {
-    const [modalVisible, setModalVisible] = useState(false);
-    setModalVisible(visible)
+const Dialog = ({visible, message, onChange}: ModalProps) => {
+    const [visibleModal, setVisibleModal] = useState(visible);
+
+    const onPressYes = () => {
+        onChange(true)
+        setVisibleModal(false)
+    }
+
     return (
-        <SafeAreaProvider>
-            <SafeAreaView style={styles.centeredView}>
-                <Modal
-                animationType="slide"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => {
-                    Alert.alert('Modal has been closed.');
-                    setModalVisible(!modalVisible);
-                }}>
-                <View style={styles.centeredView}>
-                    <View style={styles.modalView}>
-                    <Text style={styles.modalText}>Hello World!</Text>
-                    <Pressable
-                        style={[styles.button, styles.buttonClose]}
-                        onPress={() => setModalVisible(!modalVisible)}>
-                        <Text style={styles.textStyle}>Hide Modal</Text>
-                    </Pressable>
+        <Modal
+            isVisible={visibleModal}
+            onBackdropPress={() => setVisibleModal(false)}
+            backdropOpacity={0.2}
+            animationIn="fadeIn"
+            animationOut="fadeOut"
+            style={{ justifyContent: 'center', alignItems: 'center', margin: 0 }}
+        >
+            <View style={{ backgroundColor: '#fff', borderRadius: 8, padding: 10, width: '60%' }}>
+                <Text style={{color: 'red', textAlign: 'center', fontSize: 20}}>{message}</Text>
+                <View style={{marginTop: 50, width: '100%', marginHorizontal: 5, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                    <View style={{width: 100}}>
+                        <TouchableOpacity style={{backgroundColor: '#36454F', paddingHorizontal: 10, paddingVertical: 5}} onPress={() => setVisibleModal(false)}>
+                            <Text style={{color: 'white', width: '100%', textAlign: 'center'}}>{labels.sortWords.no}</Text>
+                        </TouchableOpacity>
+                        </View>
+                
+                        <View style={{width: 100}}>
+                        <TouchableOpacity style={{backgroundColor: 'red', paddingHorizontal: 10, paddingVertical: 5}} onPress={onPressYes}>
+                            <Text style={{color: 'white', width: '100%', textAlign: 'center'}}>{ labels.delete }</Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
-                </Modal>
-            </SafeAreaView>
-        </SafeAreaProvider>
+            </View>
+        </Modal>
     )
 }
 
 export default Dialog
-
-const styles = StyleSheet.create({
-    centeredView: {},
-    modalView: {},
-    modalText: {},
-    button: {},
-    buttonClose: {},
-    textStyle: {},
-    buttonOpen: {}
-})

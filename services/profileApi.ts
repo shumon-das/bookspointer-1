@@ -1,4 +1,5 @@
 import { API_CONFIG } from "@/app/utils/config";
+import { Alert } from "react-native";
 
 export const fetchBooksBySeriesName = async (seriesName: string, authorId: number, isLibrary: boolean, isCreator: boolean) => {
     const endpoint = `${API_CONFIG.BASE_URL}/api/books-by-series`;
@@ -32,5 +33,24 @@ export const fetchUserProfileData = async (userUuid: string) => {
         console.log('Failed to fetch user profile', response.message)
     }
 
+    return data;
+}
+
+export const createAndUpdateSeries = async (user: any, token: string) => {
+    const endpoint = `${API_CONFIG.BASE_URL}/admin/update-user`;
+    const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(user),
+    })
+    if (!response.ok) {
+        Alert.alert('API ERROR', `${response.status}: internal server error`)
+    }
+    
+    const data = await response.json();
+    
     return data;
 }

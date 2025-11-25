@@ -4,27 +4,11 @@ import { labels } from "@/app/utils/labels";
 import ImagePicker from '@/components/micro/ImagePicker';
 import { updateProfileImage } from "@/services/userApi";
 import { styles } from "@/styles/profile.styles";
-import { UserInterface } from "@/types/interfeces";
-import { useFocusEffect } from "@react-navigation/native";
-import { useCallback, useEffect, useState } from "react";
 import { Image, Text, View } from "react-native";
 
-
 const UserProfileHeader = () => {
-    const [author, setAuthor] = useState<UserInterface|null>(null);
-    const [token, setToken] = useState<string|null>(null);
+    const { user: author, token } = useAuthStore();
 
-    useFocusEffect(
-        useCallback(() => {
-            const authUser = useAuthStore.getState().user;
-            if (authUser) setAuthor(authUser);
-        }, [useAuthStore.getState().user])
-    );
-
-    useEffect(() => {
-
-    }, [author]);
-    
     return (
         <View>
             <View style={styles.cover}>
@@ -38,11 +22,11 @@ const UserProfileHeader = () => {
             </View>
 
             <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', paddingBottom:10 }}>
-                <View style={{width: '60%', marginLeft: 6}}>
+                <View style={{width: '55%', marginLeft: 6}}>
                     <Text style={styles.userName}>{author?.fullName}</Text>
                     <Text style={styles.userRole}>@{labels.reader}{author && author?.totalBooks > 0 ? `| ${labels.publisher}` : ''}</Text>
                 </View>
-                <View style={{ width: '20%', alignItems: 'center' }}>
+                <View style={{ width: '25%', alignItems: 'center' }}>
                     <Text>{ englishNumberToBengali(author ? author.totalReads : 0)}</Text>
                     <Text style={{fontSize: 12}}>{labels.reads}</Text>
                 </View>

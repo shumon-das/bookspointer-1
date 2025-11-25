@@ -8,6 +8,7 @@ import { labels } from '@/app/utils/labels'
 import { User } from '@/components/types/User'
 import { styles } from '@/styles/writeBook.styles'
 import FontAwesome from '@expo/vector-icons/FontAwesome'
+import useAuthStore from '@/app/store/auth'
 
 const Login = () => {
     const router = useRouter()
@@ -30,6 +31,9 @@ const Login = () => {
         if (response) {
           await AsyncStorage.setItem("auth-token", response.token)
           await AsyncStorage.setItem("auth-user", JSON.stringify(response.user))
+
+          useAuthStore.getState().setUser(response.user)
+          useAuthStore.getState().setToken(response.token)
           router.push('/')
         } else {
             alert(labels.invalidLogin)

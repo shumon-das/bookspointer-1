@@ -1,7 +1,7 @@
 import { labels } from "./labels"
 
 export const userRole = (author: any) => {
-    return `${labels.reader}${author && author?.totalBooks > 0 ? `| ${labels.publisher}` : ''}`
+    return `${labels.reader}${author && author?.totalBooks > 0 ? ` | ${labels.publisher}` : ''}`
     // if (!Array.isArray(roles) || roles.length <= 0) return labels.userRoleUser
 
     // if (roles.includes('ROLE_AUTHOR')) return labels.userRoleAuthor

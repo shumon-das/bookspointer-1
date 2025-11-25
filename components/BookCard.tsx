@@ -2,9 +2,8 @@ import { labels } from '@/app/utils/labels';
 import { userRole } from '@/app/utils/userRole';
 import { styles } from '@/styles/bookCard.styles';
 import { useRouter } from 'expo-router';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
-import SaveButton from './micro/bookCardFooter/SaveButton';
 import ShareButton from './micro/bookCardFooter/ShareButton';
 import HtmlContent from './micro/HtmlContent';
 import AudioBookButton from './micro/bookCardFooter/AudioBookButton';
@@ -14,6 +13,9 @@ import PopOver from './micro/PopOver';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { redirectToUserProfile } from '@/helper/userRedirection';
+import useAuthStore from '@/app/store/auth';
+import AddToLibrary from './micro/bookCardFooter/AddToLibraryButton';
 
 
 interface BookCardProps {
@@ -31,7 +33,9 @@ interface BookCardProps {
 const BookCard = ({book, snackMessage, backurl}: {book: BookCardProps, snackMessage: (value: string) => void, backurl: string}) => {
   const createdByImg = `https://api.bookspointer.com/uploads/${book.createdBy.image}`;
   const router = useRouter();
-  const [loggedInUser, setLoggedInuUer] = React.useState<{ uuid: string }|null>(null);
+  const [loggedInUser, setLoggedInUser] = React.useState<{ uuid: string }|null>(null);
+  const { user } = useAuthStore();
+  const authStore = useAuthStore();
 
   const popoverIcon = <FontAwesome name="ellipsis-v" size={24} color="gray" />
   const popoverMenus = [
@@ -42,23 +46,21 @@ const BookCard = ({book, snackMessage, backurl}: {book: BookCardProps, snackMess
       router.push({pathname: "/screens/book/write-book", params: { bookuuid: book.uuid, }});
     }
   }
+  
+  useEffect(() => {
+    const loadLoggedInUser = async () => {
+        const storedUser = await AsyncStorage.getItem('auth-user');
+        setLoggedInUser(storedUser ? JSON.parse(storedUser) : null);
+    }
 
-  useFocusEffect(
-    useCallback(() => {
-      const loadUserAndToken = async () => {
-          const storedUser = await AsyncStorage.getItem('auth-user');
-          const loggedInUser = storedUser ? JSON.parse(storedUser) : null
-            setLoggedInuUer(loggedInUser);
-      };
-      loadUserAndToken();
-    }, [])
-  );
+    loadLoggedInUser()
+  }, [user]);
 
   return (
     <View style={styles.cardBackground} key={book.id}>
       <View className='postHeader' style={styles.postHeader}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <TouchableOpacity onPress={() => router.push({pathname: "/screens/user/userProfile", params: {useruuid: book.createdBy.uuid}})}>
+          <TouchableOpacity onPress={() => redirectToUserProfile(book.createdBy.uuid, router, authStore)}>
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
               <Image  source={{ uri: createdByImg }} style={styles.image} />
               <View>
@@ -76,7 +78,8 @@ const BookCard = ({book, snackMessage, backurl}: {book: BookCardProps, snackMess
         </View>
         
       </View>
-      <TouchableOpacity style={styles.postBodyHeader} onPress={() => router.push({pathname: "/(tabs)/book/details", params: {id: book.id, title: book.title, author: book.author.fullName}})}>
+      {/* <TouchableOpacity style={styles.postBodyHeader} onPress={() => router.push({pathname: "/(tabs)/book/details", params: {id: book.id, title: book.title, author: book.author.fullName}})}> */}
+      <TouchableOpacity style={styles.postBodyHeader} onPress={() => router.push({pathname: "/screens/book/details", params: {id: book.id, title: book.title, author: book.author.fullName}})}>
          <View style={styles.postImageAndTitle}>
            <DefaultPostImage book={book} />
            <View style={{marginTop: 10}}>
@@ -86,7 +89,7 @@ const BookCard = ({book, snackMessage, backurl}: {book: BookCardProps, snackMess
            </View>
          </View>
          
-         <TouchableOpacity onPress={() => router.push({pathname: "/(tabs)/book/details", params: {
+         <TouchableOpacity onPress={() => router.push({pathname: "/screens/book/details", params: {
             id: book.id, 
             title: book.title, 
             author: book.author.fullName,
@@ -110,8 +113,10 @@ const BookCard = ({book, snackMessage, backurl}: {book: BookCardProps, snackMess
           />
         </Text>
         <Text>
+          <AddToLibrary book={book} />
+        </Text>
+        <Text>
           <AudioBookButton bookId={book.id} onClickToPlay={() => snackMessage(labels.audioBookNotAvailable)} />
-          {/* <SaveButton bookId={book.id} onSaveToLibrary={() => snackMessage(labels.saveBookIntoLibrary)} /> */}
         </Text>
       </View>
     </View>

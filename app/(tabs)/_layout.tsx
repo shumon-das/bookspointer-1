@@ -1,11 +1,13 @@
 import { styles } from '@/styles/bottomNav.styles';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs, useRouter } from 'expo-router';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { labels } from '../utils/labels';
+import useAuthStore from '../store/auth';
+import { redirectToUserProfile } from '@/helper/userRedirection';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFocusEffect } from '@react-navigation/native';
+import { useUseEffect } from '@/helper/setHeaderOptions';
 
 const TabIcon = ({focused, icon, title}: any) => {            
     return (
@@ -18,29 +20,12 @@ const TabIcon = ({focused, icon, title}: any) => {
 
 const _layout = () => {
   const router = useRouter();
-  const [user, setUser] = useState<any>(null);
-  const [token, setToken] = useState<string|null>(null);
-
-  useFocusEffect(
-    useCallback(() => {
-        const loadUserAndToken = async () => {
-            const storedUser = await AsyncStorage.getItem('auth-user');
-            const storedToken = await AsyncStorage.getItem('token');
-            setUser(storedUser ? JSON.parse(storedUser) : null);
-            setToken(storedToken);
-        };
-        loadUserAndToken();
-    }, [])
-  );
+  const { user } = useAuthStore();
+  const authStore = useAuthStore();
+  const loggedInUser = useUseEffect(user);
 
   const goToProfile = async () => {
-    if (user) {
-        router.push({pathname: '/screens/user/userProfile', params: {useruuid: user.uuid}});
-     } else {
-        router.push('/auth/login')
-    }
-    // router.push(user ? '/profile' : '/auth/login')
-    // alert('Go to profile function is not implemented yet.')
+    loggedInUser ? redirectToUserProfile(loggedInUser.uuid, router, authStore) : router.push('/auth/login')
   }
 
   return (
@@ -59,16 +44,19 @@ const _layout = () => {
                     <TouchableOpacity  onPress={() => router.push('/(tabs)/search')}>
                         <FontAwesome name="search"  style={styles.marginLeft} size={20} color="white" />
                     </TouchableOpacity>
-                    <TouchableOpacity  onPress={() => router.push('/screens/book/write-book')}>
+                    <TouchableOpacity  onPress={() => router.push('/screens/book/create-post')}>
                         <Text style={[styles.marginLeft, {color: 'white'}]}>{labels.writeBook}</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity  onPress={() => goToProfile()} style={styles.loginBtn}>
-                        {user 
-                            ? <Image source={{uri: `https://api.bookspointer.com/uploads/${user?.image}`}} style={styles.userImg} />
-                            : <Text>{labels.signIn}</Text>
-                            
-                        }
-                    </TouchableOpacity>
+                    {loggedInUser && (
+                      <TouchableOpacity  onPress={() => goToProfile()} style={styles.userImgParentElement}>
+                         <Image source={{uri: `https://api.bookspointer.com/uploads/${loggedInUser?.image}`}} style={styles.userImg} />
+                      </TouchableOpacity>
+                    )}
+                    {!loggedInUser &&  (
+                      <TouchableOpacity  onPress={() => goToProfile()} style={styles.loginBtn}>
+                        <Text>{labels.signIn}</Text>
+                      </TouchableOpacity>
+                    )}
                 </View>
             ),
         }}

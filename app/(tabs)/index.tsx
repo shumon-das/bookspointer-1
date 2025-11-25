@@ -32,8 +32,9 @@ export default function Index() {
 
   useEffect(() => {
     registerForPushNotificationsAsync().then(token => {
+      saveToken(token ?? '---', 1)
       if (token) {
-        saveToken(token, 1)
+        //@todo move saveToken function here
       }
       console.log(token);
     });

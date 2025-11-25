@@ -13,6 +13,12 @@ export const styles = StyleSheet.create({
         // backgroundColor: '#085a80',
         marginRight: 10,
     },
+    userImgParentElement: { 
+        borderWidth: 1, 
+        borderColor: 'white', 
+        borderRadius: '50%',
+        marginHorizontal: 10
+    },
     userImg: { 
         width: 30, 
         height: 30, 
@@ -29,5 +35,5 @@ export const styles = StyleSheet.create({
         paddingHorizontal: 8,
         paddingVertical: 4,
         borderRadius: 5,
-    }
+    },
 })

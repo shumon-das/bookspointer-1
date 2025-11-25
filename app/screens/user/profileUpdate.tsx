@@ -5,12 +5,21 @@ import { labels } from '@/app/utils/labels';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { List } from 'react-native-paper';
+import { List, Snackbar } from 'react-native-paper';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import TextEditor from "@/components/micro/TextEditor";
+import { logout } from "@/helper/profileUpdate";
+import { useRouter } from "expo-router";
+import { useNavigation } from '@react-navigation/native';
+import { useHeaderOptions } from "@/helper/setHeaderOptions";
+import { updateUserInfo } from "@/services/api";
 
 
 const ProfileUpdate = () => {
+    const navigation = useNavigation();
+    useHeaderOptions(navigation, labels.editProfile)
+    
+    const router = useRouter()
     const [oldUser, setOldUser] = useState<any>(null)
 
     const [firstName, setFirstName] = useState('')
@@ -19,9 +28,11 @@ const ProfileUpdate = () => {
     const [lastNameEditable, setLastNameEditable] = useState(false)
     const [email, setEmail] = useState('')
     const [emailEditable, setEmailEditable] = useState(false)
-    const [details, setDetails] = useState('')
-    const [socials, setSocials] = useState([])
+    const [description, setDescription] = useState('')
+    const [socials, setSocials] = useState([{facebook: ""},{instagram: ""},{telegram: ""}])
     const [socialsExpanded, setSocialsExpanded] = useState(false);
+    const [showSnackBar, setShowSnakBar] = useState(false);
+    const [snackBarMessage, setSnakBarMessage] = useState('');
 
     useEffect(() => {
         const loadUserData = async () => {
@@ -32,13 +43,40 @@ const ProfileUpdate = () => {
                 setFirstName(user.firstName || '')
                 setLastName(user.lastName || '')
                 setEmail(user.email || '')
-                setDetails(user.details.description || '')
+                setDescription(user.details.description || '')
                 setSocials(user.details.socials)
             }
         }
         loadUserData();
     }, [])
 
+    const updateUser = async () => {
+        console.log('one')
+        const token = await AsyncStorage.getItem('auth-token')
+        if (!token) {
+            alert(labels.pleaseLoginToContinue)
+            return;
+        }
+        
+        let user = oldUser;
+        user.firstName = firstName;
+        user.lastName = lastName;
+        user.email = email;
+        user.details.description = description;
+        user.details.socials = socials;
+        
+        const response = await updateUserInfo(user, token)
+        if (response.status) {
+            console.log('two')
+            setOldUser(response.user)
+            setFirstNameEditable(false)
+            setLastNameEditable(false)
+            setEmailEditable(false)
+            setSnakBarMessage(response.message)
+            setShowSnakBar(true)
+        }
+    }
+    
     return (<KeyboardAvoidingView>
         <ScrollView>
           <View style={[styles.container]}>
@@ -50,7 +88,7 @@ const ProfileUpdate = () => {
                     placeholder={labels.firstName}
                 />
                 {oldUser && oldUser.firstName !== firstName && (
-                    <TouchableOpacity onPress={() => setFirstNameEditable(false)}>
+                    <TouchableOpacity onPress={updateUser}>
                         <FontAwesome5 name="check-circle" size={20} color="black" />            
                     </TouchableOpacity>
                 )}
@@ -77,12 +115,12 @@ const ProfileUpdate = () => {
                     value={lastName}
                     placeholder={labels.lastName}
                 />
-                {oldUser && oldUser.firstName !== firstName && (
-                    <TouchableOpacity onPress={() => setFirstNameEditable(false)}>
+                {oldUser && oldUser.lastName !== lastName && (
+                    <TouchableOpacity onPress={updateUser}>
                         <FontAwesome5 name="check-circle" size={20} color="black" />            
                     </TouchableOpacity>
                 )}
-                {oldUser && oldUser.firstName === firstName && (
+                {oldUser && oldUser.lastName === lastName && (
                     <TouchableOpacity style={{marginLeft: 10}} onPress={() => setLastNameEditable(false)}>
                         <Ionicons name="close-circle-outline" size={24} color="black" />                    
                     </TouchableOpacity>
@@ -97,7 +135,7 @@ const ProfileUpdate = () => {
           </View>
 
           <View style={[styles.container]}>
-            {emailEditable && (<View style={styles.col}>
+            {/* {emailEditable && (<View style={styles.col}>
                 <TextInput
                     style={styles.textInput}
                     onChangeText={(value) => setEmail(value)}
@@ -105,7 +143,7 @@ const ProfileUpdate = () => {
                     placeholder={labels.email}
                 />
                 {oldUser && oldUser.email !== email && (
-                    <TouchableOpacity onPress={() => setFirstNameEditable(false)}>
+                    <TouchableOpacity onPress={updateUser}>
                         <FontAwesome5 name="check-circle" size={20} color="black" />            
                     </TouchableOpacity>
                 )}
@@ -114,13 +152,25 @@ const ProfileUpdate = () => {
                         <Ionicons name="close-circle-outline" size={24} color="black" />                    
                     </TouchableOpacity>
                 )}
-            </View>)}
+            </View>)} 
             {!emailEditable && (<View style={[styles.col, {flex: 1, alignItems: 'center' }]}>
                 <Text style={styles.text}>{email}</Text>
                 <TouchableOpacity onPress={() => setEmailEditable(true)}>
                     <AntDesign name="edit" size={24} color="black" />
                 </TouchableOpacity>
-            </View>)}
+            </View>)}*/}
+            <View style={[styles.col, {flex: 1, alignItems: 'center' }]}>
+                <Text style={styles.text}>{email}</Text>
+            </View>
+          </View>
+
+          <View style={[styles.container]}>
+            <View style={[styles.col, {flex: 1, alignItems: 'center' }]}>
+                <Text style={styles.text}>{labels.user.update.updatePassword}</Text>
+                <TouchableOpacity onPress={() => router.push('/screens/user/resetPassword')}>
+                    <AntDesign name="edit" size={24} color="black" />
+                </TouchableOpacity>
+            </View>
           </View>
 
           <List.Section>
@@ -131,10 +181,10 @@ const ProfileUpdate = () => {
             >
                 <View style={[styles.col, {flexDirection: 'column'}]}>
                     <View style={{height: 300}}>
-                        <TextEditor initialContent={details} onChange={(content: string) => setDetails(content)} />
+                        <TextEditor initialContent={description} onChange={(content: string) => setDescription(content)} />
                     </View>
                     <View style={styles.descriptionSaveButton}>
-                        <TouchableOpacity  onPress={() => setEmailEditable(false)}>
+                        <TouchableOpacity  onPress={updateUser}>
                             <Text style={{ color: 'white', textAlign: 'center'}}>Save</Text>                   
                         </TouchableOpacity>
                     </View>
@@ -145,11 +195,15 @@ const ProfileUpdate = () => {
                 <View style={styles.col}>
                     <TextInput
                         style={styles.textInput}
-                        onChangeText={(value) => setLastName(value)}
-                        value={email}
+                        onChangeText={(value: string) => {
+                            const newSocials = [...socials];
+                            newSocials[0] = { ...newSocials[0], facebook: value } as any;
+                            setSocials(newSocials)
+                        }}
+                        value={socials[0].facebook}
                         placeholder={labels.user.socialMedia.facebook}
                     />
-                    <TouchableOpacity onPress={() => setEmailEditable(false)}>
+                    <TouchableOpacity onPress={updateUser}>
                         <FontAwesome5 name="check-circle" size={24} color="black" />    
                     </TouchableOpacity>
                 </View>
@@ -157,11 +211,15 @@ const ProfileUpdate = () => {
                 <View style={styles.col}>
                     <TextInput
                         style={styles.textInput}
-                        onChangeText={(value) => setLastName(value)}
-                        value={email}
+                        onChangeText={(value: string) => {
+                            const newSocials = [...socials];
+                            newSocials[1] = { ...newSocials[1], instagram: value } as any;
+                            setSocials(newSocials)
+                        }}
+                        value={socials[1].instagram}
                         placeholder={labels.user.socialMedia.instagram}
                     />
-                    <TouchableOpacity onPress={() => setEmailEditable(false)}>
+                    <TouchableOpacity onPress={updateUser}>
                         <FontAwesome5 name="check-circle" size={24} color="black" />                 
                     </TouchableOpacity>
                 </View>
@@ -169,16 +227,27 @@ const ProfileUpdate = () => {
                 <View style={styles.col}>
                     <TextInput
                         style={styles.textInput}
-                        onChangeText={(value) => setLastName(value)}
-                        value={email}
+                        onChangeText={(value: string) => {
+                            const newSocials = [...socials];
+                            newSocials[2] = { ...newSocials[2], facebook: value } as any;
+                            setSocials(newSocials)
+                        }}
+                        value={socials[2].telegram}
                         placeholder={labels.user.socialMedia.telegram}
                     />
-                    <TouchableOpacity onPress={() => setEmailEditable(false)}>
+                    <TouchableOpacity onPress={updateUser}>
                         <FontAwesome5 name="check-circle" size={24} color="black" />                    
                     </TouchableOpacity>
                 </View>
             </List.Accordion>
           </List.Section>
+
+          <View style={[styles.col]}>
+                <TouchableOpacity style={{width: '100%'}} onPress={() => logout()}>
+                    <Text style={{width: '100%', textAlign:'center', color: 'red', fontWeight: 'bold', fontSize: 18}}>{labels.signOut}</Text>            
+                </TouchableOpacity>
+          </View>
+          <Snackbar visible={showSnackBar} onDismiss={() => setShowSnakBar(false)} duration={3000}>{snackBarMessage}</Snackbar> 
         </ScrollView>
     </KeyboardAvoidingView>)
 }

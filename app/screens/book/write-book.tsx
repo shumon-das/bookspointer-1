@@ -1,25 +1,28 @@
 import Dropdown from "@/components/micro/Dropdown";
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, Switch, Alert } from "react-native";
 import TextEditor from "@/components/micro/TextEditor";
 import { TextInput } from "react-native-paper";
-import React, { useEffect, useLayoutEffect } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { labels } from "@/app/utils/labels";
 import { styles } from "@/styles/writeBookScreen.styles";
 import { useCategoryStore } from "@/app/store/categories";
 import { useUserStore } from "@/app/store/user";
-import { router, useLocalSearchParams, useNavigation } from 'expo-router'
+import { useLocalSearchParams, useNavigation } from 'expo-router'
 import { Category } from "@/components/types/Category";
 import { User } from "@/components/types/User";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { saveBook } from "@/services/api";
+import useAuthStore from "@/app/store/auth";
+import { useUseEffect } from "@/helper/setHeaderOptions";
+import BookCardPreview from "@/components/BookCardPreview";
 
-const writeBook = () => {
+const WriteBook = () => {
     const {bookuuid} = useLocalSearchParams();
-
+    const {user} = useAuthStore();
+    
     const navigation = useNavigation();
     useLayoutEffect(() => {
         navigation.setOptions({
-            headerLeft: () => (<></>),
             title: labels.writeBook,
             headerTitleAlign: 'center',
             headerStyle: {
@@ -33,14 +36,19 @@ const writeBook = () => {
             headerRight: () => (<></>),
         })
     })
-
+    
     const [categories, setCategories] = React.useState(useCategoryStore((state) => state.categories));
     const [authors, setAuthors] = React.useState(useUserStore((state) => state.authors))
-
+    
     const [title, setTitle] = React.useState('');
     const [category, setCategory] = React.useState<Category|null>(null);
     const [author, setAuthor] = React.useState<User|null>(null);
+    // const [isSelfAuthor, setIsSelfAuthor] = React.useState(true);
+    // const toggleSwitch = () => setIsSelfAuthor(previousState => !previousState);
     const [content, setContent] = React.useState('');
+    const [initialContent, setInitialContent] = React.useState('');
+    const [preview, setPreview] = useState(false)
+    const [previewData, setPreviewData] = useState(null as any)    
 
     useEffect(() => {
         const loadSingleFullBook = async () => {
@@ -53,7 +61,7 @@ const writeBook = () => {
                 setTitle(data.title);
                 setCategory(data.category)
                 setAuthor(data.author)
-                setContent(data.content)
+                setInitialContent(data.content)
             }
         }
 
@@ -74,38 +82,40 @@ const writeBook = () => {
                 setAuthors(data.authors);
             }
         };
-        
+
         loadSingleFullBook();
         loadCategories();
         loadAuthors();
     }, [bookuuid]);
 
-    const saveBookData = async () => {
-        const storageUser = await AsyncStorage.getItem('auth-user');
-        const storedToken = await AsyncStorage.getItem('auth-token');
-        if (!storedToken) {
-            alert(labels.pleaseLoginToContinue);
+    const previewBook = async () => {
+        const storageUser = await AsyncStorage.getItem('auth-user')
+        if (!storageUser) {
+            Alert.alert(labels.sorry, labels.pleaseLoginToContinue)
             return;
         }
 
         const data = {
             title: title,
             category: category,
-            author: author,
+            author: JSON.parse(storageUser),
             content: content,
             estimatedReadTime: {words: 1, minutes: 1},
             seriesName: '',
             tags: [],
         }
-
-        const response = await saveBook(data as any, storedToken);
-        if (response.status && storageUser) {
-            router.push({pathname: "/screens/user/userProfile", params: { useruuid: JSON.parse(storageUser).uuid }});
-        }
+        setPreviewData(data)
+        setPreview(true)
     }
 
-    return (
-        <View style={styles.screen}>
+    return preview && title && content && category ? (
+        <BookCardPreview book={previewData} onBack={(value) => {
+                setPreview(false)
+                setInitialContent(content)
+            }}
+        />
+    ) : (
+        <View style={{flex: 1, marginHorizontal: 5}}>
             <View style={styles.title}>
                 <TextInput
                     style={styles.input}
@@ -113,6 +123,7 @@ const writeBook = () => {
                     value={title}
                     placeholder={labels.bookTitle}
                 />
+                {preview && !title && <Text style={{marginHorizontal: 10, color: 'red'}}>{labels.bookCreate.titleRequired}</Text>}
             </View>
 
             <View style={styles.category}>
@@ -121,33 +132,51 @@ const writeBook = () => {
                     options={categories}
                     optionLabel="label"
                     placeholder={labels.selectCategory}
+                    filterPlaceholder={labels.searchCategory}
                     onSelect={(item: any) => setCategory(item)} 
                 />
+                {preview && !category && <Text style={{color: 'red'}}>{labels.bookCreate.categoryRequired}</Text>}
             </View>
 
-            <View style={styles.category}>
+            {/* <View style={styles.category}>
                 <Dropdown
-                    selectedOption={author}
+                    selectedOption={isSelfAuthor ? loggedInUser : author}
                     options={authors}
                     optionLabel="fullName"
                     placeholder={labels.selectAuthor}
-                    onSelect={(item: any) => setAuthor(item)} 
+                    filterPlaceholder={labels.searchAuthor}
+                    onSelect={(item: any) => {
+                        setIsSelfAuthor(false)
+                        setAuthor(item)
+                    }} 
                 />
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                    <Switch
+                        trackColor={{false: '#767577', true: '#81b0ff'}}
+                        thumbColor={isSelfAuthor ? '#f5dd4b' : '#f4f3f4'}
+                        ios_backgroundColor="#3e3e3e"
+                        onValueChange={toggleSwitch}
+                        value={isSelfAuthor}
+                    />
+                    {isSelfAuthor && <Text>{labels.createBook.selfAuthor}</Text>}
+                </View>
+            </View> */}
+
+            <View style={{height: 320}}>
+                <TextEditor initialContent={initialContent} onChange={(content: string) => setContent(content)} />
+                {preview && !content && <Text style={{color: 'red'}}>{labels.bookCreate.contentRequired}</Text>}
             </View>
 
-            <View style={{height: 400}}>
-                <TextEditor initialContent={content} onChange={(content: string) => setContent(content)} />
-            </View>
-
-            <View>
-                <TouchableOpacity onPress={saveBookData}>
-                    <Text style={styles.saveButton}>{ labels.saveBook }</Text>
+            <View style={{marginTop: 50}}>
+                <TouchableOpacity onPress={previewBook}>
+                    <Text style={styles.saveButton}>{ labels.bookCreate.preview }</Text>
                 </TouchableOpacity>
             </View>
 
             <View style={{ height: 200 }}></View>
+            
         </View>
     );
 }
 
-export default writeBook;
+export default WriteBook;

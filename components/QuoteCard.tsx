@@ -10,6 +10,13 @@ import SaveButton from './micro/bookCardFooter/SaveButton';
 import ShareButton from './micro/bookCardFooter/ShareButton';
 import HtmlContent from './micro/HtmlContent';
 import QuoteContent from './micro/QuoteContent';
+import { redirectToUserProfile } from '@/helper/userRedirection';
+import useAuthStore from '@/app/store/auth';
+import { useUseEffect } from '@/helper/setHeaderOptions';
+import PopOver from './micro/PopOver';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import useCategoryStore from '@/app/store/categories';
+
 
 
 interface BookCardProps {
@@ -19,7 +26,7 @@ interface BookCardProps {
   title: string;
   content: string;
   author: { id: number; fullName: string };
-  createdBy: { id: number; fullName: string; image: string, roles: string[] };
+  createdBy: { id: number; uuid: string; fullName: string; image: string, roles: string[] };
   category: { label: string }|string;
   url: string;
   seriesName: string;
@@ -29,7 +36,22 @@ interface BookCardProps {
 const QuoteCard = React.memo(({book, snackMessage}: {book: BookCardProps, snackMessage: (value: string) => void}) => {
   const createdByImg = !book || !book.createdBy ? '' : `https://api.bookspointer.com/uploads/${book.createdBy.image}`;
   const router = useRouter();
+  const authStore = useAuthStore();
+  const {user} = useAuthStore();
+  const loggedInUser = useUseEffect(user)
+  
   const randomThemeIndex = Math.floor(Math.random() * quoteThemes.length);
+
+  const popoverIcon = <FontAwesome name="ellipsis-v" size={24} color="gray" />
+  const popoverMenus = [
+    {label: 'Edit'}
+  ];
+  const popoverAction = (item: any) => { 
+    if ('edit' === item.item.label.toLowerCase()) {
+      useCategoryStore.getState().setCategoryTab(book.category)
+      router.push({pathname: "/screens/book/create-ethernal-word", params: { bookuuid: book.uuid, }});
+    }
+  }
 
   if (!book) {
     return (
@@ -42,12 +64,22 @@ const QuoteCard = React.memo(({book, snackMessage}: {book: BookCardProps, snackM
   return (
     <View style={styles.cardBackground} key={book.id}>
       <View className='postHeader' style={QuoteStyles.postHeader}>
-        <Image  source={{ uri: createdByImg }} style={styles.image} />
-        <View>
-          <TouchableOpacity onPress={() => router.navigate({pathname: "/(tabs)/authorProfile", params: {authorId: book.createdBy.id}})}>
-            <Text style={styles.userName}>{book.createdBy.fullName}</Text>
-          </TouchableOpacity>
-          <Text style={styles.userRole}>{userRole(book.createdBy)}</Text>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <TouchableOpacity onPress={() => redirectToUserProfile(book.createdBy.uuid, router, authStore)}>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <Image  source={{ uri: createdByImg }} style={styles.image} />
+                <View>
+                    <Text style={styles.userName}>{book.createdBy.fullName}</Text>
+                  <Text style={styles.userRole}>{userRole(book.createdBy)}</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+        </View>
+        
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          { loggedInUser && loggedInUser.uuid === book.createdBy.uuid &&
+             (<PopOver icon={popoverIcon} menus={popoverMenus} action={popoverAction} />)
+          }
         </View>
       </View>
       <View className='postBody' style={[QuoteStyles.card, {backgroundColor: quoteThemes[randomThemeIndex].backgroundColor,}]}>
@@ -84,6 +116,7 @@ const QuoteStyles = StyleSheet.create({
   postHeader: {
       flex: 1,
       flexDirection: "row",
+      justifyContent: "space-between",
       borderBottomWidth: 0.5,
       borderBottomColor: "gray",
       paddingVertical: 12,

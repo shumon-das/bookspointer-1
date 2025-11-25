@@ -3,8 +3,9 @@ import { singleBook } from '@/services/api';
 import { decryptBook, encryptedPagesNumbers } from '@/app/utils/download';
 import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
-import { ActivityIndicator, BackHandler, FlatList, Text, TouchableOpacity, useColorScheme, View } from 'react-native';
+import { ActivityIndicator, BackHandler, Button, FlatList, Text, TouchableOpacity, useColorScheme, View } from 'react-native';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import Pagination from '@/components/micro/book/details/pagination';
 
 const details = () => {
     const {id, title, author, content = null, isQuote = 'no', backurl = null} = useLocalSearchParams();
@@ -42,10 +43,10 @@ const details = () => {
     }, [navigation, title, author]);
 
       
-    const [texts, setTexts] = useState([] as string[]);
-    const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
-    const [hasMore, setHasMore] = useState(true);
+    const [totalPages, setTotalPages] = useState(1);
+    const [pageText, setPageText] = useState("");
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
       const deviceBackButtonAction = () => {
@@ -59,38 +60,19 @@ const details = () => {
       return () => backHandler.remove();
     }, [backurl])
 
-    useEffect(() => setHasMore(true))
     useFocusEffect(
       useCallback(() => {
-        setTexts([]);
-        if (content) {
-          setTexts([content as string])
-        } else {
-          if (id) {
-            fetchChunks(1)
-          }
-        }
+        fetchChunks(page)
       }, [id, navigation])
     );
 
 
     const fetchChunks = async (pageNumber: number) => {
-        if (loading || !hasMore) return;
-
         setLoading(true);
         try {
           const data = await singleBook({id: parseInt(id as string), page: pageNumber})
-          setTexts(prevTexts => {
-            if (prevTexts.includes(data.text)) {
-              setHasMore(false);
-              return prevTexts;
-            } else {
-              setPage(pageNumber + 1);
-              return [...prevTexts, data.text];
-            }
-          });
-          
-          setPage(pageNumber + 1);
+          setPageText(data.text)
+          setTotalPages(data.total_pages)
         } catch (error) {
           console.log(error);
         } finally {
@@ -98,55 +80,45 @@ const details = () => {
         }
     };
     
-    const fetchDecryptChunks = async (pageNumber: number) => {
-        if (loading || !hasMore) return;
+    // const fetchDecryptChunks = async (pageNumber: number) => {
+    //     if (loading || !hasMore) return;
 
-        const pagesLength = await encryptedPagesNumbers(parseInt(id as string), title as string, author as string);
-        if (pageNumber === pagesLength) return;
+    //     const pagesLength = await encryptedPagesNumbers(parseInt(id as string), title as string, author as string);
+    //     if (pageNumber === pagesLength) return;
 
-        setLoading(true);
-        try {
-          const texts = await decryptBook(parseInt(id as string), title as string, author as string, pageNumber) as string
-          setTexts(prevTexts => {
-            if (prevTexts.includes(texts)) {
-              setHasMore(false);
-              return prevTexts;
-            } else {
-              setPage(pageNumber + 1);
-              return [...prevTexts, texts];
-            }
-          });
+    //     setLoading(true);
+    //     try {
+    //       const texts = await decryptBook(parseInt(id as string), title as string, author as string, pageNumber) as string
+    //       setTexts(prevTexts => {
+    //         if (prevTexts.includes(texts)) {
+    //           setHasMore(false);
+    //           return prevTexts;
+    //         } else {
+    //           setPage(pageNumber + 1);
+    //           return [...prevTexts, texts];
+    //         }
+    //       });
           
-          setPage(pageNumber + 1);
-        } catch (error) {
-          console.log(error);
-        } finally {
-          setLoading(false)
-        }
-    }
+    //       setPage(pageNumber + 1);
+    //     } catch (error) {
+    //       console.log(error);
+    //     } finally {
+    //       setLoading(false)
+    //     }
+    // }
 
     return (
-    <View>
-      <FlatList
-            data={texts}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => (<HtmlContent 
-                content={item} 
-                fontSize={title.includes('quote') ? 20 : 16}
-                textColor={'black'}
-                backgroundColor={'#fff'}
-            />) }
-            onEndReached={() => {
-            if (!content) {
-                fetchChunks(page)
-            }
-            if (content) {
-              fetchDecryptChunks(page)
-            }
-            }}
-            onEndReachedThreshold={0.5}
-            ListFooterComponent={loading ? <ActivityIndicator size="small" /> : null}
-       />
+    <View style={{flexDirection: 'column', justifyContent: 'space-between', height: '88%'}}>
+      <View style={{marginVertical: 5}}>
+        <HtmlContent 
+            content={pageText} 
+            fontSize={title.includes('quote') ? 20 : 16}
+            textColor={'black'}
+            backgroundColor={'#fff'}
+        />
+      </View>
+
+      <Pagination currentPage={page} data={{total_pages: totalPages}} onChange={(value: number) => fetchChunks(value)} />
     </View>
   )
 }

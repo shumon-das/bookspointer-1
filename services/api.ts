@@ -165,10 +165,6 @@ export const saveBook = async (value: SaveRequestParams, token: string) => {
         body: body
     })
     
-    if (401 === response.status) {
-        return null;
-    }
-
     const data = await response.json();
     
     return data;
@@ -211,4 +207,61 @@ export const saveBookWithFile = async (data: SaveRequestParams, token: string) =
     } catch (error) {
       console.error('Upload failed:', error);
     }
+}
+
+export const deleteBookItem = async (bookId: number, token: string) => {
+    const endpoint = `${API_CONFIG.BASE_URL}/admin/delete-book/${bookId}`;
+    const response = await fetch(endpoint, {
+        method: 'GET',
+        headers: {'Authorization': `Bearer ${token}`},
+    })
+
+    if (!response.ok) {
+        alert('API ERROR: Something went wrong')
+    }
+
+    const data = await response.json();
+    
+    return data;
+}
+
+export const updateUserInfo = async (userData: any, token: string) => {
+    const endpoint = `${API_CONFIG.BASE_URL}/admin/update-user`;
+    const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            user: userData,
+            details: userData.details,
+        }),
+    })
+    if (!response.ok) {
+        alert('API ERROR: Something went wrong')
+    }
+
+    const data = await response.json();
+    
+    return data;
+}
+
+export const AddToLibraryBook = async (value: {bookId: number; userId: number; isSave: boolean, action: string}, token: string) => {
+    const endpoint = `${API_CONFIG.BASE_URL}/like-unlike`;
+    const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(value),
+    })
+    if (!response.ok) {
+        alert('API ERROR: Something went wrong')
+    }
+
+    const data = await response.json();
+    
+    return data;
 }

@@ -51,4 +51,34 @@ export const styles = StyleSheet.create({
     height: 30,
     borderRadius: 15,
   },
+  overlay: {
+  position: 'absolute',
+  backgroundColor: 'rgba(0,0,0,0.3)',
+  width: '100%',
+  height: '100%',
+  justifyContent: 'center',
+  alignItems: 'center',
+  borderRadius: 5,
+},
+
+overlayBox: {
+  backgroundColor: '#fff',
+  paddingVertical: 10,
+  borderRadius: 10,
+  elevation: 10,
+  shadowColor: '#000',
+  shadowOpacity: 0.3,
+  shadowRadius: 8,
+  shadowOffset: { width: 0, height: 2 },
+},
+
+overlayItem: {
+  paddingHorizontal: 12,
+  paddingVertical: 5,
+  fontSize: 14,
+  textAlign: 'center',
+  borderBottomWidth: 1,
+  borderBottomColor: '#eee',
+},
+
 })

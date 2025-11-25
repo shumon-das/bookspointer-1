@@ -7,11 +7,9 @@
 export function toQuillHtml(html: any) {
   if (!html) return '';
   return html
-    .replace(/<div>/g, '<p>')
-    .replace(/<\/div>/g, '</p>')
-    .replace(/<p><br><\/p>/g, '')     // remove empty lines
-    .replace(/<p>\s*<\/p>/g, '')      // remove empty paragraphs
-    .replace(/\s+/g, ' ')             // normalize spaces
+    .replace(/<div>([\s\S]*?)<\/div>/gi, '<p>$1</p>')
+    // Remove empty <p><br></p> or <p>&nbsp;</p>
+    .replace(/>\s+</g, '><')
     .trim();
 }
 

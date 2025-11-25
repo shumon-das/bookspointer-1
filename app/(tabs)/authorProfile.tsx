@@ -71,19 +71,19 @@ const authorProfile = () => {
       </View>
 
       <ScrollView style={{ backgroundColor: 'white' }}>
-         <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', marginHorizontal: 5 }}>
           <View style={{width: '60%', marginLeft: 6}}>
             <Text style={styles.userName}>{author?.fullName}</Text>
             <Text style={styles.userRole}>@{labels.userRoleAuthor}</Text>
           </View>
+          <View style={{ width: '25%', alignItems: 'center' }}>
+              <Text>{ englishNumberToBengali(author ? author.totalReads : 0)}</Text>
+              <Text style={{fontSize: 12}}>{labels.reads}</Text>
+          </View>
           <View style={{ width: '15%', alignItems: 'center' }}>
             <Text>{englishNumberToBengali(author ? author.totalBooks : 0)}</Text>
-            <Image source={ require('../../assets/images/books_logo.png')} style={styles.booksLogo} />
+            <Text style={{fontSize: 12}}>{labels.books}</Text>
           </View>
-          {/* <View style={{ width: '15%', alignItems: 'center' }}>
-            <Text>{ englishNumberToBengali(0)}</Text>
-            <FontAwesome name="download" size={20} color={'blue'} />
-          </View> */}
         </View>
 
         {

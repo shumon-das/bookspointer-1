@@ -3,10 +3,14 @@ export const labels = {
     books: "বইসমগ্র",
     welcomeMessage: "বুকস পয়েন্টারে আপনাকে স্বাগতম!",
     book: "বই",
-    reads: "বার পড়া হয়েছে",
+    read: "পড়ুন...",
+    reads: "পড়া হয়েছে",
+    delete: "ডিলিট করুন",
     bookTitle: "বইয়ের নাম",
     startWriting: "লেখা শুরু করুন...",
     search: "খুঁজুন...",
+    searchAuthor: "লেখক খুঁজুন...",
+    searchCategory: "ধরণ খুঁজুন...",
     editProfile: "আপডেট প্রোফাইল",
     resetPassword: {
         header: "রিসেট পাসওয়ার্ড",
@@ -58,14 +62,21 @@ export const labels = {
     pleaseLoginToContinue: "অগ্রসর হওয়ার জন্য অনুগ্রহ করে লগইন করুন।",
     bookCreate: {
         coverMessage: 'আপনি চাইলে একটি ছবিও যুক্ত করতে পারেন বইটির প্রচ্ছদ এর জন্য। (না দিলেও অসুবিধা নেই।)',
-        title: 'বইটির নাম', 
+        title: 'বইটির নাম',
+        titleRequired: 'বইয়ের নাম অবশ্যই লিখতে হবে।',
         category: 'বইটির ধরণ',
+        categoryRequired: 'বইয়ের ধরণ অবশ্যই নির্বাচন করতে হবে।',
         author: 'বইটির লেখক',
         mainContent: 'মূল লেখা...',
         writeComplete: "লেখা সম্পন্ন হয়েছে।",
-        bookExists: "বইটি ইতোমধ্যে বুকস পয়েন্টারে আছে।"
+        bookExists: "বইটি ইতোমধ্যে বুকস পয়েন্টারে আছে।",
+        viewBook: "দেখুন",
+        preview: "preview",
+        contentRequired: 'লেখা পাওয়া যায়নি।',
     },
     saveBookIntoDb: "বইটি সফলভাবে সেভ হয়েছে।",
+    AddToLibrary: "লাইব্রেরীতে রাখুন",
+    AddedToLibrary: "লাইব্রেরীতে আছে",
     saveBookIntoLibrary: "বইটি সফলভাবে লাইব্রেরীতে যুক্ত হয়েছে।",
     share: "শেয়ার",
     audioBook: "অডিও বই",
@@ -116,6 +127,21 @@ export const labels = {
             youtube: "ইউটিউব লিঙ্ক",
         },
     },
+    createBook: {
+        book: "বই",
+        ethernelWord: "বাণী চিরন্তনী",
+        song: "গান",
+        joke: "কৌতুক",
+        poem: "কাব্য ও কবিতা",
+        selfAuthor: "আপনি নিজেই লেখক/লেখিকা"
+    },
+    newSeries: "নতুন সিরিজ",
+    createNewSeries: "নতুন সিরিজ খুলুন.",
+    seriesExists: "সিরিজ আছে। অন্য নামে তৈরি করতে পারেন!",
+    sortWords: {
+        yes: "হ্যাঁ।",
+        no: "না"
+    }
 }
 
 export default labels;
