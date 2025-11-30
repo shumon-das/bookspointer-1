@@ -12,7 +12,7 @@ import { Category } from "@/components/types/Category";
 import { User } from "@/components/types/User";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { saveBook } from "@/services/api";
-import useAuthStore from "@/app/store/auth";
+import { useAuthStore } from "@/app/store/auth";
 import { useUseEffect } from "@/helper/setHeaderOptions";
 import BookCardPreview from "@/components/BookCardPreview";
 

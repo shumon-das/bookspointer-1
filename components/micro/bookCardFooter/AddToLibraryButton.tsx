@@ -41,8 +41,8 @@ const AddToLibrary = ({ book }: {book: any}) => {
     <View style={{}}>
         <TouchableOpacity onPress={onSave} >
             <Text style={{ textAlign: 'center', color: 'lightgray'}}>
-                {isSaved && <MaterialIcons name="library-add-check" size={22} color="black" />}
-                {!isSaved && <MaterialIcons name="my-library-add" size={22} color="gray" /> }
+                {isSaved && <MaterialIcons name="library-add-check" size={14} color="black" />}
+                {!isSaved && <MaterialIcons name="my-library-add" size={14} color="gray" /> }
             </Text>
             <Text style={{fontSize: 10, color: '#282C35'}}>{isSaved ? labels.AddedToLibrary : labels.AddToLibrary}</Text>
         </TouchableOpacity>

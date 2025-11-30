@@ -5,27 +5,19 @@ import { useTheme } from 'react-native-paper';
 import labels from '@/app/utils/labels';
 import WriteBook from './write-book';
 import EthernelWord from './create-ethernal-word';
-import useCategoryStore from '@/app/store/categories';
-import { useEffect } from 'react';
 
 const CreatePost = () => {
     const layout = useWindowDimensions();
     const theme = useTheme();
+    const categories = {
+        0: {id:0, name:"write-book"},
+        1: {id:8, name:"eternal-word"},
+        2: {id:17,name:"song"},
+        3: {id:2, name:"jokes"},
+        4: {id:12,name:"poetry"}
+    } as any;
 
     const [index, setIndex] = React.useState(0);
-    useEffect(() => {
-        const categories = {
-            0: {id:0, name:"write-book"},
-            1: {id:8, name:"eternal-word"},
-            2: {id:17,name:"song"},
-            3: {id:2, name:"jokes"},
-            4: {id:12,name:"poetry"}
-        } as any;
-
-        useCategoryStore.getState().setCategoryTab(categories[index]);
-    }, [index]);
-
-    
 
     const [routes] = React.useState([
         { key: 'first', title: labels.createBook.book },
@@ -40,13 +32,13 @@ const CreatePost = () => {
             case 'first':
                 return <WriteBook />;
             case 'second':
-                return <EthernelWord />;
+                return <EthernelWord category={categories[index]} />;
             case 'third':
-                return <EthernelWord />;
+                return <EthernelWord category={categories[index]} />;
             case 'fourth':
-                return <EthernelWord />;
+                return <EthernelWord category={categories[index]} />;
             case 'fifth':
-                return <EthernelWord />;
+                return <EthernelWord category={categories[index]} />;
             default:
                 return null;
         }
@@ -60,6 +52,7 @@ const CreatePost = () => {
             initialLayout={{ width: layout.width }}
             lazy
             style={{ backgroundColor: theme.colors.background }}
+            swipeEnabled={false}
         />
     )
 }

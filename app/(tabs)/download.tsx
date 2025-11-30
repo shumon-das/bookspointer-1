@@ -55,7 +55,7 @@ const Download = () => {
       
       if (content) {
         router.push({
-          pathname: "/(tabs)/book/details", 
+          pathname: "/screens/book/details", 
           params: {id: id, title: title, author: author, content, isQuote: 'no'}
         })
       }

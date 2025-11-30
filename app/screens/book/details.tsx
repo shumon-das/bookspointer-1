@@ -6,13 +6,14 @@ import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react'
 import { ActivityIndicator, BackHandler, Button, FlatList, Text, TouchableOpacity, useColorScheme, View } from 'react-native';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import Pagination from '@/components/micro/book/details/pagination';
+import { usePageLeaveTracker } from '@/app/utils/routerGuard';
 
 const details = () => {
     const {id, title, author, content = null, isQuote = 'no', backurl = null} = useLocalSearchParams();
     const navigation = useNavigation();
     const backUrl = backurl && 'string' === typeof backurl ? JSON.parse(backurl as string) : ''
     const router = useRouter();
-
+    
     useLayoutEffect(() => {
         navigation.setOptions({
         headerLeft: () => (<TouchableOpacity onPress={() => router.back()} style={{marginLeft: 10}}>
@@ -42,7 +43,7 @@ const details = () => {
         });
     }, [navigation, title, author]);
 
-      
+    usePageLeaveTracker('book_details', id as any) 
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [pageText, setPageText] = useState("");
@@ -80,45 +81,38 @@ const details = () => {
         }
     };
     
-    // const fetchDecryptChunks = async (pageNumber: number) => {
-    //     if (loading || !hasMore) return;
+    const fetchDecryptChunks = async (pageNumber: number) => {
+      const pagesLength = await encryptedPagesNumbers(parseInt(id as string), title as string, author as string);
+      if (pageNumber === pagesLength) return;
 
-    //     const pagesLength = await encryptedPagesNumbers(parseInt(id as string), title as string, author as string);
-    //     if (pageNumber === pagesLength) return;
-
-    //     setLoading(true);
-    //     try {
-    //       const texts = await decryptBook(parseInt(id as string), title as string, author as string, pageNumber) as string
-    //       setTexts(prevTexts => {
-    //         if (prevTexts.includes(texts)) {
-    //           setHasMore(false);
-    //           return prevTexts;
-    //         } else {
-    //           setPage(pageNumber + 1);
-    //           return [...prevTexts, texts];
-    //         }
-    //       });
+      setLoading(true);
+        try {
+          const texts = await decryptBook(parseInt(id as string), title as string, author as string, pageNumber) as string
+          setPageText(texts);
           
-    //       setPage(pageNumber + 1);
-    //     } catch (error) {
-    //       console.log(error);
-    //     } finally {
-    //       setLoading(false)
-    //     }
-    // }
+          setTotalPages(pagesLength)
+        } catch (error) {
+          console.log(error);
+        } finally {
+          setLoading(false)
+        }
+    }
+
+    const getPageBook = (value: number) => content ? fetchDecryptChunks(value) : fetchChunks(value)
 
     return (
     <View style={{flexDirection: 'column', justifyContent: 'space-between', height: '88%'}}>
       <View style={{marginVertical: 5}}>
         <HtmlContent 
             content={pageText} 
+            isDetailsScreen={true}
             fontSize={title.includes('quote') ? 20 : 16}
             textColor={'black'}
             backgroundColor={'#fff'}
         />
       </View>
 
-      <Pagination currentPage={page} data={{total_pages: totalPages}} onChange={(value: number) => fetchChunks(value)} />
+      <Pagination currentPage={page} data={{total_pages: totalPages}} onChange={getPageBook} />
     </View>
   )
 }

@@ -13,6 +13,7 @@ import { useRouter } from "expo-router";
 import { useNavigation } from '@react-navigation/native';
 import { useHeaderOptions } from "@/helper/setHeaderOptions";
 import { updateUserInfo } from "@/services/api";
+import { useAuthStore } from "@/app/store/auth";
 
 
 const ProfileUpdate = () => {
@@ -51,7 +52,6 @@ const ProfileUpdate = () => {
     }, [])
 
     const updateUser = async () => {
-        console.log('one')
         const token = await AsyncStorage.getItem('auth-token')
         if (!token) {
             alert(labels.pleaseLoginToContinue)
@@ -67,13 +67,15 @@ const ProfileUpdate = () => {
         
         const response = await updateUserInfo(user, token)
         if (response.status) {
-            console.log('two')
+            useAuthStore.getState().setAuthenticatedUser(response.user)
+            useAuthStore.getState().setUser(response.user)
             setOldUser(response.user)
             setFirstNameEditable(false)
             setLastNameEditable(false)
             setEmailEditable(false)
             setSnakBarMessage(response.message)
             setShowSnakBar(true)
+            await AsyncStorage.setItem('auth-user', JSON.stringify(response.user))
         }
     }
     

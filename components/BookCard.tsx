@@ -2,7 +2,7 @@ import { labels } from '@/app/utils/labels';
 import { userRole } from '@/app/utils/userRole';
 import { styles } from '@/styles/bookCard.styles';
 import { useRouter } from 'expo-router';
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import ShareButton from './micro/bookCardFooter/ShareButton';
 import HtmlContent from './micro/HtmlContent';
@@ -11,11 +11,11 @@ import DownloadButton from './micro/bookCardFooter/DownloadButton';
 import DefaultPostImage from './micro/DefaultPostImage';
 import PopOver from './micro/PopOver';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { redirectToUserProfile } from '@/helper/userRedirection';
-import useAuthStore from '@/app/store/auth';
+import { useAuthStore } from '@/app/store/auth';
 import AddToLibrary from './micro/bookCardFooter/AddToLibraryButton';
+import Entypo from '@expo/vector-icons/Entypo';
 
 
 interface BookCardProps {
@@ -78,27 +78,27 @@ const BookCard = ({book, snackMessage, backurl}: {book: BookCardProps, snackMess
         </View>
         
       </View>
-      {/* <TouchableOpacity style={styles.postBodyHeader} onPress={() => router.push({pathname: "/(tabs)/book/details", params: {id: book.id, title: book.title, author: book.author.fullName}})}> */}
-      <TouchableOpacity style={styles.postBodyHeader} onPress={() => router.push({pathname: "/screens/book/details", params: {id: book.id, title: book.title, author: book.author.fullName}})}>
+      <TouchableOpacity style={{}} onPress={() => router.push({pathname: "/screens/book/details", params: {
+        id: book.id, 
+        title: book.title, 
+        author: book.author.fullName,
+        content: null,
+        isQuote: 'no',
+        backurl: backurl
+      }})}>
          <View style={styles.postImageAndTitle}>
-           <DefaultPostImage book={book} />
-           <View style={{marginTop: 10}}>
+           {/* {!book.content.includes('<img src=') && <DefaultPostImage book={book} />} */}
+           <View style={{width: '11%', marginTop: 10, marginLeft: 5}}>
+              <Entypo name="open-book" size={40} color="black" style={{transform: [{ rotate: '18deg' }]}} />
+           </View>
+           <View style={{width: '87%', marginTop: 10, marginLeft: 5}}>
               <Text style={styles.postTitle}>{book.title}</Text>
               <Text style={styles.postAuthorName}>{book.author.fullName}</Text>
               <Text style={styles.postCategory}>{typeof book.category === 'string' ? book.category : book.category.label}</Text>
            </View>
          </View>
-         
-         <TouchableOpacity onPress={() => router.push({pathname: "/screens/book/details", params: {
-            id: book.id, 
-            title: book.title, 
-            author: book.author.fullName,
-            content: null,
-            isQuote: 'no',
-            backurl: backurl
-          }})}>
-            <HtmlContent content={book.content} />
-         </TouchableOpacity>
+          
+         <HtmlContent content={book.content} />
       </TouchableOpacity>
 
       <View className='postFooter' style={styles.postFooter}>

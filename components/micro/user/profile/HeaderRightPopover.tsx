@@ -1,5 +1,5 @@
 
-import useAuthStore from '@/app/store/auth';
+import { useAuthStore } from '@/app/store/auth';
 import labels from '@/app/utils/labels';
 import PopOver from '@/components/micro/PopOver';
 import { UserInterface } from '@/types/interfeces';

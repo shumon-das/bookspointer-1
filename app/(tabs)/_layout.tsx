@@ -1,13 +1,9 @@
 import { styles } from '@/styles/bottomNav.styles';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Tabs, useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { Tabs } from 'expo-router';
+import React from 'react';
+import { Text, View } from 'react-native';
 import { labels } from '../utils/labels';
-import useAuthStore from '../store/auth';
-import { redirectToUserProfile } from '@/helper/userRedirection';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useUseEffect } from '@/helper/setHeaderOptions';
 
 const TabIcon = ({focused, icon, title}: any) => {            
     return (
@@ -19,15 +15,6 @@ const TabIcon = ({focused, icon, title}: any) => {
 }
 
 const _layout = () => {
-  const router = useRouter();
-  const { user } = useAuthStore();
-  const authStore = useAuthStore();
-  const loggedInUser = useUseEffect(user);
-
-  const goToProfile = async () => {
-    loggedInUser ? redirectToUserProfile(loggedInUser.uuid, router, authStore) : router.push('/auth/login')
-  }
-
   return (
     <Tabs
         screenOptions={{
@@ -39,43 +26,19 @@ const _layout = () => {
             tabBarStyle: {
                 backgroundColor: '#085a80',
             },
-            headerRight: () => (
-                <View style={styles.header}>
-                    <TouchableOpacity  onPress={() => router.push('/(tabs)/search')}>
-                        <FontAwesome name="search"  style={styles.marginLeft} size={20} color="white" />
-                    </TouchableOpacity>
-                    <TouchableOpacity  onPress={() => router.push('/screens/book/create-post')}>
-                        <Text style={[styles.marginLeft, {color: 'white'}]}>{labels.writeBook}</Text>
-                    </TouchableOpacity>
-                    {loggedInUser && (
-                      <TouchableOpacity  onPress={() => goToProfile()} style={styles.userImgParentElement}>
-                         <Image source={{uri: `https://api.bookspointer.com/uploads/${loggedInUser?.image}`}} style={styles.userImg} />
-                      </TouchableOpacity>
-                    )}
-                    {!loggedInUser &&  (
-                      <TouchableOpacity  onPress={() => goToProfile()} style={styles.loginBtn}>
-                        <Text>{labels.signIn}</Text>
-                      </TouchableOpacity>
-                    )}
-                </View>
-            ),
         }}
     >
         <Tabs.Screen
             name="index"
             options={{ 
-                title: labels.booksPointer,
+                // title: labels.booksPointer,
                 tabBarIcon: ({ focused }: { focused: boolean }) => (
                    <TabIcon
                     focused={focused}
                     icon="home"
                     title={labels.home}
                    />
-                ),
-                headerStyle: {
-                    backgroundColor: '#085a80',
-                },
-                headerTintColor: '#ffffff', 
+                ), 
             }}
         />
         <Tabs.Screen

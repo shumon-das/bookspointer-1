@@ -5,7 +5,6 @@ import { toPellHtml, toQuillHtml } from '../../app/utils/htmlNormalizer'
 import { labels } from '@/app/utils/labels';
 import { useFocusEffect } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
-import { updateProfileImage } from '@/services/userApi';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import API_CONFIG from '@/app/utils/config';
 import { resizeImage } from '@/app/utils/imageResize';

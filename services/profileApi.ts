@@ -1,4 +1,6 @@
 import { API_CONFIG } from "@/app/utils/config";
+import labels from "@/app/utils/labels";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Alert } from "react-native";
 
 export const fetchBooksBySeriesName = async (seriesName: string, authorId: number, isLibrary: boolean, isCreator: boolean) => {
@@ -36,7 +38,13 @@ export const fetchUserProfileData = async (userUuid: string) => {
     return data;
 }
 
-export const createAndUpdateSeries = async (user: any, token: string) => {
+export const createAndUpdateSeries = async (user: any) => {
+    const token = await AsyncStorage.getItem('auth-token');
+    if (!token) {
+      Alert.alert(labels.sorry, labels.pleaseLoginToContinue)
+      return;
+    }
+
     const endpoint = `${API_CONFIG.BASE_URL}/admin/update-user`;
     const response = await fetch(endpoint, {
         method: 'POST',
@@ -52,5 +60,28 @@ export const createAndUpdateSeries = async (user: any, token: string) => {
     
     const data = await response.json();
     
+    return data;
+}
+
+export const fetchLibraryBooks = async (authorId: number, isLibrary: boolean) => {
+    const endpoint = `${API_CONFIG.BASE_URL}/api/books-by-series`;
+    const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: API_CONFIG.HEADERS,
+        body: JSON.stringify({
+            series: '',
+            authorId: authorId,
+            isLibrary: isLibrary,
+            isCreator: false,
+        })
+    })
+
+    const data = await response.json();
+
+    if (data && data.status && data.status !== 200) {
+        // @ts-ignore
+        console.log('Failed to fetch ', response.message)
+    }
+
     return data;
 }

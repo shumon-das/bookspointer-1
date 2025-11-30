@@ -1,18 +1,20 @@
-import { TouchableOpacity, View, Text } from "react-native"
+import { TouchableOpacity, View, Text, Alert } from "react-native"
 import { styles } from "@/styles/writeBookScreen.styles";
 import TextEditor from "@/components/micro/TextEditor";
 import { useEffect, useLayoutEffect, useState } from "react";
 import labels from "@/app/utils/labels";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
-import useAuthStore from "@/app/store/auth";
+import { useAuthStore } from "@/app/store/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { saveBook } from "@/services/api";
 import { Snackbar } from "react-native-paper";
 import useCategoryStore from "@/app/store/categories";
 import { FontAwesome5 } from "@expo/vector-icons";
-import Dialog from "@/components/micro/Dialog";
+// import QuoteContent from "@/components/micro/QuoteContent";
+// import { QuoteStyles } from "@/styles/quoteCard.styles";
+// import quoteThemes from "@/app/utils/QuoteThemes";
 
-const EthernelWord = () => {
+const EthernelWord = ({category}: {category: any}) => {
     const {bookuuid} = useLocalSearchParams();
     const [id, setId] = useState(null)
     const [uuid, setUuid] = useState(null)
@@ -21,11 +23,11 @@ const EthernelWord = () => {
     const [initialContent, setInitialContent] = useState('')
     const [showSnackBar, setShowSnakBar] = useState(false);
     const [snackBarMessage, setSnakBarMessage] = useState('');
-    const [confirmSave, setConfirmSave] = useState(false);
+    // const randomThemeIndex = Math.floor(Math.random() * quoteThemes.length);
 
     const navigation = useNavigation();
     useLayoutEffect(() => {
-        const title = useCategoryStore.getState().categoryTab?.label ?? labels.writeBook
+        const title = category.label ?? ''
         navigation.setOptions({
             title: title ?? '',
             headerTitleAlign: 'center',
@@ -51,9 +53,9 @@ const EthernelWord = () => {
                 setCategoryData(data.category)
             }
         }
-        
-        loadSingleFullBook();        
-    }, [bookuuid]);
+        loadSingleFullBook();
+        setCategoryData(category) 
+    }, [bookuuid, category]);
 
     const updateContent = (content: string) => {
         setContent(content)
@@ -64,16 +66,8 @@ const EthernelWord = () => {
         const storageUser = await AsyncStorage.getItem('auth-user');
 
         if (!storedToken || !storageUser) {
-            alert(labels.pleaseLoginToContinue);
+            Alert.alert(labels.pleaseLoginToContinue);
             return;
-        }
-
-        const category = useCategoryStore.getState().categoryTab;
-        if (!category) {
-            console.log('category not exists')
-            return;
-        } else {
-            setCategoryData(category)
         }
 
         if ('' === content || content.length <= 0 || !categoryData) {
@@ -114,7 +108,12 @@ const EthernelWord = () => {
 
     return (
         <View style={styles.screen}>
-            <View style={{height: 400, marginVertical: 10}}>
+            {/* <View className='postBody' style={[QuoteStyles.card, {backgroundColor: quoteThemes[randomThemeIndex].backgroundColor,}]}>
+                <Text style={[QuoteStyles.quote, {color: quoteThemes[randomThemeIndex].textColor}]}>
+                    { content ? <QuoteContent content={content} /> : '' }
+                </Text>
+            </View> */}
+            <View style={{height: 300, marginVertical: 10}}>
                 <TextEditor initialContent={initialContent} onChange={updateContent} />
             </View>
 
@@ -134,7 +133,6 @@ const EthernelWord = () => {
                 >{snackBarMessage}</Snackbar>    
             </View>
 
-            {/* <Dialog visible={confirmSave} message={'sdf'} onChange={saveQuote} /> */}
             <View style={{ height: 200 }}></View>
             
         </View>

@@ -13,6 +13,18 @@
       "bundleIdentifier": "com.monoranjan.bookspointer"
     },
     "android": {
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "bookspointer",
+              "host": "oauth2redirect"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -26,6 +38,7 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      "@react-native-google-signin/google-signin",
       "expo-router",
       [
         "expo-splash-screen",
@@ -46,6 +59,10 @@
       "router": {},
       "eas": {
         "projectId": "5a76b2dc-30dc-4701-a88c-d837cf10eed1"
+      },
+      "googleClientId": {
+        "web": "995445721362-r19dvo31c8pmlt9ivdai56vltj474udm.apps.googleusercontent.com",
+        "android": "995445721362-04902rkmi63hfl271rk1moc0iqaf94no.apps.googleusercontent.com"
       }
     }
   }

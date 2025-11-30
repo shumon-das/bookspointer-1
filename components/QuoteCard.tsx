@@ -6,17 +6,16 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 // import DownloadButton from './micro/bookCardFooter/DownloadButton';
-import SaveButton from './micro/bookCardFooter/SaveButton';
 import ShareButton from './micro/bookCardFooter/ShareButton';
 import HtmlContent from './micro/HtmlContent';
 import QuoteContent from './micro/QuoteContent';
 import { redirectToUserProfile } from '@/helper/userRedirection';
-import useAuthStore from '@/app/store/auth';
+import { useAuthStore } from '@/app/store/auth';
 import { useUseEffect } from '@/helper/setHeaderOptions';
 import PopOver from './micro/PopOver';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import useCategoryStore from '@/app/store/categories';
-
+import { QuoteStyles } from '@/styles/quoteCard.styles';
 
 
 interface BookCardProps {
@@ -107,31 +106,5 @@ const QuoteCard = React.memo(({book, snackMessage}: {book: BookCardProps, snackM
     </View>
   )
 })
-
-const QuoteStyles = StyleSheet.create({
-  card: {
-    padding: 20,
-    minHeight: 200,
-  },
-  postHeader: {
-      flex: 1,
-      flexDirection: "row",
-      justifyContent: "space-between",
-      borderBottomWidth: 0.5,
-      borderBottomColor: "gray",
-      paddingVertical: 12,
-    },
-  quote: {
-    fontSize: 20,
-    fontStyle: 'italic',
-    lineHeight: 28,
-  },
-  author: {
-    marginTop: 12,
-    fontSize: 16,
-    textAlign: 'right',
-  },
-});
-
 
 export default QuoteCard

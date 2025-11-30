@@ -6,7 +6,7 @@ import { router, useFocusEffect } from 'expo-router';
 import labels from '@/app/utils/labels';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { saveBook } from '@/services/api';
-import useAuthStore from '@/app/store/auth';
+import { useAuthStore } from '@/app/store/auth';
 import { Snackbar } from 'react-native-paper';
 
 interface BookCardProps {

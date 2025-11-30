@@ -1,9 +1,8 @@
-import useAuthStore from "@/app/store/auth";
+import { useAuthStore } from "@/app/store/auth";
 import { labels } from "@/app/utils/labels";
 import HtmlContent from "@/components/micro/HtmlContent";
 import UserProfileHeader from "@/components/micro/user/profile/UserProfileHeader";
 import { Book } from "@/components/types/Book";
-import { useHeaderOptions } from "@/helper/setHeaderOptions";
 import { deleteBookItem } from "@/services/api";
 import { fetchBooksBySeriesName } from "@/services/profileApi";
 import { styles } from '@/styles/profilePageBooks.styles';
@@ -11,17 +10,34 @@ import { UserInterface } from "@/types/interfeces";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Image, SafeAreaView, Text, TouchableOpacity, View } from "react-native";
 import Modal from 'react-native-modal';
 import { Snackbar } from "react-native-paper";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 
 const UserProfilePageBooks = () => {
   const {series} = useLocalSearchParams();
 
   const navigation = useNavigation();
-  useHeaderOptions(navigation, series as string)
+  
+  useLayoutEffect(() => {
+    navigation.setOptions({
+        headerLeft: () => (<TouchableOpacity onPress={() => router.back()} style={{marginLeft: 10}}>
+            <FontAwesome5 name="arrow-left" size={18} color="#d4d4d4" />
+          </TouchableOpacity>
+        ),  
+        headerTitle: () => (
+            <View>
+              <Text style={{ fontSize: 12, fontWeight: 'bold', textAlign: 'center', color: '#d4d4d4' }}>
+                  {series}
+              </Text>
+            </View>
+        ),
+        headerRight: () => (<></>),
+    });
+  }, [navigation, series]);
 
   const [seriesName, setSeriesName] = useState<string|null>(null);
   const [user, setUser] = useState<UserInterface|null>(null);
@@ -66,7 +82,8 @@ const UserProfilePageBooks = () => {
   }
 
   const onChooseBook = (book: Book) => {
-    router.push({pathname: "/(tabs)/book/details", params: {
+    console.log('here...')
+    router.push({pathname: "/screens/book/details", params: {
         id: book.id, 
         title: book.title, 
         author: book.author.fullName,

@@ -11,23 +11,22 @@ export const styles = StyleSheet.create({
       justifyContent: "space-between",
       borderBottomWidth: 0.5,
       borderBottomColor: "gray",
-      marginBottom: 10,
-      paddingVertical: 12,
+      paddingVertical: 5,
     },
     image: {
-      width: 40, // Image width
-      height: 40, // Image height
+      width: 25, // Image width
+      height: 25, // Image height
       borderRadius: 25, // Makes it circular
       marginLeft: 12,
       marginRight: 10, // Space between image and text
       paddingLeft: 16
     },
     userName: {
-      fontSize: 16,
+      fontSize: 12,
       fontWeight: 'bold',
     },
     userRole: {
-      fontSize: 12,
+      fontSize: 10,
       // color: 'gray',
     },
   
@@ -43,9 +42,9 @@ export const styles = StyleSheet.create({
     },
   
     postTitle: {
-      fontSize: 16,
+      fontSize: 15,
       fontWeight: "bold",
-      width: 250,
+      // width: 220,
     },
   
     postAuthorName: {
@@ -58,9 +57,6 @@ export const styles = StyleSheet.create({
       fontWeight: "600"
     },
   
-    postBodyHeader: {
-      paddingHorizontal: 2,
-    },
     postContent: {
       paddingHorizontal: 0
     },
@@ -70,7 +66,7 @@ export const styles = StyleSheet.create({
       flexDirection: 'row',
       justifyContent: "space-around",
       alignItems: "center",
-      paddingVertical: 6,
+      paddingVertical: 2,
       borderTopWidth: 0.2,
       borderTopColor: "gray",
     }

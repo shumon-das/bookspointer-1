@@ -78,6 +78,7 @@ export const labels = {
     AddToLibrary: "লাইব্রেরীতে রাখুন",
     AddedToLibrary: "লাইব্রেরীতে আছে",
     saveBookIntoLibrary: "বইটি সফলভাবে লাইব্রেরীতে যুক্ত হয়েছে।",
+    removedBookFromLibrary: "বইটি সফলভাবে লাইব্রেরী থেকে ডিলিট হয়েছে।",
     share: "শেয়ার",
     audioBook: "অডিও বই",
     audioBookNotAvailable: "অডিও বইটি এখনো উপলব্ধ নয়।",
@@ -141,7 +142,11 @@ export const labels = {
     sortWords: {
         yes: "হ্যাঁ।",
         no: "না"
-    }
+    },
+    deleteItem: {
+        areYouSure: "আপনি কি নিশ্চিত?",
+        removeFromLibrary: "আপনি এটি লাইব্রেরী থেকে মুছে ফেলতে চাইছেন।"
+    },
 }
 
 export default labels;

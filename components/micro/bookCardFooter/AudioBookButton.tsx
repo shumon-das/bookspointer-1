@@ -9,10 +9,10 @@ const AudioBookButton = ({ bookId, onClickToPlay }: {bookId: number, onClickToPl
     <View style={{}}>
         <TouchableOpacity onPress={() => Alert.alert(labels.sorry, labels.audioBookNotAvailable)} >
             <Text style={{position: 'relative', textAlign: 'center'}}>
-                <Feather name="book" size={20} color={'#282C35'} />
+                <Feather name="book" size={14} color={'#282C35'} />
             </Text>
-            <Text style={{position: 'absolute', top: 1, left: '37%', color: 'lightgray'}}>
-                <Entypo name="controller-play" size={14} color="gray" />
+            <Text style={{position: 'absolute', top: 1, left: '39%', color: 'lightgray'}}>
+                <Entypo name="controller-play" size={10} color="gray" />
             </Text>
             <Text style={{fontSize: 10, color: '#282C35'}}>{labels.audioBook}</Text>
         </TouchableOpacity>

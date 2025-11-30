@@ -8,7 +8,8 @@ import { labels } from '@/app/utils/labels'
 import { User } from '@/components/types/User'
 import { styles } from '@/styles/writeBook.styles'
 import FontAwesome from '@expo/vector-icons/FontAwesome'
-import useAuthStore from '@/app/store/auth'
+import { useAuthStore } from '@/app/store/auth'
+import GoogleLogin from '@/components/GoogleLogin'
 
 const Login = () => {
     const router = useRouter()
@@ -32,7 +33,7 @@ const Login = () => {
           await AsyncStorage.setItem("auth-token", response.token)
           await AsyncStorage.setItem("auth-user", JSON.stringify(response.user))
 
-          useAuthStore.getState().setUser(response.user)
+          useAuthStore.getState().setAuthenticatedUser(response.user)
           useAuthStore.getState().setToken(response.token)
           router.push('/')
         } else {
@@ -85,6 +86,10 @@ const Login = () => {
                 <Text style={{color: 'blue'}}>{labels.register}</Text>
               </TouchableOpacity>
             </View>
+        </View>
+
+        <View>
+          <GoogleLogin />
         </View>
       </SafeAreaView>
     </SafeAreaProvider>

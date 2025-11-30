@@ -1,5 +1,8 @@
 import { useAuthStore } from "@/app/store/auth";
 import { API_CONFIG } from "@/app/utils/config";
+import labels from "@/app/utils/labels";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Alert } from "react-native";
 
 export const getAuthor = async (uuid: string) => {
     const endpoint = `${API_CONFIG.BASE_URL}/single-user/${uuid}`;
@@ -12,33 +15,35 @@ export const getAuthor = async (uuid: string) => {
     return data;
 }
 
-export const updateProfileImage = async (image: string, token: string, userId: number) => {
+export const updateProfileImage = async (image: string, userId: number) => {
+    const token = await AsyncStorage.getItem('auth-token')
+    if (!token || !userId) {
+        Alert.alert(labels.sorry, labels.pleaseLoginToContinue)
+        return
+    }
+    
     const endpoint = `${API_CONFIG.BASE_URL}/upload-book`;
     const headers = {
-        'Content-Type': 'multipart/form-data',
         'Authorization': `Bearer ${token}` 
     }
     const formData = new FormData();
-    formData.append('file', {
-        uri: image,
-        name: image.split('/').pop(),
-        type: 'image'
-    } as any);
+    formData.append('file', {uri: image, name: image.split('/').pop(), type: 'image/*'} as any);
     formData.append('operationType', "user");
     formData.append('id', `${userId}`);
-    const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: headers,
-        body: JSON.stringify({token: token, userId: userId})
-    })
-    
-    if (!response.ok) {
-        // @ts-ignore
-        throw new Error('Failed to save token', response.message)
-    }
+    console.log(formData)
+    const response = await fetch(endpoint, {method: 'POST', headers: headers, body: formData})
 
+    if (!response.ok) {
+        const text = await response.text();
+        alert(`Failed to save token: ${response.status} ${text}`);
+    }
+        
     const data = await response.json();
-    
+    useAuthStore.setState({ user: data.user })
+    console.log(useAuthStore.getState().user)
+    await AsyncStorage.removeItem('auth-user')
+    await AsyncStorage.setItem('auth-user', JSON.stringify(data.user))
+
     return data;
 }
 

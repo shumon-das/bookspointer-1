@@ -65,7 +65,7 @@ const authorProfile = () => {
         <View style={styles.userInfo}>
           <ImagePicker defaultImage={author ? author.image : 'default_post_image.jpg'} onChange={(value) => {
             if (!author || !token) return
-            updateProfileImage(value, token, author.id)
+            updateProfileImage(value, author.id)
           }} />
         </View>
       </View>
@@ -88,7 +88,7 @@ const authorProfile = () => {
 
         {
           !choosedSeries 
-            ? <UserSeries series={author.series} onChooseSeries={(seriesName) => setChoosedSeries(seriesName)} />
+            ? <UserSeries series={author.series} author={author} onChooseSeries={(seriesName) => setChoosedSeries(seriesName)} />
             : <UserProfileBooks series={choosedSeries} authorId={author.id} onBackToSeries={() => setChoosedSeries(null)} />
         }
       

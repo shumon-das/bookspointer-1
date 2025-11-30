@@ -3,7 +3,7 @@ import { ScrollView, View, Image } from "react-native";
 import HTMLView from "react-native-htmlview";
 
 
-const HtmlContent = ({ content }: any) => {
+const HtmlContent = ({ content, isDetailsScreen=false }: any) => {
   const cleanHtml = (html: string) => {
     if (!html) return '';
     return html.replace(/<p>\s*<br\s*\/?>\s*<\/p>/g, "<p></p>")
@@ -36,6 +36,7 @@ const HtmlContent = ({ content }: any) => {
             }
           }}
         />
+        {isDetailsScreen && <View style={{height: 50}}></View>}
     </ScrollView> 
   );
 };

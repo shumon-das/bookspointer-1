@@ -31,7 +31,7 @@ const ShareButton = ({ title, message, url }: {title: string; message: string; u
   return (
     <View>
       <TouchableOpacity onPress={onShare} style={{ flexDirection: 'column', alignItems: 'center' }}  >
-        <Icon name="share-alt" size={20} color="gray" />
+        <Icon name="share-alt" size={14} color="gray" />
         <Text style={{fontSize: 10}}>{labels.share}</Text>
       </TouchableOpacity>
     </View>

@@ -1,3 +1,4 @@
+import { getAnonymousId } from "@/app/utils/annonymous";
 import { API_CONFIG } from "@/app/utils/config";
 import { SaveRequestParams } from "@/components/types/Book";
 
@@ -22,6 +23,33 @@ export const fetchBooks = async ({pageNumber, limit, categoryName}: {pageNumber:
     
     return data.books;
 }
+
+export const fetchIndexFeeds = async ({pageNumber, limit}: {pageNumber: number, limit: number}) => {
+    const anonymousId = getAnonymousId();
+    let endpoint = `${API_CONFIG.BASE_URL}/user-feed/${anonymousId}/${pageNumber}/${0}/${limit}`;
+
+    const response = await fetch(endpoint)
+    
+    if (!response.ok) {
+        // @ts-ignore
+        throw new Error('Failed to fetch books', response.message)
+    }
+
+    const data = await response.json();
+    
+    return data;
+}
+
+export const stringifyToParse = (book: any) => {
+    return {
+        ...book,
+        author: JSON.parse(book.author),
+        createdBy: JSON.parse(book.createdBy),
+        category: JSON.parse(book.category),
+        details: JSON.parse(book.details)
+    };
+}
+
 
 export const singleBook = async (query: {id: number, page: number}) => {
     const endpoint = API_CONFIG.BASE_URL + '/single';
