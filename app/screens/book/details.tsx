@@ -3,10 +3,10 @@ import { singleBook } from '@/services/api';
 import { decryptBook, encryptedPagesNumbers } from '@/app/utils/download';
 import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
-import { ActivityIndicator, BackHandler, Button, FlatList, Text, TouchableOpacity, useColorScheme, View } from 'react-native';
+import { BackHandler, Text, TouchableOpacity, View } from 'react-native';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import Pagination from '@/components/micro/book/details/pagination';
-import { usePageLeaveTracker } from '@/app/utils/routerGuard';
+import usePageLeaveTracker from '@/app/utils/routerGuard';
 
 const details = () => {
     const {id, title, author, content = null, isQuote = 'no', backurl = null} = useLocalSearchParams();
@@ -63,6 +63,7 @@ const details = () => {
 
     useFocusEffect(
       useCallback(() => {
+        console.log('Fetching book details for id:', id);
         fetchChunks(page)
       }, [id, navigation])
     );

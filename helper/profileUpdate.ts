@@ -1,15 +1,13 @@
 import { useAuthStore } from "@/app/store/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter } from "expo-router";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
-export const logout = async () => {
-    const router = useRouter();
+export const logout = async (router:any) => {
+    await GoogleSignin.signOut();
     await AsyncStorage.multiRemove(['auth-user', 'auth-token']);
     useAuthStore.getState().setAuthenticatedUser(null);
-    useAuthStore.getState().setUser(null);
     router.replace("/");
 }
-
 
 export default {
     logout

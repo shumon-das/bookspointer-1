@@ -1,7 +1,7 @@
 import { login } from '@/services/api'
 import { Stack, useNavigation, useRouter } from 'expo-router'
 import React, { useLayoutEffect, useState } from 'react'
-import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Image, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { labels } from '@/app/utils/labels'
@@ -52,45 +52,47 @@ const Login = () => {
           ),
         }}
       />
-        <View>
-            <Image
-                source={require('../../../assets/images/logo.png')}
-                style={{ width: 100, height: 100, borderRadius: 50, alignSelf: 'center', marginTop: 20 }}
-            />
-            <Text style={{ fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginTop: 10, marginBottom: 30 }}>
-                {labels.welcomeMessage}
-            </Text>
-        </View>
-        <View style={{ width: '90%', marginHorizontal: 'auto' }}>
-            <TextInput
-                style={styles.input}
-                onChangeText={onChangeEmail}
-                value={email}
-                placeholder="email"
-            />
-            <TextInput
-                style={styles.input}
-                onChangeText={onChangePassword}
-                value={password}
-                placeholder="password"
-                secureTextEntry={true}
-            />
+        <ScrollView>
+          <View>
+              <Image
+                  source={require('../../../assets/images/logo.png')}
+                  style={{ width: 100, height: 100, borderRadius: 50, alignSelf: 'center', marginTop: 20 }}
+              />
+              <Text style={{ fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginTop: 10, marginBottom: 30 }}>
+                  {labels.welcomeMessage}
+              </Text>
+          </View>
+          <View style={{ width: '90%', marginHorizontal: 'auto' }}>
+              <TextInput
+                  style={styles.input}
+                  onChangeText={onChangeEmail}
+                  value={email}
+                  placeholder="email"
+              />
+              <TextInput
+                  style={styles.input}
+                  onChangeText={onChangePassword}
+                  value={password}
+                  placeholder="password"
+                  secureTextEntry={true}
+              />
 
-            <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                <Text style={styles.buttonText}>Login</Text>
-            </TouchableOpacity>
-
-            <View style={{flexDirection: 'row', justifyContent: 'center', marginTop: 10}}>
-              <Text style={{paddingHorizontal: 5}}>{labels.noAccount}</Text>
-              <TouchableOpacity onPress={() => router.push('/auth/registration')}>
-                <Text style={{color: 'blue'}}>{labels.register}</Text>
+              <TouchableOpacity style={styles.button} onPress={handleLogin}>
+                  <Text style={styles.buttonText}>Login</Text>
               </TouchableOpacity>
-            </View>
-        </View>
 
-        <View>
-          <GoogleLogin />
-        </View>
+              <View style={{flexDirection: 'row', justifyContent: 'center', marginTop: 10}}>
+                <Text style={{paddingHorizontal: 5}}>{labels.noAccount}</Text>
+                <TouchableOpacity onPress={() => router.push('/auth/registration')}>
+                  <Text style={{color: 'blue'}}>{labels.register}</Text>
+                </TouchableOpacity>
+              </View>
+          </View>
+
+          <View>
+            <GoogleLogin />
+          </View>
+        </ScrollView>
       </SafeAreaView>
     </SafeAreaProvider>
   )

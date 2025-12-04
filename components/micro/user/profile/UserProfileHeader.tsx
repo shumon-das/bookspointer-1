@@ -4,13 +4,41 @@ import { labels } from "@/app/utils/labels";
 import ImagePicker from '@/components/micro/ImagePicker';
 import { updateProfileImage } from "@/services/userApi";
 import { styles } from "@/styles/profile.styles";
-import { Image, Text, View } from "react-native";
+import Feather from "@expo/vector-icons/Feather";
+import { Image, Text, TouchableOpacity, View } from "react-native";
+import { router } from 'expo-router';
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { logout } from "@/helper/profileUpdate";
 
-const UserProfileHeader = () => {
-    const { user: author } = useAuthStore();
+
+const UserProfileHeader = ({author}: {author: any }) => {
+    const { authenticatedUser } = useAuthStore();
+    const [user, setUser] = useState(authenticatedUser as any)
+    useEffect(() => {
+        const loadLoggedInUser = async () => {
+          const storedUser = await AsyncStorage.getItem('auth-user');
+          setUser(storedUser ? JSON.parse(storedUser) : null);
+      }
+
+      loadLoggedInUser()
+    },[author])
 
     return (
         <View>
+            <View style={{backgroundColor: '#085a80', height: 90}}>
+                <View style={{marginTop: 50, flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 15}}> 
+                    <TouchableOpacity onPress={() => router.replace('/')}>
+                        <FontAwesome5 name="arrow-left" size={18} color="#d4d4d4" />
+                    </TouchableOpacity>
+
+                    {user && author && user.id === author.id && <TouchableOpacity onPress={() => {router.push({ pathname: "/screens/user/profileUpdate", params: {} })}}>
+                        <Feather name="settings" size={18} color="#d4d4d4" />
+                    </TouchableOpacity>}
+                </View>
+            </View>
+
             <View style={styles.cover}>
                 <Image source={require('../../../../assets/images/profile_cover.jpg')} style={styles.coverImg} />
                 <View style={styles.userInfo}>

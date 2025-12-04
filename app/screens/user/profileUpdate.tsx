@@ -9,17 +9,14 @@ import { List, Snackbar } from 'react-native-paper';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import TextEditor from "@/components/micro/TextEditor";
 import { logout } from "@/helper/profileUpdate";
-import { useRouter } from "expo-router";
-import { useNavigation } from '@react-navigation/native';
-import { useHeaderOptions } from "@/helper/setHeaderOptions";
+import { useNavigation, useRouter } from "expo-router";
 import { updateUserInfo } from "@/services/api";
 import { useAuthStore } from "@/app/store/auth";
 
-
 const ProfileUpdate = () => {
-    const navigation = useNavigation();
-    useHeaderOptions(navigation, labels.editProfile)
-    
+    const navigation = useNavigation()
+    useEffect(() => navigation.setOptions({ title: labels.editProfile }), []);
+
     const router = useRouter()
     const [oldUser, setOldUser] = useState<any>(null)
 
@@ -245,7 +242,7 @@ const ProfileUpdate = () => {
           </List.Section>
 
           <View style={[styles.col]}>
-                <TouchableOpacity style={{width: '100%'}} onPress={() => logout()}>
+                <TouchableOpacity style={{width: '100%'}} onPress={() => logout(router)}>
                     <Text style={{width: '100%', textAlign:'center', color: 'red', fontWeight: 'bold', fontSize: 18}}>{labels.signOut}</Text>            
                 </TouchableOpacity>
           </View>

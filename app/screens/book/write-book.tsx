@@ -1,24 +1,23 @@
 import Dropdown from "@/components/micro/Dropdown";
-import { View, Text, TouchableOpacity, Switch, Alert } from "react-native";
-import TextEditor from "@/components/micro/TextEditor";
+import { View, Text, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
 import { TextInput } from "react-native-paper";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { use, useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { labels } from "@/app/utils/labels";
 import { styles } from "@/styles/writeBookScreen.styles";
 import { useCategoryStore } from "@/app/store/categories";
 import { useUserStore } from "@/app/store/user";
-import { useLocalSearchParams, useNavigation } from 'expo-router'
+import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from 'expo-router'
 import { Category } from "@/components/types/Category";
 import { User } from "@/components/types/User";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { saveBook } from "@/services/api";
 import { useAuthStore } from "@/app/store/auth";
-import { useUseEffect } from "@/helper/setHeaderOptions";
-import BookCardPreview from "@/components/BookCardPreview";
+import HtmlContent from "@/components/micro/HtmlContent";
+import { saveBook } from "@/services/api";
+import goToProfile from "@/helper/redirectToProfile";
 
 const WriteBook = () => {
     const {bookuuid} = useLocalSearchParams();
-    const {user} = useAuthStore();
+    const router = useRouter()
     
     const navigation = useNavigation();
     useLayoutEffect(() => {
@@ -43,12 +42,17 @@ const WriteBook = () => {
     const [title, setTitle] = React.useState('');
     const [category, setCategory] = React.useState<Category|null>(null);
     const [author, setAuthor] = React.useState<User|null>(null);
-    // const [isSelfAuthor, setIsSelfAuthor] = React.useState(true);
-    // const toggleSwitch = () => setIsSelfAuthor(previousState => !previousState);
     const [content, setContent] = React.useState('');
-    const [initialContent, setInitialContent] = React.useState('');
     const [preview, setPreview] = useState(false)
-    const [previewData, setPreviewData] = useState(null as any)    
+    const [loading, setLoading] = useState(false)
+    const [showSnackBar, setShowSnakBar] = useState(false);
+    const [snackBarMessage, setSnakBarMessage] = useState('');
+
+    useFocusEffect(
+        useCallback(() => {
+            setContent(useAuthStore.getState().bookContent)
+        }, [useAuthStore.getState().bookContent])
+    )
 
     useEffect(() => {
         const loadSingleFullBook = async () => {
@@ -61,7 +65,7 @@ const WriteBook = () => {
                 setTitle(data.title);
                 setCategory(data.category)
                 setAuthor(data.author)
-                setInitialContent(data.content)
+                useAuthStore.getState().setBookContent(data.content)
             }
         }
 
@@ -90,7 +94,8 @@ const WriteBook = () => {
 
     const previewBook = async () => {
         const storageUser = await AsyncStorage.getItem('auth-user')
-        if (!storageUser) {
+        const token = await AsyncStorage.getItem('auth-token')
+        if (!storageUser || !token) {
             Alert.alert(labels.sorry, labels.pleaseLoginToContinue)
             return;
         }
@@ -103,18 +108,22 @@ const WriteBook = () => {
             estimatedReadTime: {words: 1, minutes: 1},
             seriesName: '',
             tags: [],
+        } as any;
+
+        setLoading(true)
+        const response = await saveBook(data, token)
+        setSnakBarMessage(response?.message)
+        setShowSnakBar(true)
+        if (response?.status) {
+            setLoading(false)
+            useAuthStore.getState().setBookContent('')
+            setTimeout(() => {
+                goToProfile(router, useAuthStore)
+            }, 3000);
         }
-        setPreviewData(data)
-        setPreview(true)
     }
 
-    return preview && title && content && category ? (
-        <BookCardPreview book={previewData} onBack={(value) => {
-                setPreview(false)
-                setInitialContent(content)
-            }}
-        />
-    ) : (
+    return (
         <View style={{flex: 1, marginHorizontal: 5}}>
             <View style={styles.title}>
                 <TextInput
@@ -138,43 +147,30 @@ const WriteBook = () => {
                 {preview && !category && <Text style={{color: 'red'}}>{labels.bookCreate.categoryRequired}</Text>}
             </View>
 
-            {/* <View style={styles.category}>
-                <Dropdown
-                    selectedOption={isSelfAuthor ? loggedInUser : author}
-                    options={authors}
-                    optionLabel="fullName"
-                    placeholder={labels.selectAuthor}
-                    filterPlaceholder={labels.searchAuthor}
-                    onSelect={(item: any) => {
-                        setIsSelfAuthor(false)
-                        setAuthor(item)
-                    }} 
-                />
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                    <Switch
-                        trackColor={{false: '#767577', true: '#81b0ff'}}
-                        thumbColor={isSelfAuthor ? '#f5dd4b' : '#f4f3f4'}
-                        ios_backgroundColor="#3e3e3e"
-                        onValueChange={toggleSwitch}
-                        value={isSelfAuthor}
-                    />
-                    {isSelfAuthor && <Text>{labels.createBook.selfAuthor}</Text>}
-                </View>
-            </View> */}
-
             <View style={{height: 320}}>
-                <TextEditor initialContent={initialContent} onChange={(content: string) => setContent(content)} />
+                <TouchableOpacity 
+                    style={{height: 300, borderWidth: 1, borderColor: 'gray', borderRadius: 5, margin: 10}} 
+                    onPress={() => router.push({
+                        pathname: '/screens/book/content-editor', 
+                        params: {content: useAuthStore.getState().bookContent?.substring(1, 10)}
+                    })}
+                >
+                    {useAuthStore.getState().bookContent.length > 0
+                        ? <HtmlContent content={content} />
+                        : <Text style={{padding: 10, }}>{labels.startWriting}</Text>
+                    }
+                </TouchableOpacity>
                 {preview && !content && <Text style={{color: 'red'}}>{labels.bookCreate.contentRequired}</Text>}
             </View>
 
             <View style={{marginTop: 50}}>
                 <TouchableOpacity onPress={previewBook}>
-                    <Text style={styles.saveButton}>{ labels.bookCreate.preview }</Text>
+                    {!loading && <Text style={styles.saveButton}>{ labels.saveBook }</Text>}
+                    {loading && <ActivityIndicator style={styles.saveButton}></ActivityIndicator>}
                 </TouchableOpacity>
             </View>
 
             <View style={{ height: 200 }}></View>
-            
         </View>
     );
 }

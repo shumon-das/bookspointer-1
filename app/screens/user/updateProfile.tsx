@@ -9,7 +9,6 @@ import { Snackbar } from 'react-native-paper';
 import WebView from 'react-native-webview';
 
 const updateProfile = () => {
-    const {userId, token} = useLocalSearchParams();
     const navigation = useNavigation()
     const [toastVisible, setToastVisible] = useState(false)
     const webviewRef = useRef<WebView>(null);
@@ -31,11 +30,6 @@ const updateProfile = () => {
         ),
       })
     })
-
-    const handleMessage = (event: any) => {
-      const content = event.nativeEvent.data;
-      setDescription(content);
-    };
 
     const save = async () => {
       const data = {

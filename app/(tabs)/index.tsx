@@ -1,12 +1,12 @@
 import BookCard from "@/components/BookCard";
-import { fetchAuthors, fetchBooks, fetchIndexFeeds, stringifyToParse } from "@/services/api";
+import { fetchIndexFeeds, stringifyToParse } from "@/services/api";
 import { saveToken } from "@/services/notificationApi";
 import { EventSubscription } from 'expo-modules-core';
 import * as Notifications from 'expo-notifications';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ActivityIndicator, FlatList, StyleSheet, TouchableOpacity, View, Text, Image } from "react-native";
 import { Snackbar } from "react-native-paper";
-import { registerForPushNotificationsAsync } from "../utils/notifications";
+import registerForPushNotificationsAsync from "../utils/notifications";
 import QuoteCard from "@/components/QuoteCard";
 import { useNetworkStatus } from "@/components/network/networkConnectionStatus";
 import Offline from "@/components/every/Offline";
@@ -17,15 +17,16 @@ import { styles as styles2 } from '@/styles/bottomNav.styles';
 import labels from "../utils/labels";
 import { useIsFocused } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getAnonymousId, sendActivity } from "../utils/annonymous";
-import { usePageLeaveTracker } from "../utils/routerGuard";
+import usePageLeaveTracker from "../utils/routerGuard";
 import API_CONFIG from "../utils/config";
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import NotificationBadge from "@/components/NotificationBadge";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
     shouldPlaySound: true,
-    shouldSetBadge: false,
+    shouldSetBadge: true,
     shouldShowBanner: true,
     shouldShowList: true,
   }),
@@ -108,6 +109,13 @@ export default function Index() {
         </TouchableOpacity>
         <TouchableOpacity onPress={() => router.push('/screens/book/create-post')}>
             <Text style={[styles2.marginLeft, {color: 'white'}]}>{labels.writeBook}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push('/screens/notifications')}>
+            {/* <Text style={[styles2.marginLeft, {color: 'white'}]}>
+              <Text>1</Text>
+              <MaterialIcons name="notifications" size={24} color="white" />
+            </Text> */}
+            <NotificationBadge />
         </TouchableOpacity>
         {loggedInUser && (
             <TouchableOpacity onPress={goToProfile} style={styles2.userImgParentElement}>

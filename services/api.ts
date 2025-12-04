@@ -123,6 +123,23 @@ export const login = async (email: string, password: string) => {
     return data;
 }
 
+export const googleSignin = async (idToken: string) => {
+    const endpoint = API_CONFIG.BASE_URL + '/auth/google-signin';
+    const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: API_CONFIG.HEADERS,
+        body: JSON.stringify({ idToken: idToken })
+    })
+    if (401 === response.status) {
+        console.log('status 401, Unauthorized Google Sign-In attempt');
+        return null;
+    }
+
+    const data = await response.json();
+    
+    return data;
+}
+
 export const userBooks = async (id: number) => {
     const endpoint = API_CONFIG.BASE_URL + '/api/author-series';
     const response = await fetch(endpoint, {
@@ -186,15 +203,17 @@ export const saveBook = async (value: SaveRequestParams, token: string) => {
     const body = new URLSearchParams({
         data: JSON.stringify(value)
     }).toString();
-
+    console.log('two.......')
+    
     const response = await fetch(endpoint, {
         method: 'POST',
         headers: headers,
         body: body
     })
+    console.log('three.......', value)
     
     const data = await response.json();
-    
+    console.log(data)
     return data;
 }
 

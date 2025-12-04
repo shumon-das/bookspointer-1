@@ -147,6 +147,9 @@ export const labels = {
         areYouSure: "আপনি কি নিশ্চিত?",
         removeFromLibrary: "আপনি এটি লাইব্রেরী থেকে মুছে ফেলতে চাইছেন।"
     },
+    or: "অথবা",
+    signInWithGoogle: "গুগলের মাধ্যমে লগইন করুন",
+    notifications: "নোটিফিকেশন",
 }
 
 export default labels;

@@ -1,50 +1,83 @@
-import React, { useEffect } from 'react';
-import { Button, View, Text } from 'react-native';
-import * as Google from 'expo-auth-session/providers/google';
-import * as WebBrowser from 'expo-web-browser';
-import Constants from 'expo-constants'; // To access extra config from app.json
+import { useAuthStore } from '@/app/store/auth';
+import labels from '@/app/utils/labels';
+import goToProfile from '@/helper/redirectToProfile';
+import { googleSignin } from '@/services/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { GoogleSignin, isErrorWithCode, isSuccessResponse, statusCodes } from '@react-native-google-signin/google-signin';
+import { router } from 'expo-router';
+import { Alert, View, Text, TouchableOpacity, Image } from 'react-native';
 
-// This is important for handling redirects on web platforms
-WebBrowser.maybeCompleteAuthSession();
+GoogleSignin.configure({
+  webClientId: "995445721362-vs6lio6ova5qedcotndpik6c6olg4ohp.apps.googleusercontent.com",
+});
 
-export default function GoogleLogin() {
-  // Retrieve client IDs from app.json extra field (use optional chaining to avoid runtime errors in strict mode)
-  const webClientId = Constants.expoConfig?.extra?.googleClientId?.web;
-  const androidClientId = Constants.expoConfig?.extra?.googleClientId?.android;
+const GoogleLogin = () => {
+  const handleGoogleSignIn = async () => {
+    GoogleSignin.signOut(); // Ensure previous sessions are cleared
+    try {
+      await GoogleSignin.hasPlayServices()
+      const response = await GoogleSignin.signIn();
 
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    androidClientId: androidClientId,
-    webClientId: webClientId,
-    // Add other client IDs if you have them for iOS, etc.
-    // iosClientId: 'YOUR_IOS_CLIENT_ID',
-    scopes: ['profile', 'email'], // Request necessary scopes
-  });
-
-  useEffect(() => {
-    if (response?.type === 'success') {
-      const { authentication } = response;
-      console.log('Authentication successful:', authentication);
-      // You can now use authentication.accessToken to fetch user info from Google APIs
-      // For example: fetch('https://www.googleapis.com/userinfo/v2/me', {
-      //   headers: { Authorization: `Bearer ${authentication.accessToken}` },
-      // }).then(res => res.json()).then(console.log);
-      alert('Signed in successfully!');
-    } else if (response?.type === 'error') {
-      console.error('Authentication error:', response.error);
-      alert(`Sign-in failed: ${response?.error?.message}`);
+      if (isSuccessResponse(response)) {
+        if (response.data.idToken) {
+          const loginResponse: {token: string; user: any} = await googleSignin(response.data.idToken)
+          if (loginResponse) {
+              await AsyncStorage.setItem("auth-user", JSON.stringify(loginResponse.user))
+              await AsyncStorage.setItem("auth-token", loginResponse.token)
+              useAuthStore.getState().setAuthenticatedUser(loginResponse.user)
+              goToProfile(router, useAuthStore)
+          } else {
+              GoogleSignin.signOut();
+              alert("login failed, unauthorized Google Sign-In attempt")
+          }
+        } else {
+            GoogleSignin.signOut();
+            alert("IdToken not found in Google Sign-In response")
+        }
+      } else {
+        console.log("sign in was cancelled by user")
+      }
+      
+    } catch (error) {
+      if (isErrorWithCode(error)) {
+        switch (error.code) {
+          case statusCodes.IN_PROGRESS:
+            Alert.alert("operation (eg. sign in) already in progress")
+            break;
+          case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
+            Alert.alert("Android only, play services not available or outdated")
+            break;
+          default:
+            Alert.alert("other error happened")
+        }
+      } else {
+        Alert.alert(JSON.stringify(error))
+      }
     }
-  }, [response]);
+  }
 
-  return (
-    // <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-    //   <Text>Google Sign-In Example</Text>
-      <Button
-        title="Sign in with Google"
-        disabled={!request} // Button is disabled until the request object is ready
-        onPress={() => {
-          promptAsync(); // This initiates the OAuth flow
+  return (<View>
+    <View style={{ width: '80%', margin: 'auto'}}>
+      <Text style={{textAlign: 'center', paddingVertical: 10}}>{labels.or}</Text>
+      <TouchableOpacity 
+        onPress={handleGoogleSignIn} 
+        style={{
+          backgroundColor: '#085a80', 
+          flexDirection: 'row', 
+          paddingVertical: 10,
+          borderRadius: 50,
+          justifyContent: 'center'
         }}
-      />
-    // </View>
-  );
+      >
+        <Image 
+          source={require('../assets/logo/sign_in_with_google.png')} 
+          style={{width: 20, height: 20, borderRadius: 20, marginHorizontal: 10}} 
+        />
+        <Text style={{color: 'white'}}>{labels.signInWithGoogle}</Text>
+      </TouchableOpacity>
+    </View>
+    
+  </View>)
 }
+
+export default GoogleLogin

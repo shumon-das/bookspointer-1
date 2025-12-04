@@ -54,16 +54,17 @@ const UserLibrary = ({authorId}: {authorId: number}) => {
     const renderItem = (item: any) => {
         return (
             <View style={styles.item}>
-                <TouchableOpacity style={{marginHorizontal: 5, width: '80%'}} onPress={() => router.push({
+                <TouchableOpacity style={{marginHorizontal: 10, width: '80%'}} onPress={() => router.push({
                     pathname: "/screens/book/details", 
                     params: {id: item.item.id, title: item.item.title, author: item.item.author.fullName}
                 })}>
-                    <Text style={{color: '#f0ececff'}}>{item.item.title}</Text>
+                    <Text style={{color: '#f0ececff', fontSize: 16}}>{item.item.title}</Text>
+                    <Text style={{color: '#f0ececff', fontSize: 10}}>{item.item.author.fullName}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={{marginHorizontal: 5, paddingHorizontal: 10}} onPress={() => deleteFromLibrary(item)}>
                     <Text style={{color: '#f0ececff'}}>
-                        <FontAwesome5 name="trash" />
+                        <FontAwesome5 name="trash" size={18}/>
                     </Text>
                 </TouchableOpacity>
             </View>
@@ -93,7 +94,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 10,
         marginVertical: 2,
         backgroundColor: '#085a80',
-        paddingVertical: 12,
+        paddingVertical: 8,
         borderRadius: 5,
     }
 })

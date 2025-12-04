@@ -9,7 +9,7 @@ import {startDuration, stopDuration} from './timeDuration'
  * @param {string} type - The type of activity (e.g., 'view').
  * @param {number | string | null} [targetId] - The ID of the target being viewed.
  */
-export function usePageLeaveTracker(type: string, targetId: string|number|null) {
+function usePageLeaveTracker(type: string, targetId: string|number|null) {
   useFocusEffect(
     React.useCallback(() => {
       // 1. Screen is focused (Equivalent to 'beforeEach' start)
@@ -38,3 +38,5 @@ export function usePageLeaveTracker(type: string, targetId: string|number|null) 
     }, [type, targetId])
   )
 }
+
+export default usePageLeaveTracker

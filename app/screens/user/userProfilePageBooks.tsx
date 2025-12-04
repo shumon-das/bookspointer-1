@@ -10,35 +10,18 @@ import { UserInterface } from "@/types/interfeces";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
-import { useCallback, useEffect, useLayoutEffect, useState } from "react";
-import { ActivityIndicator, FlatList, Image, SafeAreaView, Text, TouchableOpacity, View } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import { ActivityIndicator, BackHandler, FlatList, Image, SafeAreaView, Text, TouchableOpacity, View } from "react-native";
 import Modal from 'react-native-modal';
 import { Snackbar } from "react-native-paper";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 
 const UserProfilePageBooks = () => {
-  const {series} = useLocalSearchParams();
+  const {series, backurl} = useLocalSearchParams();
 
   const navigation = useNavigation();
+  useEffect(() => navigation.setOptions({ headerShown: false }), []);
   
-  useLayoutEffect(() => {
-    navigation.setOptions({
-        headerLeft: () => (<TouchableOpacity onPress={() => router.back()} style={{marginLeft: 10}}>
-            <FontAwesome5 name="arrow-left" size={18} color="#d4d4d4" />
-          </TouchableOpacity>
-        ),  
-        headerTitle: () => (
-            <View>
-              <Text style={{ fontSize: 12, fontWeight: 'bold', textAlign: 'center', color: '#d4d4d4' }}>
-                  {series}
-              </Text>
-            </View>
-        ),
-        headerRight: () => (<></>),
-    });
-  }, [navigation, series]);
-
   const [seriesName, setSeriesName] = useState<string|null>(null);
   const [user, setUser] = useState<UserInterface|null>(null);
   const router = useRouter();
@@ -77,12 +60,19 @@ const UserProfilePageBooks = () => {
     getAuthorBooksFromDb(seriesName as string);
   }, [seriesName, user]);
 
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      router.replace('/screens/user/userProfile');
+      return true
+    });
+    return () => backHandler.remove();
+  }, [backurl])
+
   const title = (title: string) => {
     return title.length > 20 ? title.slice(0, 20) + '...' : title;
   }
 
   const onChooseBook = (book: Book) => {
-    console.log('here...')
     router.push({pathname: "/screens/book/details", params: {
         id: book.id, 
         title: book.title, 
@@ -186,7 +176,7 @@ const UserProfilePageBooks = () => {
   
   return (
     <SafeAreaView style={{flex: 1}}>
-        <UserProfileHeader />
+        <UserProfileHeader author={user} />
 
         { booksNotFound ? (
             <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>

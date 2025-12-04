@@ -30,7 +30,8 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.monoranjan.bookspointer"
+      "package": "com.monoranjan.bookspointer",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "bundler": "metro",
@@ -40,6 +41,7 @@
     "plugins": [
       "@react-native-google-signin/google-signin",
       "expo-router",
+      "expo-notifications",
       [
         "expo-splash-screen",
         {
@@ -61,8 +63,8 @@
         "projectId": "5a76b2dc-30dc-4701-a88c-d837cf10eed1"
       },
       "googleClientId": {
-        "web": "995445721362-r19dvo31c8pmlt9ivdai56vltj474udm.apps.googleusercontent.com",
-        "android": "995445721362-04902rkmi63hfl271rk1moc0iqaf94no.apps.googleusercontent.com"
+        "web": "995445721362-vs6lio6ova5qedcotndpik6c6olg4ohp.apps.googleusercontent.com",
+        "android": "995445721362-r65gla5rolu5t9e92n73jgcb5fiptg01.apps.googleusercontent.com"
       }
     }
   }
