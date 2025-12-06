@@ -1,20 +1,35 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'expo-router';
+import { getNoViewNotificationCount } from '@/services/notificationApi';
 
 const NotificationBadge = () => {
   const [count, setCount] = useState(0);
+  const router = useRouter();
   
+  useEffect(() => {
+    const fetchNotificationCount = async () => {
+      const response = await getNoViewNotificationCount();
+      if (response && response.count) {
+        setCount(response.count);
+      }
+    };
 
-  return (<View style={styles.iconContainer}>
-    {count > 0 && (
-      <View style={styles.badge}>
-        <Text style={styles.badgeText}>{count}</Text>
-      </View>
-    )}
+    fetchNotificationCount();
+  }, []);
 
-    <MaterialIcons name="notifications" size={24} color="white" />
-  </View>)
+  return (<TouchableOpacity onPress={() => router.push('/screens/notifications')}>
+    <View style={styles.iconContainer}>
+      {count > 0 && (
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>{count}</Text>
+        </View>
+      )}
+
+      <MaterialIcons name="notifications" size={24} color="white" />
+    </View>
+  </TouchableOpacity>)
 };
 
 export default NotificationBadge;

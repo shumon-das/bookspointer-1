@@ -22,3 +22,13 @@ export interface BookInterface {
     categories: CategoryInterface[];
 }
 
+export interface NotificationDataInterface {
+    screenname: string;
+    bookId?: number;
+    userId?: number;
+    absolutePath?: {
+        pathname: string;
+        key: string;
+        value: any;
+    };
+}

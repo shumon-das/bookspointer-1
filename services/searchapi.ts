@@ -57,7 +57,21 @@ export const searchData = async (text: string) => {
     
     if (!response.ok) {
         // @ts-ignore
-        throw new Error('Failed to fetch authors', response.message)
+        console.log('Failed to fetch authors', response.message)
+    }
+
+    const data = await response.json();
+    
+    return data;
+}
+
+export const searchAuthorData = async (text: string, authorId: number) => {
+    const response = await fetch(`${API_CONFIG.BASE_URL}/api/author-books/${authorId}/${text}`)
+    
+    if (!response.ok) {
+        // @ts-ignore
+        alert('Failed to fetch authors', response?.message)
+        console.log('Failed to fetch authors', response.status)
     }
 
     const data = await response.json();

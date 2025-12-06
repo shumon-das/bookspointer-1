@@ -150,6 +150,8 @@ export const labels = {
     or: "অথবা",
     signInWithGoogle: "গুগলের মাধ্যমে লগইন করুন",
     notifications: "নোটিফিকেশন",
+    noNotifications: "কোন নোটিফিকেশন নেই।",
+    searhWriterBooks: "এর বইসমূহ খুঁজুন",
 }
 
 export default labels;

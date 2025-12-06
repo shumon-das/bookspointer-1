@@ -1,7 +1,7 @@
-import { searchData } from '@/services/searchapi'
+import { searchAuthorData, searchData } from '@/services/searchapi'
 import FontAwesome from '@expo/vector-icons/FontAwesome'
-import { Stack, useRouter } from 'expo-router'
-import React, { useEffect, useState } from 'react'
+import { Stack, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router'
+import React, { useCallback, useEffect, useState } from 'react'
 import { FlatList, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { useCacheStore } from '../store/search'
 import { labels } from '../utils/labels'
@@ -15,20 +15,29 @@ interface SearchItem {
 }
 
 const search = () => {
+    const {authorId, fullName} = useLocalSearchParams();
+    
     const cache = useCacheStore((state) => state.cache)
     const getFromCache = useCacheStore((state) => state.getFromCache)
     const hasInCache = useCacheStore((state) => state.hasInCache)
     const setInCache = useCacheStore((state) => state.setInCache)
-
+    
     const router = useRouter()
     const [searchText, setSearchText] = useState('')
     const [data, setData] = useState([] as SearchItem[])
     const [focusStyle, setFocusStyle] = useState({})
+    const [author, setAuthor] = useState<number|null>(null);
+    
+    useFocusEffect(useCallback(() => {
+        if (authorId && fullName) {
+            setAuthor(parseInt(authorId as string));
+        }
+    }, [authorId, fullName]))
 
     const handleSearch = async (text: string) => {
         setSearchText(text)
         if (!hasInCache(text.trim())) {
-            const result = await searchData(text);
+            const result = authorId ? await searchAuthorData(text, author as number) : await searchData(text);
             setData(result)
             setInCache(text.trim(), result)
             return
@@ -58,7 +67,7 @@ const search = () => {
             alignItems: 'center',
             height: 50,
             marginTop: 50,
-            marginBottom: 10,
+            // marginBottom: 10,
             marginHorizontal: 10,
             borderWidth: 1,
             padding: 10,
@@ -92,6 +101,9 @@ const search = () => {
                 })}
             />
         </View>
+        {fullName && <View>
+            <Text style={{textAlign: 'center', color: 'gray'}}>{`${fullName} ${labels.searhWriterBooks}`}</Text>
+        </View>}
         <View style={{paddingBottom: 100}}>
             <FlatList
                 data={data}

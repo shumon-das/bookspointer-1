@@ -1,11 +1,12 @@
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { FlatList, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, BackHandler, FlatList, Text, TouchableOpacity, View } from "react-native";
 import labels from "../utils/labels";
-import { getNotificationBooks } from "@/services/notificationApi";
+import { getNotificationBooks, markNotificationAsRead } from "@/services/notificationApi";
 import useBookStore from "../store/book";
 
 const notifications = () => {
+    const [loading, setLoading] = useState(false);
     const router = useRouter();
     const navigation = useNavigation()
     useEffect(() => navigation.setOptions({ title: labels.notifications }), []);
@@ -14,31 +15,43 @@ const notifications = () => {
     const [items, setItems] = useState<any>(useBookStore.getState().notificationBooks);
 
     useEffect(() => {
-        if (data) {
-            const getItems = async () => {
-                const currentData = JSON.parse(data as string);
-                const dbData = await getNotificationBooks(currentData);
-                setItems(dbData.data);
-                useBookStore.getState().setNotificationBooks(dbData.data);
-            }
-            getItems();
+        const getItems = async () => {
+            setLoading(true);
+            const dbData = await getNotificationBooks();
+            setItems(dbData.data);
+            useBookStore.getState().setNotificationBooks(dbData.data);
+            setLoading(false);
         }
-    }, [data]);
+        getItems();
+    }, []);
+
+    useEffect(() => {
+        const deviceBackButtonAction = () => {
+            router.push('/');
+            return true
+        }
+        
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', deviceBackButtonAction);
+        return () => backHandler.remove();
+    }, [])
+
+    const onPressNotification = (item: any) => {
+        markNotificationAsRead(item.notificationId);
+        router.push({
+            pathname: "/screens/book/details", 
+            params: { 
+                id: item.id, 
+                title: item.title,
+                author: item.author,
+                content: null,
+                isQuote: 'no',
+                backurl: JSON.stringify({pathname: "/screens/notifications"})
+            }}
+        )
+    } 
 
     const renderItem = ({ item }: { item: any }) => (
-        <TouchableOpacity onPress={() => {
-            router.push({
-                pathname: "/screens/book/details", 
-                params: { 
-                    id: item.id, 
-                    title: item.title,
-                    author: item.author,
-                    content: null,
-                    isQuote: 'no',
-                    backurl: JSON.stringify({pathname: "/screens/notifications"})
-                }}
-            )
-          }} 
+        <TouchableOpacity onPress={() => onPressNotification(item)} 
           style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: '#ccc' }}
         >
             <Text style={{ fontWeight: 'bold', fontSize: 16 }}>{item.title}</Text>
@@ -47,7 +60,21 @@ const notifications = () => {
         </TouchableOpacity>
     );
 
-    return (<FlatList data={items} keyExtractor={(item: any) => item.id} renderItem={renderItem} />);
+    if (!items || items.length === 0) {
+        return (
+            loading 
+            ? <ActivityIndicator size="large" color="#0000ff" className="mt-10 self-center" />
+            : <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                <Text>{labels.noNotifications}</Text>
+              </View>
+        );
+    }
+
+    return (
+        loading 
+        ? <ActivityIndicator size="large" color="#0000ff" className="mt-10 self-center" />
+        : <FlatList data={items} keyExtractor={(item: any) => item.id} renderItem={renderItem} />
+    );
 }
 
 export default notifications;

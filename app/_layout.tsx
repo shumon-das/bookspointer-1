@@ -28,6 +28,12 @@ export default function RootLayout() {
             pathname: `/screens/book/details`, 
             params: { data: JSON.stringify(data) } 
           });
+        } else {
+          const responseData = response.notification.request.content.data as any;
+          router.push({
+            pathname: responseData.absolutePath.pathname, 
+            params: { [responseData.absolutePath.key]: JSON.stringify(responseData.absolutePath.value) } 
+          });
         }
       }
     );

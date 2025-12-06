@@ -110,13 +110,9 @@ export default function Index() {
         <TouchableOpacity onPress={() => router.push('/screens/book/create-post')}>
             <Text style={[styles2.marginLeft, {color: 'white'}]}>{labels.writeBook}</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push('/screens/notifications')}>
-            {/* <Text style={[styles2.marginLeft, {color: 'white'}]}>
-              <Text>1</Text>
-              <MaterialIcons name="notifications" size={24} color="white" />
-            </Text> */}
-            <NotificationBadge />
-        </TouchableOpacity>
+        
+        <NotificationBadge />
+        
         {loggedInUser && (
             <TouchableOpacity onPress={goToProfile} style={styles2.userImgParentElement}>
                 <Image 
