@@ -3,10 +3,12 @@ import { singleBook } from '@/services/api';
 import { decryptBook, encryptedPagesNumbers } from '@/app/utils/download';
 import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
-import { BackHandler, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, BackHandler, Text, TouchableOpacity, View } from 'react-native';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import Pagination from '@/components/micro/book/details/pagination';
 import usePageLeaveTracker from '@/app/utils/routerGuard';
+import { getChunk, getTotalChunks } from '@/app/utils/database/manipulateBooks';
+import { getLastReadProgress, saveReadProgress } from '@/app/utils/database/readProgress';
 
 const details = () => {
     const {id, title, author, content = null, isQuote = 'no', backurl = null} = useLocalSearchParams();
@@ -64,10 +66,30 @@ const details = () => {
     useFocusEffect(
       useCallback(() => {
         console.log('Fetching book details for id:', id);
-        fetchChunks(page)
+        if (!content) {
+          console.log('Fetching book details for database: ', id);
+          const lastProgress = async () => {
+            const lastPageNumber = await getLastReadProgress(String(id));
+            setPage(lastPageNumber)
+            fetchChunks(lastPageNumber)
+          }
+          lastProgress()
+        }
+        if (content) {
+            console.log('Fetching book details for download***: ', id)
+            const fetchBook = async () => {
+            const chunksCount = await getTotalChunks(String(id))
+            setTotalPages(chunksCount)
+            const lastPageNumber = await getLastReadProgress(String(id));
+            setPage(lastPageNumber)
+            const texts = await getChunk(String(id), lastPageNumber)
+            setPageText(texts)
+            setLoading(false)
+          }
+          fetchBook()
+        }
       }, [id, navigation])
     );
-
 
     const fetchChunks = async (pageNumber: number) => {
         setLoading(true);
@@ -81,39 +103,31 @@ const details = () => {
           setLoading(false)
         }
     };
-    
-    const fetchDecryptChunks = async (pageNumber: number) => {
-      const pagesLength = await encryptedPagesNumbers(parseInt(id as string), title as string, author as string);
-      if (pageNumber === pagesLength) return;
 
-      setLoading(true);
-        try {
-          const texts = await decryptBook(parseInt(id as string), title as string, author as string, pageNumber) as string
-          setPageText(texts);
-          
-          setTotalPages(pagesLength)
-        } catch (error) {
-          console.log(error);
-        } finally {
-          setLoading(false)
-        }
+    const getPageBook = async (value: number) => {
+      if (content) {
+        console.log('page number ', value)
+        const texts = await getChunk(String(id), value -1)
+        setPageText(texts)
+      } else {
+        fetchChunks(value)
+      }
+      await saveReadProgress(String(id), value)
     }
-
-    const getPageBook = (value: number) => content ? fetchDecryptChunks(value) : fetchChunks(value)
 
     return (
     <View style={{flexDirection: 'column', justifyContent: 'space-between', height: '88%'}}>
       <View style={{marginVertical: 5}}>
-        <HtmlContent 
+        {loading ? <ActivityIndicator ></ActivityIndicator> : (<HtmlContent 
             content={pageText} 
             isDetailsScreen={true}
             fontSize={title.includes('quote') ? 20 : 16}
             textColor={'black'}
             backgroundColor={'#fff'}
-        />
+        />)}
       </View>
 
-      <Pagination currentPage={page} data={{total_pages: totalPages}} onChange={getPageBook} />
+      <Pagination currentPage={page} data={{total_pages: totalPages, book_id: id}} onChange={getPageBook} />
     </View>
   )
 }

@@ -2,9 +2,9 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react
 import React, { useCallback, useLayoutEffect, useState } from 'react'
 import { labels } from '../utils/labels';
 import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
-import { decryptBook, deleteBook, listDownloadedBooks } from '../utils/download';
 import { Snackbar } from 'react-native-paper';
 import Feather from '@expo/vector-icons/Feather';
+import { listBooks, deleteBook } from '../utils/database/manipulateBooks';
 
 interface DownloadedBook {
   id: string; 
@@ -13,13 +13,13 @@ interface DownloadedBook {
 
 const Download = () => {
   const router = useRouter();
-  const [books, setBooks] = useState([] as DownloadedBook[]);
+  const [books, setBooks] = useState([] as any[]);
   const [toastVisible, setToastVisible] = useState(false)
 
   useFocusEffect(
     useCallback(() => {
       const fetchBooks = async () => {
-        const downloaded = await listDownloadedBooks();
+        const downloaded = await listBooks() as any[];
         setBooks(downloaded);
       };
 
@@ -29,7 +29,6 @@ const Download = () => {
 
   const navigation = useNavigation();
   useLayoutEffect(() => {
-    // Set the header title for the download screen
     navigation.setOptions({
       headerLeft: () => (<></>),
       title: labels.download,
@@ -46,54 +45,42 @@ const Download = () => {
     });
   }, []) 
 
-  const openBook = async (itemId: string) => {
-    const [id, title, author] = itemId.split('.').slice(0, 4);
-    if (!id || !title || !author) return 'No book found';
-
+  const openBook = async (item: any) => {
+    if(!item) return
     try {
-      const content = await decryptBook(id as unknown as number, title, author);
-      
-      if (content) {
-        router.push({
-          pathname: "/screens/book/details", 
-          params: {id: id, title: title, author: author, content, isQuote: 'no'}
-        })
-      }
-      else {
-        alert('Failed to open book.');
-      }
+      const content = 'downloaded book';
+      router.push({
+        pathname: "/screens/book/details", 
+        params: {id: item.book_id, title: item.title, author: item.author, content, isQuote: 'no'}
+      })
     } catch (error) {
       console.error('Error opening book:', error);
       alert('Failed to open book.');
     }  
   };
 
-  const handleDelete = (item: {id: string; path: string}) => async () => {
-
-    const deleted = await deleteBook(item.path);
-
-    if (deleted) {
+  const handleDelete = (item: any) => async () => {
+    try {
+      await deleteBook(item.book_id)
       setBooks((prevBooks) => prevBooks.filter((book) => book.id !== item.id));
       setToastVisible(true);
-    } else {
+    } catch(e) {
       alert('Failed to delete book.');
+      console.log('Failed to delete book. ', e)
     }
   };
 
-  const renderBook = (item: {id: string; path: string}) => {
-    const [id, title, author] = item.id.split('.').slice(0, 4);
-    if (!id || !title || !author) return 'No book found';
+  const renderBook = (item: any) => {
+    if (!item.book_id || !item.title || !item.author) return 'No book found';
     
-    const bookTitle = title.replace(/_/g, ' ');
-    const bookAuthor = author.replace(/_/g, ' ');
     return (
       <View style={[styles.itemContainer, {backgroundColor: '#fff'}]}>
         <View style={styles.textContainer}>
           <Text style={[styles.title, {color: 'black'}]}>
-          <Feather name="book-open" size={18} color={'black'} /> {bookTitle}
+          <Feather name="book-open" size={18} color={'black'} /> {item.title}
           </Text>
           <Text style={[styles.subtitle, {color: 'black'}]}>
-            <Feather name="user" size={18} color={'black'} /> {bookAuthor}
+            <Feather name="user" size={18} color={'black'} /> {item.author}
           </Text>
         </View>
         <View >
@@ -132,7 +119,7 @@ const Download = () => {
             data={books}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => openBook(item.id)}>
+              <TouchableOpacity onPress={() => openBook(item)}>
                 {renderBook(item)}
               </TouchableOpacity>
             )}

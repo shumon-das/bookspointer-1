@@ -6,9 +6,14 @@ import { StatusBar } from 'expo-status-bar';
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
+import { initTables } from './utils/database/initTables';
 
 export default function RootLayout() {
   const router = useRouter();
+
+  useEffect(() => {
+    initTables()
+  }, []);
 
   useEffect(() => {
   const subscription = Notifications.addNotificationResponseReceivedListener(

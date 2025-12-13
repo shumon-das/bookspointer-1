@@ -75,15 +75,15 @@ export async function listDownloadedBooks() {
   }
 }
 
-export async function deleteBook(filePath: string) {
-  try {
-    await FileSystem.deleteAsync(filePath, { idempotent: true });
-    return true;
-  } catch (error) {
-    console.error('Failed to delete book:', error);
-    return false;
-  }
-}
+// export async function deleteBook(filePath: string) {
+//   try {
+//     await FileSystem.deleteAsync(filePath, { idempotent: true });
+//     return true;
+//   } catch (error) {
+//     console.error('Failed to delete book:', error);
+//     return false;
+//   }
+// }
 
 
 export async function isDownloaded(bookId: number) {
@@ -106,7 +106,7 @@ export default {
   encryptAndSaveBook,
   decryptBook,
   listDownloadedBooks,
-  deleteBook,
+  // deleteBook,
   isDownloaded,
   encryptedPagesNumbers
 };

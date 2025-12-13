@@ -6,13 +6,12 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import React, { useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { ActivityIndicator } from 'react-native-paper';
+import { insertBook, makeChunks } from '@/app/utils/database/manipulateBooks';
 
 
 const DownloadButton = ({ bookId, title, author, uuid, onDownloaded }: {bookId: number; title: string; author: string; uuid: string, onDownloaded: (isSave: Boolean) => void}) => {
-  const [user, setUser] = useState(null as null | User)
   const [loading, setLoading] = useState(false)
   const [downloaded, setDownloaded] = useState(false)
-
 
   useEffect(() => {
     const checkIsDownloaded = async () => {
@@ -26,11 +25,11 @@ const DownloadButton = ({ bookId, title, author, uuid, onDownloaded }: {bookId: 
   const onDownload = async () => {
     setLoading(true)
     const book = await fullBook(uuid);
-    const path = await encryptAndSaveBook(bookId, title, author, book.content);
-    if (path) {
-      setLoading(false)
-      onDownloaded(true);
-    }
+    const chunks = await makeChunks(book.content);
+    await insertBook(String(bookId), title, author, chunks);
+
+    setLoading(false)
+    onDownloaded(true);
   };
 
   const renderIcon = () => {

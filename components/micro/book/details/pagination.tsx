@@ -1,65 +1,93 @@
-import { View, StyleSheet, TouchableOpacity, Text } from "react-native"
-import AntDesign from '@expo/vector-icons/AntDesign';
-import { useState } from "react";
+import { ScrollView, TouchableOpacity, View, Text, StyleSheet } from "react-native";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import englishNumberToBengali from "@/app/utils/englishNumberToBengali";
+import { useFocusEffect } from "expo-router";
 
-const Pagination = ({currentPage, data, onChange}: {currentPage: number, data: any, onChange: (value: number) => void}) => {
-    const [page, setPage] = useState(currentPage)
-    // How many page buttons to show
-    const windowSize = 5;
+const ITEM_WIDTH = 45; // width of each page button (must match your styling)
 
-    // Calculate the start & end page
-    const half = Math.floor(windowSize / 2);
-    let start = Math.max(1, page - half);
-    let end = Math.min(data.total_pages, page + half);
+const Pagination = ({currentPage, data, onChange}: {currentPage: number; data: any; onChange: (value: number) => void;}) => {
+  const [page, setPage] = useState(currentPage);
+  const scrollRef = useRef<ScrollView>(null);
 
-    // Adjust if near boundaries
-    if (end - start + 1 < windowSize) {
-    if (start === 1) {
-        end = Math.min(data.total_pages, start + windowSize - 1);
-    } else if (end === data.total_pages) {
-        start = Math.max(1, end - windowSize + 1);
+  const pages = Array.from({ length: data.total_pages }, (_, i) => i + 1);
+
+  useFocusEffect(useCallback(() => setPage(currentPage), [currentPage]))
+
+  const onPageChange = (changedPageNumber: number) => {
+    setPage(changedPageNumber);
+    onChange(changedPageNumber);
+  };
+
+  // 🔥 Auto-scroll to keep active page centered
+  useEffect(() => {
+    const index = page - 1; // 0-based index
+    const xOffset = index * ITEM_WIDTH - 150; // center offset
+
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({
+        x: Math.max(0, xOffset),
+        animated: true,
+      });
     }
-    }
+  }, [page]);
 
-    // Generate array of pages to display
-    const pagesToShow = [];
-        for (let i = start; i <= end; i++) {
-        pagesToShow.push(i);
-    }
-
-    const onPageChange = (changedPageNumber: number) => {
-        setPage(changedPageNumber)
-        onChange(changedPageNumber)
-    }
-
-    return (<View style={{ flexDirection: "row", justifyContent: 'center', alignContent: 'center', marginTop: 5, height: 60 }}>
+  return (
+    <View>
+      <View style={{flexDirection: "row",justifyContent: "center",marginTop: 0,height: 60,alignItems: "flex-start"}}>
         <TouchableOpacity style={styles.button} onPress={() => onPageChange(page - 1)} disabled={page === 1}>
-            <Text style={styles.buttonText}><AntDesign name="left" size={15} color="black" /></Text>
+          <Text style={styles.buttonText}>{"<"}</Text>
         </TouchableOpacity>
 
-        {pagesToShow.map((pageNumber) => (
-            <TouchableOpacity style={page === pageNumber ? styles.activeButton : styles.button} key={pageNumber} onPress={() => onPageChange(pageNumber)} disabled={page === pageNumber}>
-                <Text style={page === pageNumber ? styles.activeButtonText : styles.buttonText}>{String(englishNumberToBengali(pageNumber))}</Text>
+        {/* Scrollable page list */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          ref={scrollRef}
+          contentContainerStyle={{ flexDirection: "row" }}
+          style={{ maxWidth: "65%" }}
+        >
+          {pages.map((p) => (
+            <TouchableOpacity
+              key={p}
+              style={page === p ? styles.activeButton : styles.button}
+              onPress={() => onPageChange(p)}
+            >
+              <Text
+                style={
+                  page === p
+                    ? styles.activeButtonText
+                    : styles.buttonText
+                }
+              >
+                {englishNumberToBengali(p)}
+              </Text>
             </TouchableOpacity>
-        ))}
+          ))}
+        </ScrollView>
 
+        {/* Next */}
         <TouchableOpacity style={styles.button} onPress={() => onPageChange(page + 1)} disabled={page === data.total_pages}>
-            <Text style={styles.buttonText}><AntDesign name="right" size={15} color="black" /></Text>
+          <Text style={styles.buttonText}>{">"}</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.button,{borderRadius: 5, backgroundColor: '#444E60'}]} onPress={() => onPageChange(page + 1)} disabled={page === data.total_pages}>
-            <Text style={[styles.buttonText, {color: 'white'}]}>{englishNumberToBengali(data.total_pages)}</Text>
+
+        {/* Last page */}
+        <TouchableOpacity style={[styles.button, { backgroundColor: "#444E60" }]} onPress={() => onPageChange(data.total_pages)}>
+          <Text style={[styles.buttonText, { color: "white" }]}>
+            {englishNumberToBengali(data.total_pages)}
+          </Text>
         </TouchableOpacity>
-     </View>)
-}
+      </View>
+    </View>
+  );
+};
 
 export default Pagination
 
 const styles = StyleSheet.create({
     button: {
-        height: 40,
-        width: 40,
-        padding: 10,
+        height: 35,
+        width: 35,
+        padding: 5,
         marginHorizontal: 3,
         borderWidth: 1,
         borderRadius: 50,
@@ -70,9 +98,9 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     activeButton: {
-        height: 40,
-        width: 40,
-        padding: 10,
+        height: 35,
+        width: 35,
+        padding: 5,
         marginHorizontal: 5,
         borderWidth: 1,
         borderRadius: 50,
