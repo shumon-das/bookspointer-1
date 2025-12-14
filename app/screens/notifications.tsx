@@ -4,6 +4,7 @@ import { ActivityIndicator, BackHandler, FlatList, Text, TouchableOpacity, View 
 import labels from "../utils/labels";
 import { getNotificationBooks, markNotificationAsRead } from "@/services/notificationApi";
 import useBookStore from "../store/book";
+import HtmlContent from "@/components/micro/HtmlContent";
 
 const notifications = () => {
     const [loading, setLoading] = useState(false);
@@ -52,11 +53,11 @@ const notifications = () => {
 
     const renderItem = ({ item }: { item: any }) => (
         <TouchableOpacity onPress={() => onPressNotification(item)} 
-          style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: '#ccc' }}
+          style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: '#ccc', backgroundColor: '#fff' }}
         >
-            <Text style={{ fontWeight: 'bold', fontSize: 16 }}>{item.title}</Text>
-            <Text style={{ fontSize: 12, fontStyle: 'italic' }}>{item.author}</Text>
-            <Text style={{ fontSize: 14 }}>{item.content}</Text>
+            <Text style={{ paddingHorizontal: 10, fontWeight: 'bold', fontSize: 16 }}>{item.title}</Text>
+            <Text style={{ paddingHorizontal: 10, fontSize: 12, fontStyle: 'italic' }}>{item.author}</Text>
+            <HtmlContent content={item.content} />
         </TouchableOpacity>
     );
 

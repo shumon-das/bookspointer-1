@@ -13,7 +13,7 @@ interface LastVersionInterface {
 export const isAppUpdateExists = async (currentAppVersion: string) => {
     const version = await getVersionDetails(currentAppVersion)
     if (version && null === checkVersionDate(getTodayDate(), version.version_check_date)) {
-        console.log('version checked...')
+        // console.log('version checked...')
         return
     }
     if (version && version.app_version !== version.new_version) {

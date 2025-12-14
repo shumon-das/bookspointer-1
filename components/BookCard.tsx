@@ -8,7 +8,6 @@ import ShareButton from './micro/bookCardFooter/ShareButton';
 import HtmlContent from './micro/HtmlContent';
 import AudioBookButton from './micro/bookCardFooter/AudioBookButton';
 import DownloadButton from './micro/bookCardFooter/DownloadButton';
-import DefaultPostImage from './micro/DefaultPostImage';
 import PopOver from './micro/PopOver';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
