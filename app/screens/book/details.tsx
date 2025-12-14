@@ -78,8 +78,9 @@ const details = () => {
             const chunksCount = await getTotalChunks(String(id))
             setTotalPages(chunksCount)
             const lastPageNumber = await getLastReadProgress(String(id));
-            setPage(lastPageNumber)
-            const texts = await getChunk(String(id), lastPageNumber)
+            const downloadBookPageNumber = lastPageNumber - 1;
+            setPage(downloadBookPageNumber)
+            const texts = await getChunk(String(id), downloadBookPageNumber)
             setPageText(texts)
             setLoading(false)
           }

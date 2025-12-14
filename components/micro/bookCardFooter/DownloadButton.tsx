@@ -38,10 +38,10 @@ const DownloadButton = ({ bookId, title, author, uuid, onDownloaded }: {bookId: 
                 <Text style={{fontSize: 10, color: '#282C35'}}>{labels.downloadedAlready}</Text>
               </>
             : (<>
-                <TouchableOpacity onPress={onDownload} >
+                <TouchableOpacity onPress={onDownload}>
                   <Text style={{textAlign: 'center'}}><FontAwesome name="download" size={14} color={'#282C35'} /></Text>
+                  <Text style={{fontSize: 10, color: '#282C35'}}>{labels.download}</Text>
                 </TouchableOpacity>
-                <Text style={{fontSize: 10, color: '#282C35'}}>{labels.download}</Text>
               </>)
         }
     </>
