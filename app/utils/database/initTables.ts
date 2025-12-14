@@ -30,5 +30,17 @@ export async function initTables() {
     )
   `);
 
+  await run(`
+    CREATE TABLE IF NOT EXISTS appversion (
+      app_version TEXT PRIMARY KEY,
+      version_check_date TEXT,
+      new_version TEXT,
+      new_version_alert_label_message TEXT,
+      new_version_alert_body_message TEXT,
+      playstore_url TEXT,
+      timestamp INTEGER
+    )
+  `);
+
   await run(`CREATE INDEX IF NOT EXISTS idx_chunks ON chunks(book_id, chunk_index)`);
 }

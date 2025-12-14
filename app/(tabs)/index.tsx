@@ -19,8 +19,8 @@ import { useIsFocused } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import usePageLeaveTracker from "../utils/routerGuard";
 import API_CONFIG from "../utils/config";
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import NotificationBadge from "@/components/NotificationBadge";
+import { isAppUpdateExists } from "../utils/app/isUpdate";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -33,6 +33,9 @@ Notifications.setNotificationHandler({
 });
 
 export default function Index() {
+  const APP_VERSION = '15_12_2025'
+  isAppUpdateExists(APP_VERSION)
+
   usePageLeaveTracker('home', null)
   
   const isConnected = useNetworkStatus(() => {

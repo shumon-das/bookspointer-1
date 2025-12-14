@@ -86,8 +86,8 @@ const authorProfile = () => {
               <Text style={{fontSize: 12}}>{labels.reads}</Text>
           </View>
           <View style={{ width: '20%', alignItems: 'center' }}>
-              <Text>{ englishNumberToBengali(author ? author.totalReads : 0)}</Text>
-              <Text style={{fontSize: 12}}>{labels.reads}</Text>
+              <Text>{ englishNumberToBengali(author ? author.totalBooks : 0)}</Text>
+              <Text style={{fontSize: 12}}>{labels.books}</Text>
           </View>
           <View style={{ width: '15%', alignItems: 'center' }}>
             <Text>{englishNumberToBengali(author ? author.totalBooks : 0)}</Text>

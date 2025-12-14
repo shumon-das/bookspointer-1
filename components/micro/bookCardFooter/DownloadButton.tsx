@@ -1,12 +1,10 @@
-import { User } from '@/components/types/User';
 import { fullBook } from '@/services/api';
-import { encryptAndSaveBook, isDownloaded } from '@/app/utils/download';
 import { labels } from '@/app/utils/labels';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import React, { useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { ActivityIndicator } from 'react-native-paper';
-import { insertBook, makeChunks } from '@/app/utils/database/manipulateBooks';
+import { getTotalChunks, insertBook, makeChunks } from '@/app/utils/database/manipulateBooks';
 
 
 const DownloadButton = ({ bookId, title, author, uuid, onDownloaded }: {bookId: number; title: string; author: string; uuid: string, onDownloaded: (isSave: Boolean) => void}) => {
@@ -15,8 +13,8 @@ const DownloadButton = ({ bookId, title, author, uuid, onDownloaded }: {bookId: 
 
   useEffect(() => {
     const checkIsDownloaded = async () => {
-      const downloaded = await isDownloaded(bookId);
-      setDownloaded(downloaded ? true : false);
+      const downloaded = await getTotalChunks(String(bookId));
+      setDownloaded(downloaded > 0);
     }
 
     checkIsDownloaded()

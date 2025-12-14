@@ -42,7 +42,7 @@ const ProfileUpdate = () => {
                 setLastName(user.lastName || '')
                 setEmail(user.email || '')
                 setDescription(user.details.description || '')
-                setSocials(user.details.socials)
+                setSocials(user.details.socials ?? [{facebook: ''}, {instagram: ''}, {telegram: ''}])
             }
         }
         loadUserData();
@@ -190,7 +190,7 @@ const ProfileUpdate = () => {
                 </View>
             </List.Accordion>
 
-            <List.Accordion title={labels.user.update.socials}>
+            {/* <List.Accordion title={labels.user.update.socials}>
                 <View style={styles.col}>
                     <TextInput
                         style={styles.textInput}
@@ -238,7 +238,7 @@ const ProfileUpdate = () => {
                         <FontAwesome5 name="check-circle" size={24} color="black" />                    
                     </TouchableOpacity>
                 </View>
-            </List.Accordion>
+            </List.Accordion> */}
           </List.Section>
 
           <View style={[styles.col]}>

@@ -19,5 +19,5 @@ export async function getLastReadProgress(bookId: string) {
     `SELECT chunk_index FROM reads WHERE book_id = ?`,
     [bookId]
   ) as any;
-  return row?.chunk_index ?? 0; // default first page
+  return row?.chunk_index ?? 1; // default first page
 }

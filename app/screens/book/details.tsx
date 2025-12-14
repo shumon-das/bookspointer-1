@@ -65,9 +65,7 @@ const details = () => {
 
     useFocusEffect(
       useCallback(() => {
-        console.log('Fetching book details for id:', id);
         if (!content) {
-          console.log('Fetching book details for database: ', id);
           const lastProgress = async () => {
             const lastPageNumber = await getLastReadProgress(String(id));
             setPage(lastPageNumber)
@@ -76,7 +74,6 @@ const details = () => {
           lastProgress()
         }
         if (content) {
-            console.log('Fetching book details for download***: ', id)
             const fetchBook = async () => {
             const chunksCount = await getTotalChunks(String(id))
             setTotalPages(chunksCount)
@@ -117,7 +114,7 @@ const details = () => {
 
     return (
     <View style={{flexDirection: 'column', justifyContent: 'space-between', height: '88%'}}>
-      <View style={{marginVertical: 5}}>
+      <View style={{marginVertical: 5, height: '99%'}}>
         {loading ? <ActivityIndicator ></ActivityIndicator> : (<HtmlContent 
             content={pageText} 
             isDetailsScreen={true}

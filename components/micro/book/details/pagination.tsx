@@ -11,7 +11,11 @@ const Pagination = ({currentPage, data, onChange}: {currentPage: number; data: a
 
   const pages = Array.from({ length: data.total_pages }, (_, i) => i + 1);
 
-  useFocusEffect(useCallback(() => setPage(currentPage), [currentPage]))
+  useFocusEffect(
+    useCallback(() => {
+      setPage(currentPage);
+    }, [currentPage])
+  )
 
   const onPageChange = (changedPageNumber: number) => {
     setPage(changedPageNumber);
@@ -71,8 +75,11 @@ const Pagination = ({currentPage, data, onChange}: {currentPage: number; data: a
         </TouchableOpacity>
 
         {/* Last page */}
-        <TouchableOpacity style={[styles.button, { backgroundColor: "#444E60" }]} onPress={() => onPageChange(data.total_pages)}>
-          <Text style={[styles.buttonText, { color: "white" }]}>
+        <TouchableOpacity style={[styles.totalPages, { backgroundColor: "#444E60" }]} onPress={() => onPageChange(page)}>
+          <Text style={[styles.activePageTexts, { color: "white" }]}>
+            {englishNumberToBengali(page)}
+          </Text>
+          <Text style={[styles.totalTexts, { color: "white" }]}>
             {englishNumberToBengali(data.total_pages)}
           </Text>
         </TouchableOpacity>
@@ -112,4 +119,17 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: 'white',
     },
+    totalPages: {
+      width: 35,
+      borderRadius: 5
+    },
+    activePageTexts: {
+      fontSize: 12,
+      textAlign: 'center',
+      backgroundColor: '#2A74F2',
+    },
+    totalTexts: {
+      fontSize: 12,
+      textAlign: 'center'
+    }
 })

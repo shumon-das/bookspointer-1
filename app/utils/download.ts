@@ -55,58 +55,8 @@ export async function decryptBook(bookId: number, title: string, author: string,
   }
 }
 
-export async function listDownloadedBooks() {
-  try {
-    if (!FileSystem.documentDirectory) {
-        throw new Error('FileSystem.documentDirectory is not available');
-    }
-
-    const files = await FileSystem.readDirectoryAsync(FileSystem.documentDirectory);
-    const bookFiles = files.filter(file => file.endsWith('.book'));
-
-    const data = bookFiles.map(file => ({
-      id: file.replace('.book', ''),
-      path: `${FileSystem.documentDirectory}${file}`,
-    }));
-    return Array.from(new Set(data))
-  } catch (error) {
-    console.error('Failed to list downloaded books:', error);
-    return [];
-  }
-}
-
-// export async function deleteBook(filePath: string) {
-//   try {
-//     await FileSystem.deleteAsync(filePath, { idempotent: true });
-//     return true;
-//   } catch (error) {
-//     console.error('Failed to delete book:', error);
-//     return false;
-//   }
-// }
-
-
-export async function isDownloaded(bookId: number) {
-  if (!FileSystem.documentDirectory) {
-    throw new Error('FileSystem.documentDirectory is not available');
-  }
-
-  const files = await FileSystem.readDirectoryAsync(FileSystem.documentDirectory);
-  const bookFiles = files.filter(file => file.endsWith('.book'));
-
-  const data = bookFiles.map(file => ({
-    id: file.replace('.book', ''),
-    path: `${FileSystem.documentDirectory}${file}`,
-  }));
-
-  return data.find((bookPath) => bookPath.id.includes(bookId.toString()));
-}
-
 export default {
   encryptAndSaveBook,
   decryptBook,
-  listDownloadedBooks,
-  // deleteBook,
-  isDownloaded,
   encryptedPagesNumbers
 };
