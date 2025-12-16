@@ -82,8 +82,6 @@ const _layout = () => {
             }}
         />
         <Tabs.Screen name="book/[id]" options={{ href: null }} />
-        <Tabs.Screen name="book/details" options={{ href: null }} />
-        <Tabs.Screen name="book/update/[id]" options={{ href: null }} />
         <Tabs.Screen name="book/categoryBooks" options={{ href: null }} />
         <Tabs.Screen name="auth/login" options={{ href: null }} />
         <Tabs.Screen name="auth/registration" options={{ href: null }} />

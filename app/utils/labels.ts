@@ -152,7 +152,8 @@ export const labels = {
     notifications: "নোটিফিকেশন",
     noNotifications: "কোন নোটিফিকেশন নেই।",
     searhWriterBooks: "এর বইসমূহ খুঁজুন",
-    signInLoading: "সাইন ইন হচ্ছে..."
+    signInLoading: "সাইন ইন হচ্ছে...",
+    detailsScreenOfflineMessage: "আপনি অফলাইন, আপনার ডাটা কানেকশন ঠিক করুন।"
 }
 
 export default labels;

@@ -1,54 +1,35 @@
 import HtmlContent from '@/components/micro/HtmlContent';
 import { singleBook } from '@/services/api';
-import { decryptBook, encryptedPagesNumbers } from '@/app/utils/download';
 import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
-import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
-import { ActivityIndicator, BackHandler, Text, TouchableOpacity, View } from 'react-native';
-import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
-import Pagination from '@/components/micro/book/details/pagination';
+import React, { useCallback, useEffect, useState } from 'react';
+import { ActivityIndicator, BackHandler, SafeAreaView, View } from 'react-native';
+import Pagination from '@/components/micro/book/details/Pagination';
 import usePageLeaveTracker from '@/app/utils/routerGuard';
 import { getChunk, getTotalChunks } from '@/app/utils/database/manipulateBooks';
 import { getLastReadProgress, saveReadProgress } from '@/app/utils/database/readProgress';
+import { fetchNextPrevPageTexts } from '@/helper/details';
+import DetailsHeader from '@/components/micro/book/details/DetailsHeaader';
+import { useNetworkStatus } from '@/components/network/networkConnectionStatus';
+import DetailsOffline from '@/components/micro/book/details/DetailsOffline';
 
 const details = () => {
     const {id, title, author, content = null, isQuote = 'no', backurl = null} = useLocalSearchParams();
     const navigation = useNavigation();
     const backUrl = backurl && 'string' === typeof backurl ? JSON.parse(backurl as string) : ''
     const router = useRouter();
+
+    const isConnected = useNetworkStatus(() => {
+      console.log('✅ Online again, syncing data...');
+    });
     
-    useLayoutEffect(() => {
-        navigation.setOptions({
-        headerLeft: () => (<TouchableOpacity onPress={() => router.back()} style={{marginLeft: 10}}>
-            <FontAwesome5 name="arrow-left" size={18} color="#d4d4d4" />
-          </TouchableOpacity>
-        ),  
-        headerTitle: () => (
-            <View>
-            <Text style={{ fontSize: 12, fontWeight: 'bold', textAlign: 'center', color: '#d4d4d4' }}>
-                {title}
-            </Text>
-            <Text style={{ fontSize: 14, color: '#b7f0d4', textAlign: 'center' }}>
-                {author}
-            </Text>
-            </View>
-        ),
-        headerRight: () => (<></>),
-        headerTitleAlign: 'center',
-        headerStyle: {
-            height: 100,
-            backgroundColor: '#085a80',
-        },
-        headerTintColor: '#d4d4d4',
-        headerTitleStyle: {
-            fontWeight: 'bold',
-        },
-        });
-    }, [navigation, title, author]);
+    useEffect(() => navigation.setOptions({ headerShown: false }), []);
 
     usePageLeaveTracker('book_details', id as any) 
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+    const [prevPageText, setPrevPageText] = useState("");
     const [pageText, setPageText] = useState("");
+    const [nextPageText, setNextPageText] = useState("");
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -66,12 +47,15 @@ const details = () => {
     useFocusEffect(
       useCallback(() => {
         if (!content) {
-          const lastProgress = async () => {
+          const fetchActivePageTexts = async () => {
             const lastPageNumber = await getLastReadProgress(String(id));
             setPage(lastPageNumber)
-            fetchChunks(lastPageNumber)
+            await fetchChunks(lastPageNumber)
+            const data = await fetchNextPrevPageTexts(parseInt(id as string), lastPageNumber)
+            setPrevPageText(data.prevPageTexts)
+            setNextPageText(data.nextPageTexts)
           }
-          lastProgress()
+          fetchActivePageTexts()
         }
         if (content) {
             const fetchBook = async () => {
@@ -102,31 +86,64 @@ const details = () => {
         }
     };
 
-    const getPageBook = async (value: number) => {
+    const getPageBook = async (pageNumber: number) => {
       if (content) {
-        console.log('page number ', value)
-        const texts = await getChunk(String(id), value -1)
+        const texts = await getChunk(String(id), pageNumber -1)
         setPageText(texts)
       } else {
-        fetchChunks(value)
+        const isNextOrPrev = (pageNumber + 1) === page || (pageNumber - 1) === page;
+        if (isNextOrPrev) {
+          await onPressNextOrPrevButton(pageNumber)
+        } else {
+          await fetchChunks(pageNumber)
+          const data = await fetchNextPrevPageTexts(parseInt(id as string), pageNumber)
+          setPrevPageText(data.prevPageTexts)
+          setNextPageText(data.nextPageTexts)
+        }
+        setPage(pageNumber)
       }
-      await saveReadProgress(String(id), value)
+      await saveReadProgress(String(id), pageNumber)
+    }
+
+    const onPressNextOrPrevButton = async (pageNumber: number) => {
+      const next = pageNumber > page;
+      // console.log('currentPage ', page, 'PressedPage', pageNumber)
+      if (next) {
+        // console.log('next')
+        setPrevPageText(pageText)
+        setPageText(nextPageText)
+        const data = await singleBook({id: parseInt(id as string), page: pageNumber + 1})
+        setNextPageText(data.text)
+      } else {
+        // console.log('prev')
+        setNextPageText(pageText)
+        setPageText(prevPageText)
+        const data = await singleBook({id: parseInt(id as string), page: pageNumber - 1})
+          setPrevPageText(data.text)
+        }
     }
 
     return (
-    <View style={{flexDirection: 'column', justifyContent: 'space-between', height: '88%'}}>
-      <View style={{marginVertical: 5, height: '99%'}}>
-        {loading ? <ActivityIndicator ></ActivityIndicator> : (<HtmlContent 
-            content={pageText} 
-            isDetailsScreen={true}
-            fontSize={title.includes('quote') ? 20 : 16}
-            textColor={'black'}
-            backgroundColor={'#fff'}
-        />)}
-      </View>
+      <SafeAreaView>
+        <View style={{height: '11%', backgroundColor: '#085a80'}}>
+          <DetailsHeader data={{title: title as string, author: author as string}} />
+        </View>
+        <View style={{flexDirection: 'column', justifyContent: 'space-between', height: '83.5%'}}>
+          {!isConnected 
+            ? <DetailsOffline />
+            : (<View style={{marginVertical: 5, height: '99%'}}>
+            {loading ? <ActivityIndicator ></ActivityIndicator> : (<HtmlContent 
+                content={pageText} 
+                isDetailsScreen={true}
+                fontSize={title.includes('quote') ? 20 : 16}
+                textColor={'black'}
+                backgroundColor={'#fff'}
+            />)}
+          </View>)}
 
-      <Pagination currentPage={page} data={{total_pages: totalPages, book_id: id}} onChange={getPageBook} />
-    </View>
+          <Pagination currentPage={page} data={{total_pages: totalPages, book_id: id}} onChange={getPageBook} />
+        </View>
+      </SafeAreaView>
   )
 }
 
