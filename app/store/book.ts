@@ -2,6 +2,8 @@ import { create } from 'zustand';
 import { BookInterface, UserInterface } from '../../types/interfeces';
 
 interface BookStore {
+    homeBooks: BookInterface[];
+    setHomeBooks: (value: any[]) => void;
     userBooks: BookInterface[];
     authorBooks: BookInterface[];
     selectCategories: BookInterface[];
@@ -12,7 +14,9 @@ interface BookStore {
     setNotificationBooks: (value: any[]) => any[],
 }
 
-export const useBookStore = create<BookStore>((set: any) => ({
+export const useBookStore = create<BookStore>((set: any, get: any) => ({
+    homeBooks: [],
+    setHomeBooks: (homeBooks: any[]) => set({ homeBooks }),
     userBooks: [],
     authorBooks: [],
     selectCategories: [],
@@ -22,5 +26,3 @@ export const useBookStore = create<BookStore>((set: any) => ({
     notificationBooks: [],
     setNotificationBooks: (notificationBooks) => set({ notificationBooks }),
 }))
-
-export default useBookStore;

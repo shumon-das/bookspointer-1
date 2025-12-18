@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { ActivityIndicator, BackHandler, FlatList, Text, TouchableOpacity, View } from "react-native";
 import labels from "../utils/labels";
 import { getNotificationBooks, markNotificationAsRead } from "@/services/notificationApi";
-import useBookStore from "../store/book";
+import { useBookStore } from "../store/book";
 import HtmlContent from "@/components/micro/HtmlContent";
 
 const notifications = () => {
@@ -28,7 +28,7 @@ const notifications = () => {
 
     useEffect(() => {
         const deviceBackButtonAction = () => {
-            router.push('/');
+            router.back();
             return true
         }
         

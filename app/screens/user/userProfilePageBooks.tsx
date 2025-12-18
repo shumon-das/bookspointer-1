@@ -62,7 +62,7 @@ const UserProfilePageBooks = () => {
 
   useEffect(() => {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-      router.replace('/screens/user/userProfile');
+      router.back();
       return true
     });
     return () => backHandler.remove();

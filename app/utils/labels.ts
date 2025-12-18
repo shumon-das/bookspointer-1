@@ -42,6 +42,8 @@ export const labels = {
     userBookTypes: {
         books: "বইসমূহ",
         library: "লাইব্রেরী",
+        // history: "ব্রাউজিং ইতিহাস",
+        history: "ইতিহাস",
     },
     writeBook: "বই লিখুন",
     writeNewBook: "লিখুন",
@@ -87,6 +89,9 @@ export const labels = {
     saveBook: "পোষ্ট করুন",
     reader: "পাঠক",
     publisher: 'পাবলিশার',
+    totalReads: "মোট পড়া হয়েছে",
+    totalPages: "মোট পৃষ্টা",
+    readed: "পড়েছেন",
     user: {
         firstName: "নামের প্রথম অংশ",
         lastName: "নামের শেষ অংশ",
@@ -94,7 +99,7 @@ export const labels = {
         phone: "ফোন নম্বর",
         totalBooks: "মোট বই",
         totalAudios: "মোট অডিও বই",
-        totalReads: "মোট পড়া হয়েছে",
+        page: "পৃষ্টা",
         totalDownloads: "মোট ডাউনলোড হয়েছে",
         totalLikes: "মোট লাইক হয়েছে",
         totalComments: "মোট মন্তব্য হয়েছে",

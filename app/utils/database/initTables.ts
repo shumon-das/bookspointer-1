@@ -22,13 +22,13 @@ export async function initTables() {
     )
   `);
 
-  await run(`
-    CREATE TABLE IF NOT EXISTS reads (
-      book_id TEXT PRIMARY KEY,
-      chunk_index INTEGER,
-      timestamp INTEGER
-    )
-  `);
+  // await run(`
+  //   CREATE TABLE IF NOT EXISTS reads (
+  //     book_id TEXT PRIMARY KEY,
+  //     chunk_index INTEGER,
+  //     timestamp INTEGER
+  //   )
+  // `);
 
   await run(`
     CREATE TABLE IF NOT EXISTS appversion (
@@ -38,6 +38,21 @@ export async function initTables() {
       new_version_alert_label_message TEXT,
       new_version_alert_body_message TEXT,
       playstore_url TEXT,
+      timestamp INTEGER
+    )
+  `);
+
+  await run(`
+    CREATE TABLE IF NOT EXISTS history (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT,
+      author TEXT,
+      target INTEGER UNIQUE,
+      read_duration TEXT,
+      total_page INTEGER,
+      active_page INTEGER,
+      greater_readed_page INTEGER,
+      browsing_time INTEGER,
       timestamp INTEGER
     )
   `);

@@ -25,7 +25,7 @@ const userProfile = () => {
   useEffect(() => navigation.setOptions({ headerShown: false }), []);
   useEffect(() => {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-      router.replace('/');
+      router.back();
       return true
     });
     return () => backHandler.remove();
