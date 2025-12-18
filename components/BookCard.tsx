@@ -122,4 +122,4 @@ const BookCard = ({book, snackMessage, backurl}: {book: BookCardProps, snackMess
   )
 }
 
-export default BookCard
+export default React.memo(BookCard)

@@ -28,8 +28,8 @@ const registration = () => {
     const handleRegister = async () => {
         const date = new Date();
         let initialUserState = {
-            firstName: 'your',
-            lastName: 'name-' + date.getTime(),
+            firstName: labels.user.register.firstName,
+            lastName: labels.user.register.lastName,
             email: '',
             roles: ['ROLE_USER'],
             phone: '',
@@ -112,6 +112,7 @@ const registration = () => {
                     }}
                     value={email}
                     placeholder="email"
+                    placeholderTextColor="#999"
                 />
                 {emailError ? <Text style={{color: 'red', fontSize: 12, textAlign: 'center'}}>{labels.invalidEmail}</Text> : ''}
                 <TextInput
@@ -119,6 +120,7 @@ const registration = () => {
                     onChangeText={(value) => setPassword(value)}
                     value={password}
                     placeholder="password"
+                    placeholderTextColor="#999"
                     secureTextEntry={true}
                 />
                 <TextInput
@@ -129,6 +131,7 @@ const registration = () => {
                     }}
                     value={confirmPassword}
                     placeholder="confirm password"
+                    placeholderTextColor="#999"
                     secureTextEntry={true}
                 />
                 {passwordError ? <Text style={{color: 'red', fontSize: 12, textAlign: 'center'}}>{labels.passswordConfirmNotMatch}</Text> : ''}

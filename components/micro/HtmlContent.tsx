@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { ScrollView, View, Image } from "react-native";
 import HTMLView from "react-native-htmlview";
+import DetailsScreenBottomAds from "./meta/DetailsScreenBottomAds";
 
 
 const HtmlContent = ({ content, isDetailsScreen=false }: any) => {
@@ -36,6 +37,7 @@ const HtmlContent = ({ content, isDetailsScreen=false }: any) => {
             }
           }}
         />
+        {isDetailsScreen && <DetailsScreenBottomAds />}
         {isDetailsScreen && <View style={{height: 50}}></View>}
     </ScrollView> 
   );

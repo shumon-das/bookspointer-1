@@ -107,6 +107,10 @@ export const labels = {
         profileUpdated: "প্রোফাইল সফলভাবে আপডেট হয়েছে।",
         profileUpdateError: "প্রোফাইল আপডেট করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।",
         followMe: "সাথে থাকুন",
+        register: {
+            firstName: "নতুন",
+            lastName: "পাঠক",
+        },
         update: {
             name: "নাম আপডেট করুন",
             email: "ইমেইল আপডেট করুন",

@@ -107,4 +107,4 @@ const QuoteCard = React.memo(({book, snackMessage}: {book: BookCardProps, snackM
   )
 })
 
-export default QuoteCard
+export default React.memo(QuoteCard)

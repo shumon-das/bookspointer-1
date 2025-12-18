@@ -20,8 +20,8 @@ export const styles = StyleSheet.create({
         marginHorizontal: 10
     },
     userImg: { 
-        width: 30, 
-        height: 30, 
+        width: 28, 
+        height: 28, 
         borderRadius: 50, 
         borderWidth: 1,
         borderColor: 'white',
