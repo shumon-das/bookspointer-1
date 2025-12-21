@@ -1,4 +1,4 @@
-import { KeyboardAvoidingView, ScrollView, TextInput, TouchableOpacity, View, Text } from "react-native";
+import { KeyboardAvoidingView, ScrollView, TextInput, TouchableOpacity, View, Text, Alert } from "react-native";
 import { styles } from '@/styles/profileUpdate.styles';
 import { useEffect, useState } from "react";
 import { labels } from '@/app/utils/labels';
@@ -73,6 +73,15 @@ const ProfileUpdate = () => {
             setSnakBarMessage(response.message)
             setShowSnakBar(true)
             await AsyncStorage.setItem('auth-user', JSON.stringify(response.user))
+        }
+    }
+
+    const onPressLogout = async () => {
+        try {
+            await logout(router);
+        } catch (error) {
+            console.log(error)
+            Alert.alert('Logout Failed', JSON.stringify(error))
         }
     }
     
@@ -242,7 +251,7 @@ const ProfileUpdate = () => {
           </List.Section>
 
           <View style={[styles.col]}>
-                <TouchableOpacity style={{width: '100%'}} onPress={() => logout(router)}>
+                <TouchableOpacity style={{width: '100%'}} onPress={onPressLogout}>
                     <Text style={{width: '100%', textAlign:'center', color: 'red', fontWeight: 'bold', fontSize: 18}}>{labels.signOut}</Text>            
                 </TouchableOpacity>
           </View>

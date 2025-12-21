@@ -89,6 +89,7 @@ const search = () => {
                 onChangeText={handleSearch}
                 value={searchText}
                 placeholder={labels.search}
+                placeholderTextColor="#999"
                 onFocus={() => setFocusStyle({
                     shadowColor: '#000',
                     shadowOffset: {

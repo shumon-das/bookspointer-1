@@ -37,8 +37,8 @@ const HtmlContent = ({ content, isDetailsScreen=false }: any) => {
             }
           }}
         />
-        {isDetailsScreen && <DetailsScreenBottomAds />}
-        {isDetailsScreen && <View style={{height: 50}}></View>}
+        {/* {isDetailsScreen && <DetailsScreenBottomAds />} */}
+        {isDetailsScreen && <View style={{height: 100}}></View>}
     </ScrollView> 
   );
 };

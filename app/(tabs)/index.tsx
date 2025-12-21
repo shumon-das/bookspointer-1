@@ -148,7 +148,8 @@ export default function Index() {
 
     const renderItem = useCallback(({item, index}: {item: any, index: number}) => {
       if (item.title === 'ads-item' && index != 0) {
-        return <NativeFeedAds />
+        // return <NativeFeedAds />
+        return <></>
       }
 
       if (item.title === 'quote-song-poem' || item.title.includes('quote')) {

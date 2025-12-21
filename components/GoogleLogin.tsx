@@ -3,7 +3,7 @@ import labels from '@/app/utils/labels';
 import goToProfile from '@/helper/redirectToProfile';
 import { googleSignin } from '@/services/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { GoogleSignin, isErrorWithCode, isSuccessResponse, statusCodes } from '@react-native-google-signin/google-signin';
+import { GoogleSignin, isErrorWithCode, statusCodes } from '@react-native-google-signin/google-signin';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Alert, View, Text, TouchableOpacity, Image, ActivityIndicator, StyleSheet } from 'react-native';
@@ -13,59 +13,6 @@ GoogleSignin.configure({
   offlineAccess: true,
 });
 
-// const GoogleLogin = () => {
-//   const [loading, setLoading] = useState(false)
-//   const handleGoogleSignIn = async () => {
-//     // GoogleSignin.signOut(); // Ensure previous sessions are cleared
-//     try {
-//       await GoogleSignin.hasPlayServices({
-//         showPlayServicesUpdateDialog: true,
-//       })
-//       const response = await GoogleSignin.signIn();
-
-//       if (isSuccessResponse(response)) {
-//         setLoading(true)
-//         if (response?.data?.idToken) {
-//           const loginResponse: {token: string; user: any} = await googleSignin(response.data.idToken)
-
-//           if (loginResponse) {
-//               await AsyncStorage.setItem("auth-user", JSON.stringify(loginResponse.user))
-//               await AsyncStorage.setItem("auth-token", loginResponse.token)
-//               useAuthStore.getState().setAuthenticatedUser(loginResponse.user)
-//               goToProfile(router, useAuthStore)
-//           } else {
-//               GoogleSignin.signOut();
-//               Alert.alert("login failed, unauthorized Google Sign-In attempt")
-//           }
-//         } else {
-//             GoogleSignin.signOut();
-//             Alert.alert("IdToken not found in Google Sign-In response")
-//         }
-//       } else {
-//         console.log("sign in was cancelled by user")
-//       }
-      
-//     } catch (error) {
-//       if (isErrorWithCode(error)) {
-//         switch (error.code) {
-//           case statusCodes.IN_PROGRESS:
-//             Alert.alert(`operation (eg. sign in) already in progress: ${JSON.stringify(error)}`)
-//             break;
-//           case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
-//             Alert.alert(`Android only, play services not available or outdated: ${JSON.stringify(error)}`)
-//             break;
-//           default:
-//             Alert.alert(`other error happened: ${JSON.stringify(error)}`)
-//             console.log('isErrorWithCode ', error)
-//         }
-//       } else {
-//         Alert.alert(JSON.stringify(error))
-//         console.log('isErrorWithCode else ', error)
-//       }
-//     } finally {
-//       setLoading(false)
-//     }
-//   }
 const GoogleLogin = () => {
   const [loading, setLoading] = useState(false);
 
@@ -97,6 +44,7 @@ const GoogleLogin = () => {
       await AsyncStorage.setItem("auth-token", loginResponse.token);
 
       useAuthStore.getState().setAuthenticatedUser(loginResponse.user);
+      await GoogleSignin.signOut();
       goToProfile(router, useAuthStore);
 
     } catch (error: any) {
