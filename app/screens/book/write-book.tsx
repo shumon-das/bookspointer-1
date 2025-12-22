@@ -57,6 +57,7 @@ const WriteBook = () => {
     useEffect(() => {
         const loadSingleFullBook = async () => {
             if (bookuuid) {
+                setLoading(true)
                 const response = await fetch('https://api.bookspointer.com/book', {
                     method: "POST",
                     body: JSON.stringify({ uuid: bookuuid }),
@@ -66,6 +67,7 @@ const WriteBook = () => {
                 setCategory(data.category)
                 setAuthor(data.author)
                 useAuthStore.getState().setBookContent(data.content)
+                setLoading(false)
             }
         }
 
@@ -125,6 +127,10 @@ const WriteBook = () => {
 
     return (
         <View style={{flex: 1, marginHorizontal: 5}}>
+            <View style={{marginHorizontal: 10, marginTop: 5}}>
+                {loading && <ActivityIndicator></ActivityIndicator>}
+                {loading && <Text>{labels.loadingBook}</Text>}
+            </View>
             <View style={styles.title}>
                 <TextInput
                     style={styles.input}

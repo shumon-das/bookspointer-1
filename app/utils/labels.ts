@@ -136,6 +136,13 @@ export const labels = {
             telegram: "টেলিগ্রাম লিঙ্ক",
             youtube: "ইউটিউব লিঙ্ক",
         },
+        block: {
+            you: "আপনি",
+            blockUserButtonMessage: "কে ব্লক করছেন!",
+            blockWarningStart: "আপনি কি নিশ্চিত যে আপনি ",
+            blockWarningEnd: " কে ব্লক করতে চান? ব্লক করার পর আপনি আর তার কোন পোষ্ট দেখতে পাবেন না।",
+            userBlockedMessage: "কে ব্লক হয়েছে।",
+        }
     },
     createBook: {
         book: "বই",
@@ -162,7 +169,8 @@ export const labels = {
     noNotifications: "কোন নোটিফিকেশন নেই।",
     searhWriterBooks: "এর বইসমূহ খুঁজুন",
     signInLoading: "সাইন ইন হচ্ছে...",
-    detailsScreenOfflineMessage: "আপনি অফলাইন, আপনার ডাটা কানেকশন ঠিক করুন।"
+    detailsScreenOfflineMessage: "আপনি অফলাইন, আপনার ডাটা কানেকশন ঠিক করুন।",
+    loadingBook: "বই লোড হচ্ছে..., দয়া করে একটু অপেক্ষা করুন। এটি একটু সময় নিতে পারে।"
 }
 
 export default labels;

@@ -37,12 +37,27 @@ const BookCard = ({book, snackMessage, backurl}: {book: BookCardProps, snackMess
   const authStore = useAuthStore();
 
   const popoverIcon = <FontAwesome name="ellipsis-v" size={24} color="gray" />
-  const popoverMenus = [
-    {label: 'Edit'}
+  const popoverMenus = loggedInUser && loggedInUser.uuid === book.createdBy.uuid ? [
+    {label: 'Edit'},
+    {label: `ব্লক করুন (block)`},
+  ] : [
+    {label: `ব্লক করুন (block)`}
   ];
   const popoverAction = (item: any) => { 
     if ('edit' === item.item.label.toLowerCase()) {
-      router.push({pathname: "/screens/book/write-book", params: { bookuuid: book.uuid, }});
+      if (loggedInUser && loggedInUser.uuid === book.createdBy.uuid) {
+        router.push({pathname: "/screens/book/write-book", params: { bookuuid: book.uuid, }})
+      } else {
+        alert(labels.pleaseLoginToContinue)
+      }
+    }
+
+    if ('ব্লক করুন (block)' === item.item.label.toLowerCase()) {
+      if (loggedInUser) {
+        router.push({pathname: "/screens/block/block-user", params: { id: book.createdBy.id, username: book.createdBy.fullName, }});
+      } else {
+        alert(labels.pleaseLoginToContinue)
+      }
     }
   }
   
@@ -71,9 +86,9 @@ const BookCard = ({book, snackMessage, backurl}: {book: BookCardProps, snackMess
         </View>
 
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          { loggedInUser && loggedInUser.uuid === book.createdBy.uuid &&
-             (<PopOver icon={popoverIcon} menus={popoverMenus} action={popoverAction} />)
-          }
+          {/* { loggedInUser && loggedInUser.uuid === book.createdBy.uuid && */}
+             <PopOver icon={popoverIcon} menus={popoverMenus} action={popoverAction} />
+          {/* } */}
         </View>
         
       </View>

@@ -93,3 +93,19 @@ export const updateProfileInfo = async (value: any, description: string) => {
     const data = await response.json();
     return data;
 }
+
+export const blockUser = async (targetUserId: number) => {
+    const token = await AsyncStorage.getItem('auth-token')
+    if (!token) return
+
+    const endpoint = `${API_CONFIG.BASE_URL}/admin/user/block/${targetUserId}`;
+    const response: any = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${token}` },
+        body: null
+    });
+
+    const data = await response.json()
+    console.log(data)
+    return data
+  }
