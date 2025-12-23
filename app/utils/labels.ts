@@ -142,7 +142,10 @@ export const labels = {
             blockWarningStart: "আপনি কি নিশ্চিত যে আপনি ",
             blockWarningEnd: " কে ব্লক করতে চান? ব্লক করার পর আপনি আর তার কোন পোষ্ট দেখতে পাবেন না।",
             userBlockedMessage: "কে ব্লক হয়েছে।",
-        }
+        },
+        report: {
+            reportingFor: "রিপোর্ট করছেন!"
+        },
     },
     createBook: {
         book: "বই",

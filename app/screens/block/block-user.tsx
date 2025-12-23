@@ -19,7 +19,7 @@ const BlockUser = () => {
         await blockUser(parseInt(id as string))
         setSnackMessage(`${username} ${labels.user.block.userBlockedMessage}`)
         setToastVisible(true)
-        setTimeout(() => router.back(), )
+        setTimeout(() => router.back(), 2000)
     }
 
     return (<View>

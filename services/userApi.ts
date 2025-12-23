@@ -108,4 +108,20 @@ export const blockUser = async (targetUserId: number) => {
     const data = await response.json()
     console.log(data)
     return data
-  }
+}
+
+export const reportPost = async (targetUser: number, targetPost: number, reason: string) => {
+    const token = await AsyncStorage.getItem('auth-token')
+    if (!token) return
+
+    const endpoint = `${API_CONFIG.BASE_URL}/admin/post/report`;
+    const response: any = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${token}` },
+        body: JSON.stringify({targetUser, targetPost, reason})
+    });
+
+    const data = await response.json()
+
+    return data
+}

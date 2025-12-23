@@ -39,14 +39,25 @@ const BookCard = ({book, snackMessage, backurl}: {book: BookCardProps, snackMess
   const popoverIcon = <FontAwesome name="ellipsis-v" size={24} color="gray" />
   const popoverMenus = loggedInUser && loggedInUser.uuid === book.createdBy.uuid ? [
     {label: 'Edit'},
-    {label: `ব্লক করুন (block)`},
+    {label: `রিপোর্ট (Report)`},
+    {label: `ব্লক করুন (Block)`},
   ] : [
-    {label: `ব্লক করুন (block)`}
+    {label: `রিপোর্ট (Report)`},
+    {label: `ব্লক করুন (Block)`},
   ];
+
   const popoverAction = (item: any) => { 
     if ('edit' === item.item.label.toLowerCase()) {
       if (loggedInUser && loggedInUser.uuid === book.createdBy.uuid) {
         router.push({pathname: "/screens/book/write-book", params: { bookuuid: book.uuid, }})
+      } else {
+        alert(labels.pleaseLoginToContinue)
+      }
+    }
+
+    if ('রিপোর্ট (report)' === item.item.label.toLowerCase()) {
+      if (loggedInUser) {
+        router.push({pathname: "/screens/report/report-post", params: { targetPost: book.id, targetUser: book.createdBy.id, title: book.title }});
       } else {
         alert(labels.pleaseLoginToContinue)
       }

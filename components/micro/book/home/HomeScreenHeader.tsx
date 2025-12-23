@@ -39,7 +39,7 @@ const HomeScreenHeader = () => {
     return (<View style={styles.header}>
         <View style={styles.headerContent}>
             <View style={styles.headerLeft}>
-                 <Image  source={require('../../../../assets/images/bp_small_logo.png')} style={{width: 30, height: 25, margin: 'auto'}} />
+                 <Image  source={require('../../../../assets/images/bp_small_logo.png')} style={{width: 25, height: 20, margin: 'auto'}} />
                  <Text style={{color: 'white', fontSize: 10}}>{labels.booksPointer}</Text>
             </View>
             
