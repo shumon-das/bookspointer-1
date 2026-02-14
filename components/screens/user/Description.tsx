@@ -11,7 +11,6 @@ const Description = ({author}: {author: User | AuthUser | null}) => {
 
   useEffect(() => {
     if (author) {
-      console.log(author)
       setDescription(Object.keys(author).includes('description') 
         ? author?.description || 'লেখক সম্পর্কে কোন তথ্য নেই।' 
         : author?.details?.description || 'লেখক সম্পর্কে কোন তথ্য নেই।')

@@ -53,7 +53,7 @@ const registration = () => {
                     const response: {token: string; user: User} = await login(email, password)
                     if (response) {
                         AsyncStorage.setItem("auth-user", JSON.stringify(response.user))
-                        AsyncStorage.setItem("token", response.token)
+                        AsyncStorage.setItem("auth-token", response.token)
                     
                         router.push('/')
                     } else {
