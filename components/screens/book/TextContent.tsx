@@ -14,7 +14,7 @@ const tagsStyles = {
     borderRadius: 8,
   },
   p: {
-    marginBottom: 20,   // 👈 controls paragraph spacing
+    marginBottom: 8,   // 👈 controls paragraph spacing
     lineHeight: 20,     // 👈 controls text height
   },
 };

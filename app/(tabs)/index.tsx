@@ -79,9 +79,6 @@ export default function Index() {
   useEffect(() => navigation.setOptions({ headerShown: false }), []);
   // end header 
 
-  // this is for ads banner. which will use for bookspointer self ads. e.g. Hey, you are using old version of app. Please update to latest version.
-  const [bannerStyle, setBannerStyle] = useState({height: 0, backgroundColor: '#085a80', margin: 0})
-
   const [toastVisible, setToastVisible] = useState(false)
   const [snackMessage, setSnackMessage] = useState('')
   const [refreshing, setRefreshing] = useState(false);
@@ -93,7 +90,7 @@ export default function Index() {
     await syncAllUsers.syncAllUsers()
   }
   useEffect(() => {
-    if (isOnline) {
+    if (isOnline && feedBooks.length === 0) {
       console.log('online')
       fetchFeedBooks(true, APP_VERSION);
     } else {
@@ -148,9 +145,6 @@ export default function Index() {
         <Text>{useHomeStore.getState().bannerMessage}</Text>
       </View>
       <View style={styles.container}>
-          {refreshing && <View style={styles.floatingLoading}>
-              <ActivityIndicator size="large" color="#e63946" />
-          </View>}
           <FlatList
             data={listData}
             keyExtractor={(item, index) => typeof item.id === 'number' ? item.id.toString() : `fallback-key-${index}`}
@@ -164,9 +158,7 @@ export default function Index() {
             removeClippedSubviews={true}
             refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={() => {
-                  setRefreshing(true)
                   useHomeStore.getState().onRefresh(APP_VERSION)
-                  setRefreshing(false)
                 }} />
             }
             ListHeaderComponent={() => <View>{loading && <ActivityIndicator size="small" color="#e63946" />}</View>}

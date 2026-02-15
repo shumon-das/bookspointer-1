@@ -37,6 +37,7 @@ export const useHomeStore = create<HomeState>((set, get) => ({
 
     set({ loading: true });
     if (!isOnline) {
+        set({ loading: false });
         return;
     }
 
@@ -62,6 +63,7 @@ export const useHomeStore = create<HomeState>((set, get) => ({
             page: state.page + 1,
           };
         });
+        set({loading: false})
         await replaceFeedBooksCache(books);
 
         const bannerStyle = response.headers.get('x-banner-style');
