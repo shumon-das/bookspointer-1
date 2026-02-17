@@ -65,6 +65,30 @@ export const searchData = async (text: string) => {
     return data;
 }
 
+export const separateSearchByBookAndAuthorOrAll = async (text: string, searchSubject: string, page: number = 1, limit: number = 20) => {
+    console.log(text, searchSubject, page, limit)
+    try {
+        const response = await fetch(`${API_CONFIG.BASE_URL}/api/suggessions`, {
+            method: 'POST',
+            headers: API_CONFIG.HEADERS,
+            body: JSON.stringify({
+                search: { 
+                    query: text, 
+                    subject: searchSubject,
+                    page: page,
+                    limit: limit 
+                }
+            })
+        })
+    
+        const data = await response.json();
+        
+        return data;
+    } catch (error) {
+        console.log('Failed to fetch authors', error)
+    }
+}
+
 export const searchAuthorData = async (text: string, authorId: number) => {
     const response = await fetch(`${API_CONFIG.BASE_URL}/api/author-books/${authorId}/${text}`)
     
