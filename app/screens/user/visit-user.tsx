@@ -1,7 +1,7 @@
 import { useAuthorsStore } from '@/app/store/authorStore'
 import labels from '@/app/utils/labels'
-import AppBottomSheet from '@/components/micro/AppBottomSheet'
-import AppLoginBottomSheet from '@/components/micro/AppLoginBottomSheet'
+import AppBottomSheet from '@/components/micro/bottomSheet/AppBottomSheet'
+import AppLoginBottomSheet from '@/components/micro/bottomSheet/AppLoginBottomSheet'
 import { useNetworkStatus } from '@/components/network/networkConnectionStatus'
 import Description from '@/components/screens/user/Description'
 import Follow from '@/components/screens/user/Follow'
@@ -130,7 +130,7 @@ const VisitUser = () => {
                     <Description author={visitUser} />
                 </View>
                 <View style={styles.section}>
-                    <SeriesList author={visitUser} isUser={true}/>
+                    <SeriesList author={visitUser} isUser={true} onPressCreateSeries={() => { }} />
                 </View>
                 <View style={[styles.section, { height: 200 }]}>
 

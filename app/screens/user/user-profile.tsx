@@ -1,20 +1,21 @@
-import { View, ScrollView, ActivityIndicator, Text, RefreshControl } from 'react-native'
-import React, { useEffect, useState, useRef, useCallback } from 'react'
-import { useNavigation } from 'expo-router';
-import { AuthUser } from '@/components/types/User';
-import HeaderBackground from '@/components/screens/user/HeaderBackground';
-import { styles } from '@/styles/author.styles';
-import UserImageAndName from '@/components/screens/user/UserImageAndName';
-import FollowersCount from '@/components/screens/user/FollowersCount';
-import Description from '@/components/screens/user/Description';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import AppBottomSheet from '@/components/micro/AppBottomSheet';
-import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
-import SeriesList from '@/components/screens/user/SeriesList';
 import { useUserStore } from '@/app/store/userStore';
-import UserSelfSearchAndUpdate from '@/components/micro/user/profile/UserSelfSearchAndUpdate';
+import AppBottomSheet from '@/components/micro/bottomSheet/AppBottomSheet';
+import AppCreateSeriesSheet from '@/components/micro/bottomSheet/AppCreateSeriesSheet';
 import AuthUserContent from '@/components/micro/user/profile/AuthUserContent';
+import UserSelfSearchAndUpdate from '@/components/micro/user/profile/UserSelfSearchAndUpdate';
 import { useNetworkStatus } from '@/components/network/networkConnectionStatus';
+import Description from '@/components/screens/user/Description';
+import FollowersCount from '@/components/screens/user/FollowersCount';
+import HeaderBackground from '@/components/screens/user/HeaderBackground';
+import SeriesList from '@/components/screens/user/SeriesList';
+import UserImageAndName from '@/components/screens/user/UserImageAndName';
+import { AuthUser } from '@/components/types/User';
+import { styles } from '@/styles/author.styles';
+import { useNavigation } from 'expo-router';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, RefreshControl, ScrollView, Text, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
 
 // it is *** OPTIONAL *** this will prevent the extra warning from Reanimated
 configureReanimatedLogger({
@@ -55,8 +56,16 @@ const UserProfile = () => {
     }, [isOnline, isInitializing]);
 
     const sheetRef = useRef<any>(null);
+    const createSeriesSheetRef = useRef<any>(null);
+
     const handleBottomSheet = (value: boolean) => {
-        value ? sheetRef.current?.snapToIndex(1) : sheetRef.current?.close() 
+        createSeriesSheetRef.current?.close()
+        value ? sheetRef.current?.snapToIndex(1) : sheetRef.current?.close()
+    }
+
+    const handleCreateSeriesSheet = (value: boolean) => {
+        sheetRef.current?.close()
+        value ? createSeriesSheetRef.current?.snapToIndex(1) : createSeriesSheetRef.current?.close()
     }
 
     const onRefresh = useCallback(() => {
@@ -103,7 +112,7 @@ const UserProfile = () => {
                     <Description author={author} />
                 </View>
                 <View style={styles.section}>
-                    <SeriesList author={author} isUser={true}/>
+                    <SeriesList author={author} isUser={true} onPressCreateSeries={handleCreateSeriesSheet} />
                 </View>
                 <View>
                     <AuthUserContent author={author} />
@@ -114,6 +123,7 @@ const UserProfile = () => {
             </ScrollView>
             
             {author && <AppBottomSheet {...author} ref={sheetRef} />}
+            {author && <AppCreateSeriesSheet {...author} ref={createSeriesSheetRef} />}
         </GestureHandlerRootView>
     )
 }

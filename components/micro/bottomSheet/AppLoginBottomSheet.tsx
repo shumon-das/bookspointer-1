@@ -1,20 +1,9 @@
-import React, { forwardRef, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, FlatList, TouchableOpacity } from 'react-native';
-import BottomSheet, { BottomSheetFlatList, BottomSheetView } from '@gorhom/bottom-sheet';
-import labels from '@/app/utils/labels';
-import { User } from '../types/User';
-import useCacheStore from '@/app/store/search';
-import { searchAuthorData } from '@/services/searchapi';
-import { useRouter } from 'expo-router';
-import Login from '../auth/Login';
+import React, { forwardRef, useMemo } from 'react';
+import { StyleSheet } from 'react-native';
+import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+import { User } from '@/components/types/User';
+import Login from '@/components/auth/Login';
 
-interface SearchItem {
-    id: number;
-    uuid: string;
-    title: string;
-    fullName: string;
-    category: string
-}
 const AppLoginBottomSheet = forwardRef((author: User, ref: any) => {
   const snapPoints = useMemo(() => ['70%', '90%'], []);
 

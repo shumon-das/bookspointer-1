@@ -1,16 +1,16 @@
-import { View } from 'react-native'
-import React, { useEffect, useState, useRef } from 'react'
-import { useLocalSearchParams, useNavigation } from 'expo-router';
-import { User } from '@/components/types/User';
-import HeaderBackground from '@/components/screens/user/HeaderBackground';
-import { getAuthorByUrl, getSingleUserByUuid } from '@/services/userApi';
-import { styles } from '@/styles/author.styles';
-import UserImageAndName from '@/components/screens/user/UserImageAndName';
+import AppBottomSheet from '@/components/micro/bottomSheet/AppBottomSheet';
 import Follow from '@/components/screens/user/Follow';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import AppBottomSheet from '@/components/micro/AppBottomSheet';
-import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
+import HeaderBackground from '@/components/screens/user/HeaderBackground';
 import SeriesBooks from '@/components/screens/user/SeriesBooks';
+import UserImageAndName from '@/components/screens/user/UserImageAndName';
+import { User } from '@/components/types/User';
+import { getSingleUserByUuid } from '@/services/userApi';
+import { styles } from '@/styles/author.styles';
+import { useLocalSearchParams, useNavigation } from 'expo-router';
+import React, { useEffect, useRef, useState } from 'react';
+import { View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
 
 // it is *** OPTIONAL *** this will prevent the extra warning from Reanimated
 configureReanimatedLogger({

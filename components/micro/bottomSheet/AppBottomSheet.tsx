@@ -1,18 +1,18 @@
-import React, { forwardRef, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, FlatList, TouchableOpacity } from 'react-native';
-import BottomSheet, { BottomSheetFlatList, BottomSheetView } from '@gorhom/bottom-sheet';
-import labels from '@/app/utils/labels';
-import { User } from '../types/User';
 import useCacheStore from '@/app/store/search';
+import labels from '@/app/utils/labels';
 import { searchAuthorData } from '@/services/searchapi';
+import BottomSheet, { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { useRouter } from 'expo-router';
+import React, { forwardRef, useMemo, useState } from 'react';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { User } from '../../types/User';
 
 interface SearchItem {
-    id: number;
-    uuid: string;
-    title: string;
-    fullName: string;
-    category: string
+  id: number;
+  uuid: string;
+  title: string;
+  fullName: string;
+  category: string
 }
 const AppBottomSheet = forwardRef((author: User, ref: any) => {
   const snapPoints = useMemo(() => ['70%', '90%'], []);
@@ -25,31 +25,31 @@ const AppBottomSheet = forwardRef((author: User, ref: any) => {
   const setInCache = useCacheStore((state) => state.setInCache)
   const getFromCache = useCacheStore((state) => state.getFromCache)
   const handleSearch = async (text: string) => {
-      setSearchText(text)
-      if (!hasInCache(text.trim())) {
-          if (text.trim().length < 2) return;
-          const result = await searchAuthorData(text, author.id);
-          setData(result)
-          setInCache(text.trim(), result)
-          return
-      }
-      setData(getFromCache(text.trim()))
+    setSearchText(text)
+    if (!hasInCache(text.trim())) {
+      if (text.trim().length < 2) return;
+      const result = await searchAuthorData(text, author.id);
+      setData(result)
+      setInCache(text.trim(), result)
+      return
+    }
+    setData(getFromCache(text.trim()))
   }
 
-  const Item = ({searchItem}: {searchItem: SearchItem}) => (
-      <View style={styles.searchItem}>
-          <Text style={styles.searchItemText}>{searchItem.title}</Text>
-          <Text style={styles.searchItemAuthor}>{author.fullName}</Text>
-      </View>
+  const Item = ({ searchItem }: { searchItem: SearchItem }) => (
+    <View style={styles.searchItem}>
+      <Text style={styles.searchItemText}>{searchItem.title}</Text>
+      <Text style={styles.searchItemAuthor}>{author.fullName}</Text>
+    </View>
   );
 
   return (
     <BottomSheet
       ref={ref}
-      index={-1} 
+      index={-1}
       snapPoints={snapPoints}
       enablePanDownToClose={true}
-      backgroundStyle={{ backgroundColor: 'white' }} 
+      backgroundStyle={{ backgroundColor: 'white' }}
     >
       <BottomSheetFlatList
         data={data}
@@ -68,18 +68,18 @@ const AppBottomSheet = forwardRef((author: User, ref: any) => {
           </View>
         }
 
-        renderItem={({item}) => (
+        renderItem={({ item }) => (
           <TouchableOpacity onPress={() => {
-              router.push({
-                pathname: "/screens/book/details", 
-                params: {id: item.id, title: item.title, author: item.fullName}
-              })
+            router.push({
+              pathname: "/screens/book/details",
+              params: { id: item.id, title: item.title, author: item.fullName }
+            })
           }}>
-              <Item searchItem={item} />
+            <Item searchItem={item} />
           </TouchableOpacity>
         )}
 
-        ListFooterComponent={<View style={{height: 100}} />}
+        ListFooterComponent={<View style={{ height: 100 }} />}
       />
     </BottomSheet>
   );
@@ -105,14 +105,14 @@ const styles = StyleSheet.create({
     borderColor: 'lightgray',
   },
   searchItem: {
-    backgroundColor: '#fff', 
-    marginBottom: 10, 
-    borderBottomWidth: 1, 
+    backgroundColor: '#fff',
+    marginBottom: 10,
+    borderBottomWidth: 1,
     borderBottomColor: '#ccc'
   },
   searchItemText: {
-    paddingBottom: 3, 
-    fontSize: 15, 
+    paddingBottom: 3,
+    fontSize: 15,
     fontWeight: '600'
   },
   searchItemAuthor: {

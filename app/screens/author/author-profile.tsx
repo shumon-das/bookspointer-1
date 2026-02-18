@@ -10,13 +10,13 @@ import Follow from '@/components/screens/user/Follow';
 import FollowersCount from '@/components/screens/user/FollowersCount';
 import Description from '@/components/screens/user/Description';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import AppBottomSheet from '@/components/micro/AppBottomSheet';
+import AppBottomSheet from '@/components/micro/bottomSheet/AppBottomSheet';
 import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
 import SeriesList from '@/components/screens/user/SeriesList';
 import PopularBooks from '@/components/screens/user/PopularBooks';
 import { useAuthorsStore } from '@/app/store/authorStore';
 import { useNetworkStatus } from '@/components/network/networkConnectionStatus';
-import AppLoginBottomSheet from '@/components/micro/AppLoginBottomSheet';
+import AppLoginBottomSheet from '@/components/micro/bottomSheet/AppLoginBottomSheet';
 
 // it is *** OPTIONAL *** this will prevent the extra warning from Reanimated
 configureReanimatedLogger({
@@ -112,7 +112,7 @@ const Author = () => {
                     <PopularBooks author={author} />
                 </View>
                 <View style={styles.section}>
-                    <SeriesList author={author} />
+                    <SeriesList author={author} onPressCreateSeries={() => { }}/>
                 </View>
                 <View style={[styles.section, {height: 200}]}>
                     

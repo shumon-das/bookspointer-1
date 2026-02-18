@@ -19,7 +19,7 @@ const tagsStyles = {
   },
 };
 
-const TextContent = ({ content, isDetailsScreen=false, fontSize=16, textColor='#333', backgroundColor='#fff' }: any) => {
+const TextContent = ({ content, isDetailsScreen=false, fontSize=16, textColor='black', backgroundColor='#fff' }: any) => {
   const { width } = useWindowDimensions();
   const styles = {
     ...tagsStyles,

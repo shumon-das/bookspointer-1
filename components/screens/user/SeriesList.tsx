@@ -6,7 +6,7 @@ import englishNumberToBengali from '@/app/utils/englishNumberToBengali'
 import { styles } from '@/styles/seriesList.styles'
 import { useRouter } from 'expo-router'
 
-const SeriesList = ({author, isUser}:{author: User|null, isUser?: boolean}) => {
+const SeriesList = ({author, isUser, onPressCreateSeries}:{author: User|null, isUser?: boolean, onPressCreateSeries: (value: boolean) => void}) => {
   const [series, setSeries] = useState([] as any[])
   const router = useRouter()
 
@@ -33,6 +33,12 @@ const SeriesList = ({author, isUser}:{author: User|null, isUser?: boolean}) => {
 
   return (
     <View style={styles.gridContainer}>
+      <TouchableOpacity style={styles.series} onPress={() => onPressCreateSeries(true)}>
+        <Text style={styles.text}>{'নতুন সিরিজ তৈরি করুন'}</Text>
+        <View style={styles.viewSeries}>
+            <Text style={styles.viewSeriesText}>{labels.createNewSeries}</Text>
+        </View>
+      </TouchableOpacity> 
       {Object.keys(series).map((s: any, i: number) => renderItem(i))}
     </View>
   )
