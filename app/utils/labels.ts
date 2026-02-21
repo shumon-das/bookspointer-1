@@ -202,6 +202,7 @@ export const labels = {
     currentlyReadingDescription: "যেসব বই পড়া শুরু করেছেন। কিন্তু শেষ করেননি।",
     resentActivity: "রিসেন্ট এক্টিভিটি",
     review: "রিভিউ",
+    noReview: "কোন রিভিউ নেই",
     countReview: " টি রিভিউ",
     readStatus: {
         readed: "পৃষ্টা পড়েছেন, ",

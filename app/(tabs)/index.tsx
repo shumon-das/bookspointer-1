@@ -1,6 +1,5 @@
 import BookCard from "@/components/BookCard";
 import { saveToken } from "@/services/notificationApi";
-import { EventSubscription } from 'expo-modules-core';
 import * as Notifications from 'expo-notifications';
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, FlatList, View, Text, RefreshControl } from "react-native";
@@ -16,6 +15,8 @@ import { styles } from "@/styles/home.styles";
 import { useSyncAllUsersStore } from "../store/syncAllUsersStore";
 import { useHomeStore } from "../store/homeStore";
 import { MaterialIcons } from "@expo/vector-icons";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import BookReviewSheet from "@/components/micro/bottomSheet/BookReviewSheet";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -35,8 +36,8 @@ export default function Index() {
     console.log('✅ Online again, syncing data...');
   });
 
-  const notificationListener = useRef<EventSubscription | null>(null);
-  const responseListener = useRef<EventSubscription | null>(null);
+  const notificationListener = useRef<Notifications.EventSubscription | null>(null);
+  const responseListener = useRef<Notifications.EventSubscription | null>(null);
 
   useEffect(() => {
     // Helper function to handle registration and save the token
@@ -82,6 +83,7 @@ export default function Index() {
   const [toastVisible, setToastVisible] = useState(false)
   const [snackMessage, setSnackMessage] = useState('')
   const [refreshing, setRefreshing] = useState(false);
+  const [reviewBook, setReviewBook] = useState(null)
 
   const { loading, feedBooks, fetchFeedBooks, fetchCacheBooks, clearFeedBooks } = useHomeStore()
   const syncAllUsers = useSyncAllUsersStore()
@@ -125,6 +127,13 @@ export default function Index() {
       setTimeout(() => setToastVisible(false), 2000);
     };
 
+    const reviewSheetRef = useRef<any>(null);
+    
+    const handleReviewBottomSheet = (book: any) => {
+      setReviewBook(book)
+      book ? reviewSheetRef.current?.snapToIndex(1) : reviewSheetRef.current?.close()
+    }
+
     const renderItem = useCallback(({item, index}: {item: any, index: number}) => {
       if (item.title === 'ads-item' && index != 0) {
         // return <NativeFeedAds />
@@ -134,10 +143,16 @@ export default function Index() {
       if (item.title === 'quote-song-poem' || item.title.includes('quote')) {
         return <QuoteCard book={item} snackMessage={handleSnackMessage} />
       }
-      return <BookCard book={item} snackMessage={handleSnackMessage} backurl={JSON.stringify({ pathname: '/(tabs)/', params: {} })} />
+
+      return <BookCard
+        book={item}
+        snackMessage={handleSnackMessage}
+        backurl={JSON.stringify({ pathname: '/(tabs)/', params: {} })}
+        handleReviewBottomSheet={() => handleReviewBottomSheet(item)}
+      />
     }, [])
 
-    return (<>
+    return (<GestureHandlerRootView style={{ flex: 1,backgroundColor: '#f9f0eb', position: 'relative' }} >
       <View style={{height: '11%', backgroundColor: '#085a80'}}>
         <HomeScreenHeader />
       </View>
@@ -177,7 +192,8 @@ export default function Index() {
               {snackMessage}
           </Snackbar>
       </View>
-    </>
-    );
 
+      {reviewBook && <BookReviewSheet ref={reviewSheetRef} book={reviewBook} />}
+    </GestureHandlerRootView>
+    );
 }

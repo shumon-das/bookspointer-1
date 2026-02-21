@@ -25,9 +25,11 @@ interface BookCardProps {
   createdBy: { id: number; uuid: string; fullName: string; image: string, roles: string[] };
   category: { label: string } | string;
   url: string;
+  reviewcount: number;
+  handleReviewBottomSheet?: (book: BookCardProps) => void;
 }
 
-const BookCard = ({ book, snackMessage, backurl }: { book: BookCardProps, snackMessage: (value: string) => void, backurl: string }) => {
+const BookCard = ({ book, snackMessage, backurl, handleReviewBottomSheet }: { book: BookCardProps, snackMessage: (value: string) => void, backurl: string, handleReviewBottomSheet?: (book: BookCardProps) => void }) => {
   const createdByImg = `https://api.bookspointer.com/uploads/${book.createdBy.image}`;
   const router = useRouter();
   const userStore = useUserStore();
@@ -141,7 +143,10 @@ const BookCard = ({ book, snackMessage, backurl }: { book: BookCardProps, snackM
           <AddToLibrary book={book} />
         </Text>
         <Text>
-          <AudioBookButton bookId={book.id} onClickToPlay={() => snackMessage(labels.audioBookNotAvailable)} />
+          {/* <AudioBookButton bookId={book.id} onClickToPlay={() => snackMessage(labels.audioBookNotAvailable)} /> */}
+          {handleReviewBottomSheet && <TouchableOpacity onPress={() => handleReviewBottomSheet(book)}>
+            <Text>{book.reviewcount > 0 ? book.reviewcount : ''}{labels.review}</Text>
+          </TouchableOpacity>}
         </Text>
       </View>
     </View>

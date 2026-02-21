@@ -1,10 +1,12 @@
 import { create } from 'zustand';
 import API_CONFIG from '../utils/config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getAnonymousId } from '../utils/annonymous';
 
 interface ReviewState {
   reviews: any[];
   fetchReviews: (bookId: number) => Promise<any>;
+  createReview: (bookId: number, content: string) => Promise<any>;
   replyToReview: (reviewId: number, bookId: number, reply: string) => Promise<any>;
   editReview: (review: any, content: string) => Promise<any>;
   deleteReview: (reviewId: number) => Promise<any>;
@@ -30,6 +32,34 @@ export const useReviewStore = create<ReviewState>((set, get) => ({
     } catch (error) {
       console.error("Failed to fetch reviews:", error);
       return [];
+    }
+  },
+  createReview: async (bookId: number, content: string) => {
+    try {
+      const storageUser = await AsyncStorage.getItem('auth-user')
+      const loggedInUser = storageUser ? JSON.parse(storageUser) : null;
+      const token = await AsyncStorage.getItem('auth-token')
+      const anonymous = await getAnonymousId()
+      if (!token || !loggedInUser) {
+        alert('No token found')
+        return;
+      }
+      const response = await fetch(`${API_CONFIG.BASE_URL}/admin/review/create`, {
+        method: 'POST',
+        headers: { "Authorization": `Bearer ${token}` },
+        body: JSON.stringify({
+          book_id: bookId,
+          reviewer_id: loggedInUser.id,
+          content: content,
+          anonymous: anonymous,
+          parent_id: null
+        }),
+      });
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error("Failed to create review:", error);
+      return null;
     }
   },
   replyToReview: async (reviewId: number, bookId: number, reply: string) => {
