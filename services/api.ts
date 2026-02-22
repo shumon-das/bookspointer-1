@@ -193,17 +193,15 @@ export const saveBook = async (value: SaveRequestParams, token: string) => {
     const body = new URLSearchParams({
         data: JSON.stringify(value)
     }).toString();
-    console.log('two.......')
     
     const response = await fetch(endpoint, {
         method: 'POST',
         headers: headers,
         body: body
     })
-    console.log('three.......', value)
     
     const data = await response.json();
-    console.log(data)
+    console.log(Object.keys(data))
     return data;
 }
 
