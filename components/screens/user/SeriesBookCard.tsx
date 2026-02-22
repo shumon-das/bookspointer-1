@@ -30,7 +30,7 @@ const SeriesBookCardActions = ({book, author}: {book: any, author: any}) => {
     const router = useRouter();
     const popoverAction = (item: any) => {
         if ('edit' === item.label.toLowerCase()) {
-            router.push({pathname: "/screens/book/write-book", params: { bookuuid: book.uuid }})
+            router.push({pathname: "/screens/book/write-book", params: { bookuuid: book.uuid, id: book.id }})
         }
         if ('disable' === item.label.toLowerCase()) {
             Alert.alert(

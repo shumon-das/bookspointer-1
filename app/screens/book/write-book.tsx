@@ -13,10 +13,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { ActivityIndicator, Alert, Text, TouchableOpacity, View } from "react-native";
-import { TextInput } from "react-native-paper";
+import { Snackbar, TextInput } from "react-native-paper";
 
 const WriteBook = () => {
-    const { bookuuid } = useLocalSearchParams();
+    const { bookuuid, id } = useLocalSearchParams();
     const router = useRouter()
 
     const navigation = useNavigation();
@@ -92,7 +92,7 @@ const WriteBook = () => {
         loadSingleFullBook();
         loadCategories();
         loadAuthors();
-    }, [bookuuid]);
+    }, [bookuuid, id]);
 
     const previewBook = async () => {
         const storageUser = await AsyncStorage.getItem('auth-user')
@@ -103,6 +103,8 @@ const WriteBook = () => {
         }
 
         const data = {
+            id: id,
+            uuid: bookuuid,
             title: title,
             category: category,
             author: JSON.parse(storageUser),
@@ -116,13 +118,14 @@ const WriteBook = () => {
         const response = await saveBook(data, token)
         setSnakBarMessage(response?.message)
         setShowSnakBar(true)
+
         if (response?.status) {
-            setLoading(false)
             useTempStore.getState().setBookContent('')
             setTimeout(() => {
                 goToProfile(router, useTempStore)
             }, 3000);
         }
+        setLoading(false)
     }
 
     return (
@@ -157,7 +160,7 @@ const WriteBook = () => {
                 <TouchableOpacity
                     style={{ height: 300, borderWidth: 1, borderColor: 'gray', borderRadius: 5, margin: 10 }}
                     onPress={() => router.push({
-                        pathname: '/screens/book/content-editor',
+                        pathname: '/screens/book/write-screen',
                         params: { content: useTempStore.getState().bookContent?.substring(1, 10) }
                     })}
                 >
@@ -177,6 +180,9 @@ const WriteBook = () => {
             </View>
 
             <View style={{ height: 200 }}></View>
+            <Snackbar visible={showSnackBar} onDismiss={() => setShowSnakBar(false)} duration={2000}>
+              {snackBarMessage}
+          </Snackbar>
         </View>
     );
 }

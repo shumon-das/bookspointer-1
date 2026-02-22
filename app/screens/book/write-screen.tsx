@@ -19,6 +19,7 @@ import {
 import { InsertImageButton } from "@/app/utils/editor/toolbarItem";
 import ColorBar from "@/components/editor/ColorBar";
 import labels from "@/app/utils/labels";
+import { useTempStore } from "@/app/store/temporaryStore";
 
 interface Props {
   initialContent?: string;
@@ -43,7 +44,7 @@ const COLORS = ['#ff0000', '#00ff00', '#0000ff'];
 const WriteScreen: React.FC<Props> = () => {
   const navigation = useNavigation();
   useLayoutEffect(() => { navigation.setOptions({ headerShown: true, title: 'Settings' });}, []);
-  const initialContent = "<p></p>";
+  const initialContent = useTempStore.getState().bookContent
 
   const editor = useEditorBridge({
     autofocus: true,
@@ -97,8 +98,8 @@ const WriteScreen: React.FC<Props> = () => {
 
   const content = useEditorContent(editor, { type: 'html' });
   useEffect(() => {
-    console.log('content', content)
-    // content && onChange(content);
+    if (!content) return;
+    useTempStore.getState().setBookContent(content)
   }, [content])
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -115,6 +116,7 @@ const WriteScreen: React.FC<Props> = () => {
         </View>
         <View style={{height: 88}}></View>
       </KeyboardAvoidingView>
+      <View style={{height: 100, backgroundColor: 'white'}}></View>
     </SafeAreaView>
   );
 };

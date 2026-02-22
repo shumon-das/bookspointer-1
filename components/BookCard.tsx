@@ -46,7 +46,7 @@ const BookCard = ({ book, snackMessage, backurl, handleReviewBottomSheet }: { bo
   const popoverAction = (item: any) => {
     if ('edit' === item.label.toLowerCase()) {
       if (loggedInUser && loggedInUser.uuid === book.createdBy.uuid) {
-        router.push({ pathname: "/screens/book/write-book", params: { bookuuid: book.uuid, } })
+        router.push({ pathname: "/screens/book/write-book", params: { bookuuid: book.uuid, id: book.id } })
       } else {
         alert(labels.pleaseLoginToContinue)
       }
