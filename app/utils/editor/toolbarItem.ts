@@ -24,7 +24,7 @@ export const InsertImageButton: ToolbarItem = {
   active: () => false,
   disabled: () => false,
   image: () => {
-    const img = Image.resolveAssetSource(require('../../../assets/images/favicon.png'));
+    const img = Image.resolveAssetSource(require('../../../assets/images/multi-image-line.png'));
     return { uri: img.uri }
   }
 };

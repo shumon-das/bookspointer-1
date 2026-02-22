@@ -1,5 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useLayoutEffect } from "react";
 import { View, SafeAreaView, KeyboardAvoidingView, Image } from "react-native";
+import { useNavigation, useRouter } from 'expo-router'
 import { 
   RichText, 
   Toolbar,
@@ -40,6 +41,8 @@ const darkEditorCss = `
 const COLORS = ['#ff0000', '#00ff00', '#0000ff'];
 
 const WriteScreen: React.FC<Props> = () => {
+  const navigation = useNavigation();
+  useLayoutEffect(() => { navigation.setOptions({ headerShown: true, title: 'Settings' });}, []);
   const initialContent = "<p></p>";
 
   const editor = useEditorBridge({
@@ -57,7 +60,7 @@ const WriteScreen: React.FC<Props> = () => {
           backgroundColor: '#474747',
           borderColor: 'gray',
           borderWidth: 1,
-          borderRadius: 10,
+          borderRadius: 5,
           marginRight: 5
         },
         icon: {
@@ -87,7 +90,7 @@ const WriteScreen: React.FC<Props> = () => {
     active: () => false,
     disabled: () => false,
     image: () => {
-      const img = Image.resolveAssetSource(require('../../../assets/logo/bp_logo_gold.jpg'));
+      const img = Image.resolveAssetSource(require('../../../assets/images/font-color.png'));
       return { uri: img.uri }
     }
   };
