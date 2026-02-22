@@ -7,7 +7,7 @@ type ResizeImageResult = {
   height: number;
 };
 
-export const resizeImage = async (uri: string, maxWidth = 800): Promise<ResizeImageResult> => {
+export const resizeImage = async (uri: string, maxWidth = 600): Promise<ResizeImageResult> => {
   try {
     // Get image info
     const fileInfo = await FileSystem.getInfoAsync(uri);
