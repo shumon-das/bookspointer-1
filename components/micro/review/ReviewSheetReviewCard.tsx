@@ -91,7 +91,7 @@ const ReviewSheetReviewCard = ({ review, bookCreator, replies, action }: ReviewC
                 </View>
             </TouchableOpacity>
             <TouchableOpacity>
-                {loggedInUser &&<PopOver icon={popoverIcon} menus={popoverMenus} action={popoverAction} />}
+                {loggedInUser && popoverMenus.length > 0 &&<PopOver icon={popoverIcon} menus={popoverMenus} action={popoverAction} />}
             </TouchableOpacity>
         </View>
 

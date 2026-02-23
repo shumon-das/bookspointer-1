@@ -20,12 +20,15 @@ interface BookDetailsState {
   textsWithPrevAndNextPage: (bookId: number, page: number, isFirstRequest?: boolean) => Promise<Response>;
   selectedBook: any;
   setSelectedBook: (book: any) => void;
+  relatedBooks: any[];
+  fetchRelatedBooks: (bookId: number) => Promise<any[]>;
 }
 
 export const useBookDetailsStore = create<BookDetailsState>((set, get) => ({
     pages: [],
     current_page_number: 1,
     total_pages: 0,
+    relatedBooks: [],
     textsWithPrevAndNextPage: async (bookId, page, isFirstRequest = false) => {
         const annonymousId = await getAnonymousId();
         try {
@@ -63,5 +66,19 @@ export const useBookDetailsStore = create<BookDetailsState>((set, get) => ({
         }
     },
     selectedBook: null,
-    setSelectedBook: (book: any) => set({selectedBook: book})
+    setSelectedBook: (book: any) => set({selectedBook: book}),
+    fetchRelatedBooks: async (bookId: number) => {
+        try {
+            const response = await fetch(`${API_CONFIG.BASE_URL}/book-related-books`, {
+                method: 'POST',
+                headers: API_CONFIG.HEADERS,
+                body: JSON.stringify({ id: bookId })
+            });
+            const data = await response.json();
+            set({relatedBooks: data.relatedBooks})
+            return data.relatedBooks;
+        } catch (error) {
+            console.error("Failed to fetch related books", error);
+        }
+    }
 }))

@@ -221,6 +221,7 @@ export const labels = {
     onlyForDownloadedBooks: "শুধুমাত্র ডাউনলোড করা বই ইন্টারনেট ছাড়া পড়া যাবে।",
     edit: "এডিট করুন",
     bookNotFound: "কোন বই পাওয়া যায়নি।",
+    relatedBooks: "এই রকমের আরও কিছু বই",
 }
 
 export default labels;

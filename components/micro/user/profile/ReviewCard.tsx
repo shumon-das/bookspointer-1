@@ -36,12 +36,12 @@ const ReviewCard = ({book}: {book: any}) => {
                         <Image source={require('@/assets/images/book_review_icon.png')} style={{width: 20, height: 20}} />
                         <Text style={{fontSize: 10}}>{labels.seeReviews}</Text>
                     </TouchableOpacity>
-                    <View style={reviewStyles.shareButton}>
+                    <View>
                         <ShareButton
                             title="Check this out!"
                             message={book.title}
                             url={`https://bookspointer.com${book.url}`}
-                            style={reviewStyles.shareButton}
+                            style={styles.shareButton}
                         /> 
                     </View>
                 </View>
@@ -70,17 +70,5 @@ const reviewStyles = StyleSheet.create({
         alignItems: 'center',
         gap: 5,
         margin: 10,
-    },
-    readButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 5,
-    },
-    shareButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 10,
-        paddingHorizontal: 10,
-        paddingVertical: 3,
     },
 })

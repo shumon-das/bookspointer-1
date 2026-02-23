@@ -35,13 +35,14 @@ const details = () => {
     const [bookId, setBookId] = useState(parseInt(id as string));
 
     const storeBook = useBookDetailsStore.getState().selectedBook;
+    const [relatedBooks, setRelatedBooks] = useState([] as any[]);
 
     useFocusEffect(
       useCallback(() => {
         if (id) {
           setBookId(parseInt(id as string))
         }
-
+        
         const fetchActivePageTexts = async () => {
           setLoading(true)
           useBookDetailsStore.getState().pages = []
@@ -50,8 +51,14 @@ const details = () => {
           setLoading(false)
           await fetchChunks(useBookDetailsStore.getState().current_page_number, false)
         }
-
+        
+        const fetchRelatedBooks = async () => {
+          const relatedBooks = await useBookDetailsStore.getState().fetchRelatedBooks(parseInt(id as string));
+          setRelatedBooks(relatedBooks);
+        }
+        
         fetchActivePageTexts()
+        fetchRelatedBooks();
       }, [id, navigation])
     );
 
@@ -135,11 +142,33 @@ const details = () => {
                 </View>)
               :  (<View style={{ margin: 10 }}>
                   <TextContent content={pageText} isDetailsScreen={true} fontSize={fontSize} backgroundColor={backgroundColor} />
-                  <View style={{ marginVertical: 30 }}>
+                  <View style={{ marginTop: 30, marginBottom: 10 }}>
                     {!loading && <Pagination currentPage={page} data={{total_pages: totalPages, book_id: id}} onChange={getPageBook} />}
                     <View style={{ height: 10 }}></View>
                   </View>
                 </View>)}
+
+              {relatedBooks.length > 0 && (
+                <View style={{ margin: 10 }}>
+                  <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{labels.relatedBooks}</Text>
+                  <View style={{ height: 10, borderBottomWidth: 1, borderBottomColor: '#ccc' }}></View>
+                  {relatedBooks.map((book) => (
+                    <TouchableOpacity key={book.book_id} style={{ marginVertical: 10 }} onPress={() => {
+                      router.push({
+                        pathname: "/screens/book/details", params: {
+                          id: book.book_id,
+                          title: book.data ? JSON.parse(book.data).title : '',
+                          author: book.data ? JSON.parse(book.data).author : '',
+                        }
+                      })
+                    }}>
+                      <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{book.data ? JSON.parse(book.data).title : ''}</Text>
+                      <Text style={{ fontSize: 14, color: 'gray' }}>{book.data ? JSON.parse(book.data).author : ''}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )}
+              <View style={{ height: 100, borderBottomWidth: 1, borderBottomColor: '#ccc' }}></View>
           </ScrollView>
         </View>
       </GestureHandlerRootView>
