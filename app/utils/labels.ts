@@ -218,7 +218,9 @@ export const labels = {
     postedAt: "পোস্ট করা হয়েছে: ",
     userNotFound: "কোন ইউজার পাওয়া যায়নি।",
     visitedUserNotFound: "দুঃখিত, ইউজার সম্পর্কে কোন তথ্য পাওয়া যায়নি।",
-    onlyForDownloadedBooks: "শুধুমাত্র ডাউনলোড করা বই ইন্টারনেট ছাড়া পড়া যাবে।"
+    onlyForDownloadedBooks: "শুধুমাত্র ডাউনলোড করা বই ইন্টারনেট ছাড়া পড়া যাবে।",
+    edit: "এডিট করুন",
+    bookNotFound: "কোন বই পাওয়া যায়নি।",
 }
 
 export default labels;

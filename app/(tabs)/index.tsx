@@ -127,13 +127,6 @@ export default function Index() {
       setTimeout(() => setToastVisible(false), 2000);
     };
 
-    const reviewSheetRef = useRef<any>(null);
-    
-    const handleReviewBottomSheet = (book: any) => {
-      setReviewBook(book)
-      book ? reviewSheetRef.current?.snapToIndex(1) : reviewSheetRef.current?.close()
-    }
-
     const renderItem = useCallback(({item, index}: {item: any, index: number}) => {
       if (item.title === 'ads-item' && index != 0) {
         // return <NativeFeedAds />
@@ -148,7 +141,6 @@ export default function Index() {
         book={item}
         snackMessage={handleSnackMessage}
         backurl={JSON.stringify({ pathname: '/(tabs)/', params: {} })}
-        handleReviewBottomSheet={() => handleReviewBottomSheet(item)}
       />
     }, [])
 
@@ -193,7 +185,6 @@ export default function Index() {
           </Snackbar>
       </View>
 
-      {reviewBook && <BookReviewSheet ref={reviewSheetRef} book={reviewBook} />}
     </GestureHandlerRootView>
     );
 }

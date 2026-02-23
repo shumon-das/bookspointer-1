@@ -4,6 +4,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getAnonymousId } from '../utils/annonymous';
 
 interface ReviewState {
+  selectedBook: any;
+  setSelectedBook: (book: any) => void;
   reviews: any[];
   fetchReviews: (bookId: number) => Promise<any>;
   createReview: (bookId: number, content: string) => Promise<any>;
@@ -14,6 +16,8 @@ interface ReviewState {
 }
 
 export const useReviewStore = create<ReviewState>((set, get) => ({
+  selectedBook: null,
+  setSelectedBook: (book: any) => set({ selectedBook: book }),
   reviews: [],
   fetchReviews: async (bookId: number) => {
     try {

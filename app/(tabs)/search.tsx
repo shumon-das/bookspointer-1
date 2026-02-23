@@ -106,7 +106,9 @@ const search = () => {
 
                     <FlatList
                         data={isSuggession ? suggessions : data}
-                        renderItem={({ item }) => <SearchRender item={item} searchSubject={searchSubject} />}
+                        renderItem={({ item }) => <SearchRender item={item} searchSubject={searchSubject} onSelect={(item: any) => {
+                            handleExtremeSearch(item.title, 'all');
+                        }} />}
                         keyExtractor={(item) => item.uuid.toString()}
                         ListHeaderComponent={() => (<SearchListHeader subject={searchSubject} onChangeSubject={(subject) => {
                             setSuggessions([])

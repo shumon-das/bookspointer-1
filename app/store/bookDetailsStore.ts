@@ -9,7 +9,8 @@ interface Response {
     current_page: {page_number: number, text: string},
     total_pages: number,
     nextPage: {page_number: number|null, text: string|null},
-    prevPage: {page_number: number|null, text: string|null}
+    prevPage: {page_number: number|null, text: string|null},
+    selectedBook: any,
 }
 
 interface BookDetailsState {
@@ -17,6 +18,8 @@ interface BookDetailsState {
   current_page_number: number;
   total_pages: number;
   textsWithPrevAndNextPage: (bookId: number, page: number, isFirstRequest?: boolean) => Promise<Response>;
+  selectedBook: any;
+  setSelectedBook: (book: any) => void;
 }
 
 export const useBookDetailsStore = create<BookDetailsState>((set, get) => ({
@@ -58,5 +61,7 @@ export const useBookDetailsStore = create<BookDetailsState>((set, get) => ({
         } catch (error) {
             console.error("Failed to fetch page", error);
         }
-    }
+    },
+    selectedBook: null,
+    setSelectedBook: (book: any) => set({selectedBook: book})
 }))

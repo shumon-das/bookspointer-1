@@ -8,12 +8,13 @@ import { useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import AddToLibrary from './micro/bookCardFooter/AddToLibraryButton';
-import AudioBookButton from './micro/bookCardFooter/AudioBookButton';
+// import AudioBookButton from './micro/bookCardFooter/AudioBookButton';
 import DownloadButton from './micro/bookCardFooter/DownloadButton';
 import ShareButton from './micro/bookCardFooter/ShareButton';
 import PopOver from './micro/PopOver';
 import TextContent from './screens/book/TextContent';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { useReviewStore } from '@/app/store/reviewStore';
 
 interface BookCardProps {
   id: number;
@@ -26,16 +27,15 @@ interface BookCardProps {
   category: { label: string } | string;
   url: string;
   reviewcount: number;
-  handleReviewBottomSheet?: (book: BookCardProps) => void;
 }
 
-const BookCard = ({ book, snackMessage, backurl, handleReviewBottomSheet }: { book: BookCardProps, snackMessage: (value: string) => void, backurl: string, handleReviewBottomSheet?: (book: BookCardProps) => void }) => {
+const BookCard = ({ book, snackMessage, backurl }: { book: BookCardProps, snackMessage: (value: string) => void, backurl: string }) => {
   const createdByImg = `https://api.bookspointer.com/uploads/${book.createdBy.image}`;
   const router = useRouter();
   const userStore = useUserStore();
   const [loggedInUser, setLoggedInUser] = React.useState<{ uuid: string } | null>(userStore.authUser || null);
 
-  const popoverIcon = <FontAwesome name="ellipsis-v" size={20} color="gray" />
+  const popoverIcon = <MaterialIcons name="more-vert" size={24} color="black" />
   const popoverMenus = loggedInUser && loggedInUser.uuid === book.createdBy.uuid ? [
     { label: 'Edit', icon: <FontAwesome name="edit" size={18} color="black" /> },
   ] : [
@@ -144,9 +144,14 @@ const BookCard = ({ book, snackMessage, backurl, handleReviewBottomSheet }: { bo
         </Text>
         <Text>
           {/* <AudioBookButton bookId={book.id} onClickToPlay={() => snackMessage(labels.audioBookNotAvailable)} /> */}
-          {handleReviewBottomSheet && <TouchableOpacity onPress={() => handleReviewBottomSheet(book)}>
+          <TouchableOpacity onPress={() => {
+            useReviewStore.getState().setSelectedBook(book);
+            setTimeout(() => {
+              router.push({ pathname: "/screens/book/single-book-reviews" });
+            }, 50);
+          }}>
             <Text>{book.reviewcount > 0 ? book.reviewcount : ''}{labels.review}</Text>
-          </TouchableOpacity>}
+          </TouchableOpacity>
         </Text>
       </View>
     </View>

@@ -3,14 +3,15 @@ import Pagination from '@/components/micro/book/details/Pagination';
 import { useNetworkStatus } from '@/components/network/networkConnectionStatus';
 import TextContent from '@/components/screens/book/TextContent';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import TextFormating from '@/components/micro/book/details/TextFormating';
 import { useBookDetailsStore } from '@/app/store/bookDetailsStore';
 import { styles } from '@/styles/details.styles';
-// import ShareButton from '@/components/micro/bookCardFooter/ShareButton';
+import { useReviewStore } from '@/app/store/reviewStore';
+import ShareButton from '@/components/micro/bookCardFooter/ShareButton';
 
 const details = () => {
     const {id, title, author, content = null, isQuote = 'no', backurl = null} = useLocalSearchParams();
@@ -32,6 +33,8 @@ const details = () => {
     const [backgroundColor, setBackgroundColor] = useState('white');
     const [isTextFormating, setIsTextFormating] = useState(false);
     const [bookId, setBookId] = useState(parseInt(id as string));
+
+    const storeBook = useBookDetailsStore.getState().selectedBook;
 
     useFocusEffect(
       useCallback(() => {
@@ -90,7 +93,25 @@ const details = () => {
                     {author}
                   </Text>
                 </View>
-                <View style={{ marginHorizontal: 10 }}>
+                <View style={{ marginHorizontal: 10, flexDirection: 'row', gap: 10 }}>
+                  <TouchableOpacity onPress={() => {
+                    useReviewStore.getState().setSelectedBook({
+                      id: bookId,
+                      title: title,
+                      author: author,
+                      uuid: storeBook ? storeBook.uuid : null,
+                      url: storeBook ? storeBook.url : null,
+                      createdBy: { uuid: storeBook ? storeBook.creator_uuid : null, fullName: storeBook ? storeBook.creator_name : null } 
+                    });
+                    router.push('/screens/book/single-book-reviews')
+                  }}>
+                    <Text>{labels.review}</Text>
+                  </TouchableOpacity>
+                  {storeBook && storeBook.url && <ShareButton
+                    title="Check this book out!"
+                    message={title as string}
+                    url={`https://bookspointer.com${storeBook.url}`}
+                  />}
                   <TouchableOpacity onPress={() => setIsTextFormating(!isTextFormating)}>
                     <MaterialIcons name="format-color-text" size={24} color="gray" />
                   </TouchableOpacity>
