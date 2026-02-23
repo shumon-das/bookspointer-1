@@ -16,7 +16,6 @@ import { useSyncAllUsersStore } from "../store/syncAllUsersStore";
 import { useHomeStore } from "../store/homeStore";
 import { MaterialIcons } from "@expo/vector-icons";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import BookReviewSheet from "@/components/micro/bottomSheet/BookReviewSheet";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({

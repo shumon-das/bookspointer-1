@@ -64,12 +64,30 @@ const SingleBookReviews = () => {
     
     const onDeleteReview = async (item: any) => {
         Alert.alert(labels.deleteItem.areYouSure, labels.deleteItem.deleteMessage, [
-          {text: 'Yes', style: 'destructive', onPress: () => {
-            // apply delete logic
+          {text: 'Yes', style: 'destructive', onPress: async () => {
+            await useReviewStore.getState().deleteReview(item.id)
+            setReviews(reviews.filter((r: any) => r.id !== item.id))
           }},
           {text: 'No', style: 'cancel'}
         ])
     }
+
+    const onSaveReview = async () => {
+    if (isReply) {
+      await useReviewStore.getState().replyToReview(actionReview.id, useReviewStore.getState().selectedBook.id, content)
+    } else if (isEdit) {
+      await useReviewStore.getState().editReview(actionReview, content)
+      setReviews(reviews.filter((r: any) => r.id === actionReview.id ? r.content = content : r))
+    } else {
+      await createReview()
+    }
+    setIsEdit(false)
+    setIsDelete(false)
+    setIsReply(false)
+    setIsReplyBack(false)
+    setActionReview(null)
+    setContent('')
+  }
 
     if (!useReviewStore.getState().selectedBook) {
       return <View>
@@ -145,12 +163,8 @@ const SingleBookReviews = () => {
                         multiline={true}
                     />
                     <View style={{width: '100%', alignItems: 'flex-end'}}>
-                        <TouchableOpacity style={{margin: 5}} onPress={() => {
-                            isReply 
-                            ? useReviewStore.getState().replyToReview(actionReview.id, useReviewStore.getState().selectedBook.id, content) 
-                            : createReview()
-                        }}>
-                            <MaterialIcons name="send" size={24} color="black" />
+                        <TouchableOpacity disabled={content.length === 0} style={{margin: 5}} onPress={onSaveReview}>
+                            <MaterialIcons name="send" size={24} color="blue" />
                         </TouchableOpacity>
                     </View>
                 </View>

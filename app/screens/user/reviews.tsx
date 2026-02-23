@@ -45,7 +45,7 @@ const Review = () => {
         <View>
             <FlatList
                 data={reviews}
-                renderItem={({ item }) => <ReviewCard review={item} />}
+                renderItem={({ item }) => <ReviewCard book={item} />}
                 keyExtractor={(item) => item.id}
                 ListFooterComponent={() => (
                     <View style={{ height: 200 }} />

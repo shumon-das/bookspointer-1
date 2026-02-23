@@ -93,7 +93,12 @@ const DownloadedDetails = () => {
                 </TouchableOpacity>
               </View>
             </View>
-            {isFontRange && <TextFormating currentFontSize={fontSize} onChange={(value) => setFontSize(value)} onResetEverything={() => setFontSize(16)} />}
+            {isFontRange && <TextFormating 
+              currentFontSize={fontSize} 
+              onChange={(value) => setFontSize(value)} 
+              onChangeBgColor={(value) => console.log(value)} 
+              onResetEverything={() => setFontSize(16)}
+            />}
             
             {1 === activePage && <View style={{ marginBottom: 10 }}>
               <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', marginTop: 10 }}>

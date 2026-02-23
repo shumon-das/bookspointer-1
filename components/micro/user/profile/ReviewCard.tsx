@@ -7,39 +7,44 @@ import ShareButton from '../../bookCardFooter/ShareButton'
 import englishNumberToBengali from '@/app/utils/englishNumberToBengali'
 import API_CONFIG from '@/app/utils/config'
 import { useRouter } from 'expo-router'
-import { useTempStore } from '@/app/store/temporaryStore'
+import { useReviewStore } from '@/app/store/reviewStore'
 
-const ReviewCard = ({review}: {review: any}) => {
-    const tempStore = useTempStore();
+const ReviewCard = ({book}: {book: any}) => {
     const router = useRouter();
-    const handleBookReadPress = (review: any) => {
-        tempStore.setSelectedReview(review);
-        router.push('/screens/book/book-review');
+    const handleBookReadPress = (selectedBook: any) => {
+        useReviewStore.getState().setSelectedBook({
+            id: selectedBook.id,
+            title: selectedBook.title,
+            url: selectedBook.url,
+            image: selectedBook.image,
+            createdBy: {uuid: selectedBook.creator_uuid, name: selectedBook.creator_name}
+        });
+        router.push('/screens/book/single-book-reviews');
     }
   return (
-        <View key={review.id} style={styles.bookCard}>
-        <View style={reviewStyles.bookImageContainer}>
-            <Image source={{ uri: `${API_CONFIG.BASE_URL}/uploads/${ '' === review.image || !review.image ? 'default_cover_2.jpeg' : review.image}` }} style={reviewStyles.bookImage} />
-        </View>
+        <View key={book.id} style={[styles.bookCard, {height: 100}]}>
+            <View style={reviewStyles.bookImageContainer}>
+                <Image source={{ uri: `${API_CONFIG.BASE_URL}/uploads/${ '' === book.image || !book.image ? 'default_cover_2.jpeg' : book.image}` }} style={reviewStyles.bookImage} />
+            </View>
             <View style={reviewStyles.bookInfo}>
-            <View style={{ marginHorizontal: 10 }}>
-                <Text style={styles.bookTitle}>{review.title}</Text>
-                <Text style={{color: 'gray'}}>{ englishNumberToBengali(review.reviews_count)} {labels.countReview}</Text>
-            </View>
-            <View style={reviewStyles.bookActions}>
-                <TouchableOpacity style={styles.readButton} onPress={() => handleBookReadPress(review)}>
-                <Image source={require('@/assets/images/book_review_icon.png')} style={{width: 20, height: 20}} />
-                <Text style={{fontSize: 10}}>{labels.seeReviews}</Text>
-                </TouchableOpacity>
-                <View style={styles.shareButton}>
-                <ShareButton
-                    title="Check this out!"
-                    message={review.title}
-                    url={`https://bookspointer.com${review.url}`}
-                    style={reviewStyles.shareButton}
-                /> 
+                <View style={{ marginHorizontal: 10 }}>
+                    <Text style={styles.bookTitle}>{book.title}</Text>
+                    <Text style={{color: 'gray'}}>{ englishNumberToBengali(book.reviews_count)} {labels.countReview}</Text>
                 </View>
-            </View>
+                <View style={reviewStyles.bookActions}>
+                    <TouchableOpacity style={styles.readButton} onPress={() => handleBookReadPress(book)}>
+                        <Image source={require('@/assets/images/book_review_icon.png')} style={{width: 20, height: 20}} />
+                        <Text style={{fontSize: 10}}>{labels.seeReviews}</Text>
+                    </TouchableOpacity>
+                    <View style={reviewStyles.shareButton}>
+                        <ShareButton
+                            title="Check this out!"
+                            message={book.title}
+                            url={`https://bookspointer.com${book.url}`}
+                            style={reviewStyles.shareButton}
+                        /> 
+                    </View>
+                </View>
             </View>
         </View>
     )
