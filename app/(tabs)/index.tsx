@@ -1,10 +1,8 @@
 import BookCard from "@/components/BookCard";
 import { saveToken } from "@/services/notificationApi";
-import * as Notifications from 'expo-notifications';
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, FlatList, View, Text, RefreshControl } from "react-native";
 import { Snackbar } from "react-native-paper";
-import registerForPushNotificationsAsync from "../utils/notifications";
 import QuoteCard from "@/components/QuoteCard";
 import { useNetworkStatus } from "@/components/network/networkConnectionStatus";
 import { useNavigation } from "expo-router";
@@ -17,16 +15,6 @@ import { useHomeStore } from "../store/homeStore";
 import { MaterialIcons } from "@expo/vector-icons";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-    shouldShowBanner: true,
-    shouldShowList: true,
-  }),
-});
-
 export default function Index() {
   const APP_VERSION = '13_02_2026'
   isAppUpdateExists(APP_VERSION)
@@ -35,44 +23,7 @@ export default function Index() {
     console.log('✅ Online again, syncing data...');
   });
 
-  const notificationListener = useRef<Notifications.EventSubscription | null>(null);
-  const responseListener = useRef<Notifications.EventSubscription | null>(null);
-
-  useEffect(() => {
-    // Helper function to handle registration and save the token
-    const setupNotifications = async () => {
-      const pushToken = await registerForPushNotificationsAsync();
-
-      if (pushToken) {
-        // Only save the token if we successfully received one
-        await saveToken(pushToken, 1);
-        console.log('✅ Push Token Received and Saved:', pushToken);
-      } else {
-        console.log('⚠️ Could not get a Push Token.');
-      }
-    };
-
-    setupNotifications();
-
-    // Listener when a notification is received (app is foregrounded)
-    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-      console.log('🔔 Notification Received:', notification);
-      // You can add logic here to display an in-app notification/toast
-    });
-
-    // Listener when user taps the notification (app is backgrounded/closed)
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log('👆 User interacted with notification:', response);
-      // You can add navigation logic here based on the notification content
-    });
-
-    // Cleanup listeners on component unmount
-    return () => {
-      notificationListener.current?.remove();
-      responseListener.current?.remove();
-    };
-  }, []);  
-  /*** end notification ***/
+  
 
   // start header
   const navigation = useNavigation();

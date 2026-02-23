@@ -1,16 +1,35 @@
 import 'react-native-reanimated';
-import * as Notifications from 'expo-notifications';
+import messaging from '@react-native-firebase/messaging';
+import { 
+  getMessaging, 
+  getToken, 
+  requestPermission, 
+  onMessage, 
+  onNotificationOpenedApp, 
+  getInitialNotification, 
+  setBackgroundMessageHandler,
+  AuthorizationStatus 
+} from '@react-native-firebase/messaging';
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { useRouter } from 'expo-router';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { initTables } from './utils/database/initTables';
 import { initSecretKey } from '@/helper/initSecurity';
 import { pingServer } from '@/services/pingServer';
-import { AppState } from 'react-native';
+import { Alert, AppState } from 'react-native';
 import { useMercureStore } from './store/mercureStore';
+import { fetchFcmPushToken } from './utils/notifications';
+import { saveToken } from '@/services/notificationApi';
+import { handleNotificationNavigation } from './utils/notification/notificationHandler';
+
+const messagingInstance = getMessaging();
+
+setBackgroundMessageHandler(messagingInstance, async (remoteMessage) => {
+  console.log('Message handled in the background!', remoteMessage);
+});
 
 export default function RootLayout() {
   const router = useRouter();
@@ -19,6 +38,52 @@ export default function RootLayout() {
     initTables()
     initSecretKey()
   }, []);
+
+  useEffect(() => {
+    
+    // 1. Request Permission & Get Token
+    const setupNotifications = async () => {
+      const authStatus = await requestPermission(messagingInstance);
+      const enabled =
+        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+      if (enabled) {
+        const token = await messaging().getToken();
+        await saveToken(token, 1); 
+        console.log('Saved FCM Token:', token);
+      }
+    };
+
+    setupNotifications();
+
+    // 2. Handle Foreground Messages (App is OPEN)
+    const unsubscribeOnMessage = onMessage(messagingInstance, async (remoteMessage) => {
+      Alert.alert(
+        remoteMessage.notification?.title || 'New Message',
+        remoteMessage.notification?.body || ''
+      );
+    });
+
+    // 3. Handle Notification Tap (App was in BACKGROUND)
+    const unsubscribeOnNotificationOpened = onNotificationOpenedApp(messagingInstance, (remoteMessage) => {
+      console.log('Notification tapped:', remoteMessage.data);
+      // handleNavigation(remoteMessage.data);
+    });
+
+    // 4. Handle Cold Start (App was CLOSED/KILLED)
+    getInitialNotification(messagingInstance).then((remoteMessage) => {
+      if (remoteMessage) {
+        console.log('App opened from quit state:', remoteMessage.data);
+      }
+    });
+
+    return () => {
+      unsubscribeOnMessage();
+      unsubscribeOnNotificationOpened();
+    };
+  }, []);
+  /*** end notification ***/
 
 
   useEffect(() => {
@@ -39,37 +104,6 @@ export default function RootLayout() {
       subscription.remove();
       useMercureStore.getState().closeMercureHub();
     };
-  }, []);
-
-  useEffect(() => {
-  const subscription = Notifications.addNotificationResponseReceivedListener(
-      response => {
-        const data = response.notification.request.content.data;
-        console.log("Notification pressed!", data);
-
-        if (data?.screenname === "notifications") {
-          router.push({
-            pathname: "/screens/notifications", 
-            params: { data: JSON.stringify(data)}
-          });
-        }
-
-        if (data?.screenname === "book") {
-          router.push({
-            pathname: `/screens/book/details`, 
-            params: { data: JSON.stringify(data) } 
-          });
-        } else {
-          const responseData = response.notification.request.content.data as any;
-          router.push({
-            pathname: responseData.absolutePath.pathname, 
-            params: { [responseData.absolutePath.key]: JSON.stringify(responseData.absolutePath.value) } 
-          });
-        }
-      }
-    );
-
-    return () => subscription.remove();
   }, []);
 
   useEffect(() => {
