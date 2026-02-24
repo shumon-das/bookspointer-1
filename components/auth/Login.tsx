@@ -9,6 +9,8 @@ import { useRouter } from 'expo-router'
 import { AuthUser } from '../types/User'
 import { insertAuthUser } from '@/app/utils/database/insertAllUsers'
 import { login } from '@/services/api'
+import { saveToken } from '@/services/notificationApi'
+import messaging from '@react-native-firebase/messaging';
 
 const Login = ({onLoginSuccess}: {onLoginSuccess: () => void}) => {
     const router = useRouter()
@@ -39,6 +41,10 @@ const Login = ({onLoginSuccess}: {onLoginSuccess: () => void}) => {
 
           useUserStore.getState().setAuthUser(response.user)
           useUserStore.getState().setAuthToken(response.token)
+
+          const token = await messaging().getToken();
+          await saveToken(token, response.user.id); 
+          
           onLoginSuccess()
         } catch (error) {
           console.error(error)
