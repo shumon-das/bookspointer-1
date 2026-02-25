@@ -152,7 +152,7 @@ const BookCard = ({ book, snackMessage, backurl }: { book: BookCardProps, snackM
             }, 50);
           }}>
             <Text style={{textAlign: 'center'}}><Foundation name="comment-quotes" size={18} color="gray" /></Text>
-            <Text style={{ color: 'gray', fontSize: 10 }}>{englishNumberToBengali(book.reviewcount)} {labels.review}</Text>
+            <Text style={{ color: '#282C35', fontSize: 10 }}>{englishNumberToBengali(book.reviewcount)} {labels.review}</Text>
           </TouchableOpacity>
         </Text>
       </View>
