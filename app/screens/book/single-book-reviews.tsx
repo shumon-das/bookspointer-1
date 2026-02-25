@@ -10,7 +10,7 @@ import { useNavigation } from 'expo-router'
 
 const SingleBookReviews = () => {
     const navigation = useNavigation();
-    useLayoutEffect(() => { navigation.setOptions({ headerShown: true, title: 'Reviews' });}, []);
+    useLayoutEffect(() => { navigation.setOptions({ headerShown: true, title: labels.review });}, []);
     const [keyboardOpen, setKeyboardOpen] = useState(false);
     useEffect(() => {
         const showSubscription = Keyboard.addListener('keyboardDidShow', () =>  setKeyboardOpen(true));

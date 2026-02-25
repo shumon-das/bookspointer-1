@@ -2,10 +2,10 @@ import labels from '@/app/utils/labels';
 import Pagination from '@/components/micro/book/details/Pagination';
 import { useNetworkStatus } from '@/components/network/networkConnectionStatus';
 import TextContent from '@/components/screens/book/TextContent';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Foundation, MaterialIcons } from '@expo/vector-icons';
 import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import TextFormating from '@/components/micro/book/details/TextFormating';
 import { useBookDetailsStore } from '@/app/store/bookDetailsStore';
@@ -95,6 +95,14 @@ const details = () => {
         <View style={{ flex: 1, backgroundColor: backgroundColor }}>
             <View style={styles.header}>
               <View style={{ marginTop: 30, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                <View style={{ marginHorizontal: 10 }}>
+                  <Text style={{ fontSize: 15, fontWeight: 'bold' }}>
+                    {title.length > 20 ? title.slice(0, 20) + '...' : title}
+                  </Text>
+                  <Text style={{ fontSize: 10, fontWeight: 'bold', color: 'gray' }}>
+                    {author}
+                  </Text>
+                </View>
                 <View style={{ marginHorizontal: 10, flexDirection: 'row', gap: 10 }}>
                   <TouchableOpacity onPress={() => {
                     useReviewStore.getState().setSelectedBook({
@@ -107,7 +115,8 @@ const details = () => {
                     });
                     router.push('/screens/book/single-book-reviews')
                   }}>
-                    <Text>{labels.review}</Text>
+                    <Text style={{textAlign: 'center'}}><Foundation name="comment-quotes" size={16} color="gray" /></Text>
+                    <Text style={{ fontSize: 10, fontWeight: 'bold', color: 'gray' }}>{labels.review}</Text>
                   </TouchableOpacity>
                   {storeBook && storeBook.url && <ShareButton
                     title="Check this book out!"

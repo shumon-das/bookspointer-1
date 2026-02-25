@@ -15,6 +15,9 @@ import PopOver from './micro/PopOver';
 import TextContent from './screens/book/TextContent';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useReviewStore } from '@/app/store/reviewStore';
+import { useBookDetailsStore } from '@/app/store/bookDetailsStore';
+import englishNumberToBengali from '@/app/utils/englishNumberToBengali';
+import { Foundation } from '@expo/vector-icons';
 
 interface BookCardProps {
   id: number;
@@ -103,16 +106,18 @@ const BookCard = ({ book, snackMessage, backurl }: { book: BookCardProps, snackM
         </View>
 
       </View>
-      <TouchableOpacity style={{}} onPress={() => router.push({
-        pathname: "/screens/book/details", params: {
-          id: book.id,
-          title: book.title,
-          author: book.author.fullName,
-          content: null,
-          isQuote: 'no',
-          backurl: backurl
-        }
-      })}>
+      <TouchableOpacity style={{}} onPress={() => {
+        useBookDetailsStore.getState().setSelectedBook(book);
+        router.push({
+          pathname: "/screens/book/details", params: {
+            id: book.id,
+            title: book.title,
+            author: book.author.fullName,
+            content: null,
+            isQuote: 'no',
+            backurl: backurl
+          }
+        })}}>
         <View style={styles.postImageAndTitle}>
           {/* {!book.content.includes('<img src=') && <DefaultPostImage book={book} />} */}
           <View style={{ width: '11%', marginTop: 10, marginLeft: 5 }}>
@@ -133,11 +138,7 @@ const BookCard = ({ book, snackMessage, backurl }: { book: BookCardProps, snackM
           <DownloadButton bookId={book.id} title={book.title} author={book.author.fullName} uuid={book.uuid} onDownloaded={() => snackMessage(labels.downloadedAlready)} />
         </Text>
         <Text>
-          <ShareButton
-            title="Check this out!"
-            message={book.title}
-            url={`https://bookspointer.com${book.url}`}
-          />
+          <ShareButton title="Check this out!" message={book.title} url={`https://bookspointer.com${book.url}`} />
         </Text>
         <Text>
           <AddToLibrary book={book} />
@@ -150,7 +151,8 @@ const BookCard = ({ book, snackMessage, backurl }: { book: BookCardProps, snackM
               router.push({ pathname: "/screens/book/single-book-reviews" });
             }, 50);
           }}>
-            <Text>{book.reviewcount > 0 ? book.reviewcount : ''}{labels.review}</Text>
+            <Text style={{textAlign: 'center'}}><Foundation name="comment-quotes" size={18} color="gray" /></Text>
+            <Text style={{ color: 'gray', fontSize: 10 }}>{englishNumberToBengali(book.reviewcount)} {labels.review}</Text>
           </TouchableOpacity>
         </Text>
       </View>
