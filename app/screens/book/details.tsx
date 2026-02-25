@@ -54,7 +54,10 @@ const details = () => {
         
         const fetchRelatedBooks = async () => {
           const relatedBooks = await useBookDetailsStore.getState().fetchRelatedBooks(parseInt(id as string));
-          setRelatedBooks(relatedBooks);
+          const filteredBooks = relatedBooks.filter((book, index, self) =>
+            index === self.findIndex((b) => b.book_id === book.book_id)
+          )
+          setRelatedBooks(filteredBooks);
         }
         
         fetchActivePageTexts()
@@ -92,14 +95,6 @@ const details = () => {
         <View style={{ flex: 1, backgroundColor: backgroundColor }}>
             <View style={styles.header}>
               <View style={{ marginTop: 30, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                <View style={{ marginHorizontal: 10 }}>
-                  <Text style={{ fontSize: 15, fontWeight: 'bold' }}>
-                    {title}
-                  </Text>
-                  <Text style={{ fontSize: 10, fontWeight: 'bold', color: 'gray' }}>
-                    {author}
-                  </Text>
-                </View>
                 <View style={{ marginHorizontal: 10, flexDirection: 'row', gap: 10 }}>
                   <TouchableOpacity onPress={() => {
                     useReviewStore.getState().setSelectedBook({
@@ -135,6 +130,15 @@ const details = () => {
                 setBackgroundColor('#fff')
               }} 
             />}
+
+            {page === 1 && <View style={{ marginHorizontal: 10 }}>
+              <Text style={{ fontSize: 15, fontWeight: 'bold' }}>
+                {title}
+              </Text>
+              <Text style={{ fontSize: 10, fontWeight: 'bold', color: 'gray' }}>
+                {author}
+              </Text>
+            </View>}
 
             {loading && page === 1 
               ? (<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>

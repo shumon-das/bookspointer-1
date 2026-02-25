@@ -1,5 +1,4 @@
 import 'react-native-reanimated';
-import messaging from '@react-native-firebase/messaging';
 import { 
   getMessaging, 
   getToken, 
@@ -15,17 +14,28 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { useRouter } from 'expo-router';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { initTables } from './utils/database/initTables';
 import { initSecretKey } from '@/helper/initSecurity';
 import { pingServer } from '@/services/pingServer';
-import { Alert, AppState } from 'react-native';
+import { AppState } from 'react-native';
 import { useMercureStore } from './store/mercureStore';
-import { fetchFcmPushToken } from './utils/notifications';
 import { saveToken } from '@/services/notificationApi';
 import { handleNotificationNavigation } from './utils/notification/notificationHandler';
+import { getApp } from '@react-native-firebase/app';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Notifications from 'expo-notifications';
 
 const messagingInstance = getMessaging();
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowBanner: false,   // no popup banner
+    shouldShowList: true,      // keep in notification tray
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
 setBackgroundMessageHandler(messagingInstance, async (remoteMessage) => {
   console.log('Message handled in the background!', remoteMessage);
@@ -40,17 +50,38 @@ export default function RootLayout() {
   }, []);
 
   useEffect(() => {
+    async function setupChannel() {
+      await Notifications.setNotificationChannelAsync(
+        'high_importance_channel',
+        {
+          name: 'High Importance',
+          importance: Notifications.AndroidImportance.MAX,
+          sound: 'default',
+          vibrationPattern: [0, 250, 250, 250],
+          lockscreenVisibility:
+            Notifications.AndroidNotificationVisibility.PUBLIC,
+        }
+      );
+    }
+
+    setupChannel();
+  }, []);
+
+  useEffect(() => {
     
     // 1. Request Permission & Get Token
     const setupNotifications = async () => {
-      const authStatus = await requestPermission(messagingInstance);
-      const enabled =
-        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+      const app = getApp();
+      const messaging = getMessaging(app);
+      const authStatus = await requestPermission(messaging);
+      const enabled = authStatus === AuthorizationStatus.AUTHORIZED || authStatus === AuthorizationStatus.PROVISIONAL;
 
       if (enabled) {
-        const token = await messaging().getToken();
-        await saveToken(token, 1); 
+        const storageUser = await AsyncStorage.getItem('auth-user');
+        const user = storageUser ? JSON.parse(storageUser) : null;
+        const token = await getToken(messaging);
+        
+        await saveToken(token, user ? user.id : 1); 
         console.log('Saved FCM Token:', token);
       }
     };
@@ -59,22 +90,27 @@ export default function RootLayout() {
 
     // 2. Handle Foreground Messages (App is OPEN)
     const unsubscribeOnMessage = onMessage(messagingInstance, async (remoteMessage) => {
-      Alert.alert(
-        remoteMessage.notification?.title || 'New Message',
-        remoteMessage.notification?.body || ''
-      );
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: remoteMessage.notification?.title ?? '',
+          body: remoteMessage.notification?.body ?? '',
+          data: remoteMessage.data,
+        },
+        trigger: null,
+      });
     });
 
     // 3. Handle Notification Tap (App was in BACKGROUND)
-    const unsubscribeOnNotificationOpened = onNotificationOpenedApp(messagingInstance, (remoteMessage) => {
+    const unsubscribeOnNotificationOpened = onNotificationOpenedApp(messagingInstance, async (remoteMessage) => {
       console.log('Notification tapped:', remoteMessage.data);
-      // handleNavigation(remoteMessage.data);
+      
+      handleNotificationNavigation(remoteMessage.data, router);
     });
 
     // 4. Handle Cold Start (App was CLOSED/KILLED)
     getInitialNotification(messagingInstance).then((remoteMessage) => {
       if (remoteMessage) {
-        console.log('App opened from quit state:', remoteMessage.data);
+        handleNotificationNavigation(remoteMessage.data, router);
       }
     });
 
@@ -82,6 +118,18 @@ export default function RootLayout() {
       unsubscribeOnMessage();
       unsubscribeOnNotificationOpened();
     };
+  }, []);
+
+  // 5. Handle Notification Tap (App was in FOREGROUND)
+  useEffect(() => {
+    const subscription =
+      Notifications.addNotificationResponseReceivedListener(response => {
+        const data = response.notification.request.content.data;
+
+        handleNotificationNavigation(data, router);
+      });
+
+    return () => subscription.remove();
   }, []);
   /*** end notification ***/
 
