@@ -1,3 +1,4 @@
+import { useReviewStore } from "@/app/store/reviewStore";
 import { NOTIFICATION_TYPE } from "@/constants/NotificationType";
 import { Router } from "expo-router";
 
@@ -23,17 +24,11 @@ export const handleNotificationNavigation = (data: any, router: Router) => {
     }
 
     if (notificationData.type === NOTIFICATION_TYPE.REVIEW) {
-      if (notificationData.roles && notificationData.roles.includes("ROLE_AUTHOR")) {
-        router.push({
-          pathname: "/screens/author/author-profile",
-          params: { uuid: notificationData.uuid },
-        });
-      }
-      if (notificationData.roles && notificationData.roles.includes("ROLE_USER")) {
-        router.push({
-          pathname: "/screens/user/visit-user",
-          params: { uuid: notificationData.uuid },
-        });
+      if (Object.keys(notificationData).includes("book_id") && Object.keys(notificationData).includes("review_id")) {
+        useReviewStore.getState().setSelectedBook({id: notificationData.book_id})
+        setTimeout(() => {
+          router.push("/screens/book/single-book-reviews");
+        }, 50);
       }
     }
   }
