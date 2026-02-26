@@ -1,3 +1,4 @@
+import { useBookDetailsStore } from "@/app/store/bookDetailsStore";
 import { useReviewStore } from "@/app/store/reviewStore";
 import { NOTIFICATION_TYPE } from "@/constants/NotificationType";
 import { Router } from "expo-router";
@@ -31,6 +32,26 @@ export const handleNotificationNavigation = (data: any, router: Router) => {
         }, 50);
       }
     }
+
+    if (notificationData.type === NOTIFICATION_TYPE.CREATE_BOOK) {
+      if (Object.keys(notificationData).includes("id") && Object.keys(notificationData).includes("title") && Object.keys(notificationData).includes("author")) {
+        useBookDetailsStore.getState().setSelectedBook({
+          id: notificationData.id,
+          uuid: notificationData.uuid,
+          title: notificationData.title,
+          author: notificationData.author,
+          url: notificationData.url,
+          createdBy: notificationData.createdBy 
+        });
+        setTimeout(() => {
+          router.push({
+            pathname: "/screens/book/details",
+            params: { id: notificationData.id, title: notificationData.title, author: notificationData.author.full_name },
+          });
+        }, 50);
+      }
+    }
+      
   }
 
 };

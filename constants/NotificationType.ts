@@ -2,10 +2,10 @@ export const NOTIFICATION_TYPE = {
     SYSTEM: 'system',
     AUTHOR: 'author',
     USER: 'user',
-    BOOK: 'book',
+    CREATE_BOOK: 'create_book',
     FOLLOW: 'follow',
     UNFOLLOW: 'unfollow',
     REVIEW: 'review',
     BLOCK: 'block',
-    REPORT: 'report'  
+    REPORT: 'report'
 }

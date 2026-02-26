@@ -99,9 +99,12 @@ const details = () => {
                   <Text style={{ fontSize: 15, fontWeight: 'bold' }}>
                     {title.length > 20 ? title.slice(0, 20) + '...' : title}
                   </Text>
-                  <Text style={{ fontSize: 10, fontWeight: 'bold', color: 'gray' }}>
-                    {author}
-                  </Text>
+                  <TouchableOpacity onPress={() => storeBook.author && storeBook.author.uuid && router.push({
+                    pathname: "/screens/author/author-profile",
+                    params: { authorUuid: storeBook.author.uuid },
+                  })}>
+                    <Text style={{ fontSize: 10, fontWeight: 'bold', color: 'gray' }}>{author}</Text>
+                  </TouchableOpacity>
                 </View>
                 <View style={{ marginHorizontal: 10, flexDirection: 'row', gap: 10 }}>
                   <TouchableOpacity onPress={() => {
@@ -144,9 +147,12 @@ const details = () => {
               <Text style={{ fontSize: 15, fontWeight: 'bold' }}>
                 {title}
               </Text>
-              <Text style={{ fontSize: 10, fontWeight: 'bold', color: 'gray' }}>
-                {author}
-              </Text>
+              <TouchableOpacity onPress={() => storeBook.author && storeBook.author.uuid && router.push({
+                pathname: "/screens/author/author-profile",
+                params: { authorUuid: storeBook.author.uuid },
+              })}>
+                <Text style={{ fontSize: 10, fontWeight: 'bold', color: 'gray' }}>{author}</Text>
+              </TouchableOpacity>
             </View>}
 
             {loading && page === 1 
