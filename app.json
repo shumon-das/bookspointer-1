@@ -13,6 +13,9 @@
       "bundleIdentifier": "com.monoranjan.bookspointer"
     },
     "android": {
+      "permissions": [
+        "POST_NOTIFICATIONS"
+      ],
       "intentFilters": [
         {
           "action": "android.intent.action.VIEW",
