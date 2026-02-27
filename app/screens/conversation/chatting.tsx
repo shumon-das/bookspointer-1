@@ -73,7 +73,7 @@ const Chatting = () => {
             <View style={chatStore.selectedConversation.isOnline 
                 ? {width: 10, height: 10, borderRadius: 5, backgroundColor: 'lightgreen'} 
                 : {width: 10, height: 10, borderRadius: 5, backgroundColor: 'gray'}}></View>
-            {!chatStore.selectedConversation.isOnline && <Text style={{marginLeft: 5}}>Last seen at {
+            {!chatStore.selectedConversation.isOnline && <Text style={{marginLeft: 5, color: 'lightgray', fontSize: 12}}>Last seen at {
               lastSeenDate(chatStore.selectedConversation?.lastSeenAt)
                     ? chatStore.selectedConversation?.lastSeenAt.date + ' ' + chatStore.selectedConversation?.lastSeenAt.time
                     : chatStore.selectedConversation?.lastSeenAt.time
