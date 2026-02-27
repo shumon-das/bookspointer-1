@@ -39,14 +39,17 @@ const UserSelfSearchAndUpdate = ({author, onPressSearch}: {author: User | null, 
           </View>
       </View>
       <View style={[styles.followersButtonFollow]}>
-        <View style={styles.followAndSearch}>
           <TouchableOpacity style={styles.followSearchButton} onPress={onSearch}>
             <FontAwesome name="search" style={{}} size={20} color="black" />
           </TouchableOpacity>
-          <TouchableOpacity style={{marginRight: 20}} onPress={onPressProfileUpdate}>
+          <TouchableOpacity onPress={onPressProfileUpdate}>
             <Feather name="settings" size={20} color="black" />
           </TouchableOpacity>
-        </View>
+          <TouchableOpacity style={[styles.messageButton, {marginRight: 10}]} onPress={() => {
+            router.push({pathname: '/screens/conversation/conversationList', params: {userId: author?.id}})
+          }}>
+            <Text style={styles.messageMessageTextBtn}>Message</Text>
+          </TouchableOpacity>
       </View>
     </View>
   )

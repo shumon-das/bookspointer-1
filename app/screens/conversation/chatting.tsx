@@ -6,6 +6,7 @@ import { useConversationStore } from '@/app/store/conversationStore';
 import API_CONFIG from '@/app/utils/config';
 import Message from '@/components/screens/conversation/Message';
 import { Feather, MaterialIcons } from '@expo/vector-icons';
+import { lastSeenDate } from '@/services/pingServer';
 
 const viewabilityConfig = {
     itemVisiblePercentThreshold: 70 // Message is "read" if 70% of it is visible
@@ -68,7 +69,17 @@ const Chatting = () => {
           />
         <View>
           <Text style={styles.headerTitle}>{chatStore.selectedConversation.fullName}</Text>
-          <Text style={styles.headerSubtitle}>Mercure Live</Text>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <View style={chatStore.selectedConversation.isOnline 
+                ? {width: 10, height: 10, borderRadius: 5, backgroundColor: 'lightgreen'} 
+                : {width: 10, height: 10, borderRadius: 5, backgroundColor: 'gray'}}></View>
+            {!chatStore.selectedConversation.isOnline && <Text style={{marginLeft: 5}}>Last seen at {
+              lastSeenDate(chatStore.selectedConversation?.lastSeenAt)
+                    ? chatStore.selectedConversation?.lastSeenAt.date + ' ' + chatStore.selectedConversation?.lastSeenAt.time
+                    : chatStore.selectedConversation?.lastSeenAt.time
+            }</Text>}
+            {chatStore.selectedConversation.isOnline && <Text style={{marginLeft: 5, color: 'lightgray', fontSize: 12}}>Online</Text>}
+          </View>
         </View>
       </View>
 
