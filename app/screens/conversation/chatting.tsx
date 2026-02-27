@@ -5,7 +5,7 @@ import { styles } from '@/styles/chatting.styles';
 import { useConversationStore } from '@/app/store/conversationStore';
 import API_CONFIG from '@/app/utils/config';
 import Message from '@/components/screens/conversation/Message';
-import { Feather } from '@expo/vector-icons';
+import { Feather, MaterialIcons } from '@expo/vector-icons';
 
 const viewabilityConfig = {
     itemVisiblePercentThreshold: 70 // Message is "read" if 70% of it is visible
@@ -28,8 +28,10 @@ const Chatting = () => {
   }, [chatStore.selectedEditMessage]);
 
   const sendMessage = async () => {
-     await chatStore.sendMessage(inputText, null, null);
-     setInputText('');  
+    if (inputText.trim().length > 0) {
+      await chatStore.sendMessage(inputText, null, null);
+      setInputText('');  
+    }
   };
 
   useEffect(() => {
@@ -90,9 +92,11 @@ const Chatting = () => {
           automaticallyAdjustContentInsets={false}
           onViewableItemsChanged={onViewableItemsChanged}
           viewabilityConfig={viewabilityConfig}
-          ListEmptyComponent={<View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          ListEmptyComponent={chatStore.loading ? <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
             <ActivityIndicator size="large" color="#764ba2" />
             <Text>Loading messages...</Text>
+          </View> : <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+            <Text>No messages found</Text>
           </View>}
           style={{ flex: 1 }}
         />
@@ -122,9 +126,10 @@ const Chatting = () => {
             value={inputText}
             onChangeText={setInputText}
             placeholderTextColor="#999"
+            multiline
           />
           <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
-            <Text style={styles.sendButtonText}>Send</Text>
+            <MaterialIcons name="send" size={24} color="blue" />
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>

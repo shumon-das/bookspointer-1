@@ -49,6 +49,7 @@ export const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderRadius: 5,
         paddingHorizontal: 10,
+        marginHorizontal: 10,
         paddingVertical: 5,
         borderWidth: 1,
         borderColor: 'lightgray'
@@ -57,8 +58,9 @@ export const styles = StyleSheet.create({
         color: 'black'
     },
     followersButtonFollow: {
-        flex: 1,
-        alignItems: 'flex-end',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         paddingVertical: 5,
     },
     followersButtonMessage: {
@@ -76,7 +78,7 @@ export const styles = StyleSheet.create({
     },
     followersCountSection: {
         flexDirection: 'row',
-        justifyContent: 'space-around',
+        justifyContent: 'space-between',
     },
     followersCountEach: {
         flex: 1,

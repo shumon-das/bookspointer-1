@@ -10,6 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { getAnonymousId } from '@/app/utils/annonymous';
 import { useUserStore } from '@/app/store/userStore';
+import { useConversationStore } from '@/app/store/conversationStore';
 
 interface FollowProps {
     author: User | null
@@ -92,22 +93,18 @@ const Follow = ({author, onFollowUnfollow, onPressSearch, onTryLogin}: FollowPro
               <Text style={styles.followTotalBooks}>{labels.books}</Text>
           </View>
       </View>
-      <View style={[styles.followersButtonFollow]}>
-        <View style={styles.followAndSearch}>
+      <View style={styles.followersButtonFollow}>
           <TouchableOpacity style={styles.followSearchButton} onPress={() => onPressSearch(true)}>
             <FontAwesome name="search" style={{}} size={20} color="black" />
           </TouchableOpacity>
           <TouchableOpacity style={styles.followButton} onPress={toggleFollow}>
             <Text style={styles.followMessageTextBtn}>{isFollowing ? "Following" : "Follow"}</Text>
           </TouchableOpacity>
-        </View>
-      </View>
-      <View style={styles.followersButtonMessage}>
-        {/* <TouchableOpacity style={styles.messageButton} onPress={() => {
-          router.push({pathname: '/screens/conversation/conversationList', params: {userId: author?.id}})
-        }}>
-          <Text style={styles.messageMessageTextBtn}>Message</Text>
-        </TouchableOpacity> */}
+          <TouchableOpacity style={styles.messageButton} onPress={async () => {
+            await useConversationStore.getState().redirectToChatting(author)
+          }}>
+            <Text style={styles.messageMessageTextBtn}>Message</Text>
+          </TouchableOpacity>
       </View>
     </View>
   )

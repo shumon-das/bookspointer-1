@@ -1,5 +1,5 @@
 import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, ActivityIndicator } from 'react-native'
-import React, { useCallback, useState, useLayoutEffect } from 'react'
+import React, { useCallback, useLayoutEffect } from 'react'
 import { useFocusEffect, useNavigation, useRouter } from 'expo-router'
 import { useConversationStore } from '@/app/store/conversationStore'
 import { useUserStore } from '@/app/store/userStore'

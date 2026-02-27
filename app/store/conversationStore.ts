@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import API_CONFIG from '../utils/config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useUserStore } from './userStore';
+import { router } from 'expo-router';
 
 interface ConversationState {
     conversationList: any[];
@@ -25,6 +26,7 @@ interface ConversationState {
     setSelectedEditMessage: (message: any) => void;
     setSelectedReplyMessage: (message: any) => void;
     markAsRead: (messageIds: string[]) => Promise<void>;
+    redirectToChatting: (user: any) => Promise<void>;
 }
 
 export const useConversationStore = create<ConversationState>((set, get) => ({
@@ -69,13 +71,11 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
         const token = await AsyncStorage.getItem('auth-token')
         const storageUser = await AsyncStorage.getItem('auth-user');
         const user = storageUser ? JSON.parse(storageUser) : null;
-        if (!token || !user) {
-            alert('No token or user found')
+        if (!token || !user || !conversationId) {
+            console.log('toke or user or conversationId is missing')
             return;
         }
 
-        const { loading, selectedConversationMessages } = get();
-        if (loading) return;
         set({ loading: true });
 
         try {
@@ -84,10 +84,11 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
             });
             const result = await response.json();
             if (result.status) {
-                set({ selectedConversationMessages: result.messages });
+                set({ selectedConversationMessages: result.messages, loading: false });
             }
         } catch (error) {
-            console.error("Failed to fetch conversations:", error);
+            console.error("Failed to fetch messages:", error);
+            set({ loading: false})
         } finally {
             set({ loading: false });
         }
@@ -216,6 +217,23 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
             console.log('completed', data)
         } catch (error) {
             console.error("Failed to mark as read:", error);
+        }
+    },
+    redirectToChatting: async (user: any) => {
+        const token = await AsyncStorage.getItem('auth-token');
+        if (!token) {
+            console.log('No token found')
+            return;
+        }
+        const response = await fetch(`${API_CONFIG.BASE_URL}/admin/single-conversation/${user.uuid}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        const result = await response.json();
+        if (result.status) {
+            set({ selectedConversation: result.data });
+            setTimeout(() => {
+                router.push('/screens/conversation/chatting')
+            }, 1000)
         }
     }
 }))
