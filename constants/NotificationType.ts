@@ -7,5 +7,6 @@ export const NOTIFICATION_TYPE = {
     UNFOLLOW: 'unfollow',
     REVIEW: 'review',
     BLOCK: 'block',
-    REPORT: 'report'
+    REPORT: 'report',
+    CHAT: 'chat'
 }

@@ -1,4 +1,5 @@
 import { useBookDetailsStore } from "@/app/store/bookDetailsStore";
+import { useConversationStore } from "@/app/store/conversationStore";
 import { useReviewStore } from "@/app/store/reviewStore";
 import { NOTIFICATION_TYPE } from "@/constants/NotificationType";
 import { Router } from "expo-router";
@@ -51,7 +52,20 @@ export const handleNotificationNavigation = (data: any, router: Router) => {
         }, 50);
       }
     }
-      
+
+    if (notificationData.type === NOTIFICATION_TYPE.CHAT) {
+      console.log(notificationData.id)
+      useConversationStore.getState().setSelectedConversation({
+        id: notificationData.conversation.id,
+        fullName: notificationData.fullName,
+        image: notificationData.image, 
+        lastSeenAt: notificationData.lastSeenAt
+      })
+      setTimeout(() => {
+        router.push("/screens/conversation/chatting");
+      }, 50);
+    }
+
   }
 
 };

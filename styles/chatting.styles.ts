@@ -57,22 +57,22 @@ export const styles = StyleSheet.create({
   },
   inputContainer: {
     flexDirection: 'row',
-    paddingHorizontal: 10,
+    paddingHorizontal: 5,
     alignItems: 'flex-end',
   },
   input: {
     flex: 1,
     backgroundColor: 'rgba(200, 200, 200, 0.9)',
-    borderRadius: 10,
+    borderRadius: 5,
     marginRight: 5,
     fontSize: 15,
     color: '#000',
   },
   sendButton: {
     backgroundColor: '#764ba2',
-    paddingVertical: 10,
+    paddingVertical: 8,
     paddingHorizontal: 20,
-    borderRadius: 25,
+    borderRadius: 5,
   },
   sendButtonText: { color: '#FFF', fontWeight: 'bold' },
 
