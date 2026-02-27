@@ -28,10 +28,10 @@ export const useAuthorsStore = create<AuthorsState>((set, get) => ({
 
   fetchAuthors: async () => {
     const authorsData = await getAllAuthors();
-    if (authorsData.length > 0) {
-      set({ authors: authorsData });
-      return;
-    }
+    // if (authorsData.length > 0) {
+    //   set({ authors: authorsData });
+    //   return;
+    // }
     const { loading, page, totalPages, authors, limit } = get();
     
     // Logic: Stop if already loading or reached the end

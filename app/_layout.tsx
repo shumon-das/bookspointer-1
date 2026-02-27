@@ -25,15 +25,16 @@ import { handleNotificationNavigation } from './utils/notification/notificationH
 import { getApp } from '@react-native-firebase/app';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
+import { requestAndroidNotificationPermission } from './utils/notification/requestPermission';
 
 const messagingInstance = getMessaging();
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowBanner: false,   // no popup banner
+    shouldShowBanner: true,   // no popup banner
     shouldShowList: true,      // keep in notification tray
     shouldPlaySound: true,
-    shouldSetBadge: false,
+    shouldSetBadge: true,
   }),
 });
 
@@ -52,7 +53,7 @@ export default function RootLayout() {
   useEffect(() => {
     async function setupChannel() {
       await Notifications.setNotificationChannelAsync(
-        'high_importance_channel',
+        'high_importance_channel_v2',
         {
           name: 'High Importance',
           importance: Notifications.AndroidImportance.MAX,
@@ -71,6 +72,12 @@ export default function RootLayout() {
     
     // 1. Request Permission & Get Token
     const setupNotifications = async () => {
+      const hasPermission = await requestAndroidNotificationPermission();
+      if (!hasPermission) {
+        console.log("Notification permission denied");
+        return;
+      }
+
       const app = getApp();
       const messaging = getMessaging(app);
       const authStatus = await requestPermission(messaging);
@@ -95,6 +102,7 @@ export default function RootLayout() {
           title: remoteMessage.notification?.title ?? '',
           body: remoteMessage.notification?.body ?? '',
           data: remoteMessage.data,
+          sound: 'default',
         },
         trigger: null,
       });
