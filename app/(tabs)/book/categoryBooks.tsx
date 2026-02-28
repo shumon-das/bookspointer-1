@@ -2,26 +2,14 @@ import BookCard from "@/components/BookCard";
 import QuoteCard from "@/components/QuoteCard";
 import { fetchBooks } from "@/services/api";
 import { useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
-import { useCallback, useEffect, useLayoutEffect, useState } from "react";
-import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import { ActivityIndicator, FlatList, StyleSheet, View, Text } from "react-native";
 
 export default function CategoryBooks() {
   const {category, categoryLabel} = useLocalSearchParams();
   const navigation = useNavigation()
+  useEffect(() => navigation.setOptions({ headerShown: false }), []);
   const [label, setLabel] = useState(categoryLabel as string)
-  
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerTitle: label,
-      headerStyle: {
-        backgroundColor: '#085a80',
-      },
-      headerTintColor: '#d4d4d4',
-      headerTitleStyle: {
-        fontWeight: 'bold',
-      },
-    });
-  }, [navigation, categoryLabel]);
 
   const [currentCategory, setCurrentCategory] = useState("");
   const [books, setBooks] = useState([] as any[]);
@@ -49,7 +37,7 @@ export default function CategoryBooks() {
   }, [navigation, category, categoryLabel]))
 
   const fetchChunks = async (pageNumber: number, category: string) => {
-      if (loading || !hasMore) return;
+      if (loading) return;
         setLoading(true);
 
         try {
@@ -92,6 +80,12 @@ export default function CategoryBooks() {
 
   return (
     <View style={styles.container}>
+      <View style={{width: '100%',height: 70, backgroundColor: '#085a80', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end'}}>
+        <View style={{margin: 10}}>
+          <Text style={{color: 'white', fontSize: 16, textAlign: 'center'}}>{label}</Text>
+        </View>
+        <View></View>
+      </View>
       {initialLoading ? (<ActivityIndicator size="large" color="#0000ff" className="mt-10 self-center" /> ) : (
         <>
           <FlatList
@@ -101,6 +95,9 @@ export default function CategoryBooks() {
             onEndReached={() => fetchChunks(page, currentCategory)}
             onEndReachedThreshold={0.5}
             ListFooterComponent={loading ? <ActivityIndicator size="small" /> : null}
+            ListEmptyComponent={<View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+              <Text>No books found</Text>
+            </View>}
             style={styles.list}
           />
         </>

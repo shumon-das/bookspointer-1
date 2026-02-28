@@ -26,6 +26,8 @@ import { getApp } from '@react-native-firebase/app';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import { requestAndroidNotificationPermission } from './utils/notification/requestPermission';
+import * as Linking from 'expo-linking';
+import { handleDeepLinking } from './utils/notification/deepLinkingHandler';
 
 const messagingInstance = getMessaging();
 
@@ -168,6 +170,15 @@ export default function RootLayout() {
         pingServer();
     }, 45000);
     return () => clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    const subscription = Linking.addEventListener('url', (event) => {
+      const { path, queryParams } = Linking.parse(event.url);
+      handleDeepLinking(path as string, queryParams as any, router);
+    });
+
+    return () => subscription.remove();
   }, []);
 
   return (

@@ -18,17 +18,26 @@
       ],
       "intentFilters": [
         {
-          "action": "android.intent.action.VIEW",
+          "action": "VIEW",
           "data": [
             {
               "scheme": "bookspointer",
               "host": "oauth2redirect"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
+        },
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "bookspointer.com",
+              "pathPrefix": "/"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
         }
       ],
       "adaptiveIcon": {

@@ -93,7 +93,7 @@ const details = () => {
     return (
       <GestureHandlerRootView style={{ flex: 1 }}>
         <View style={{ flex: 1, backgroundColor: backgroundColor }}>
-            <View style={styles.header}>
+            <View style={[styles.header, {backgroundColor: backgroundColor}]}>
               <View style={{ marginTop: 30, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
                 <View style={{ marginHorizontal: 10 }}>
                   <Text style={{ fontSize: 15, fontWeight: 'bold' }}>
