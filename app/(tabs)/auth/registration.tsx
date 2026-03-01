@@ -16,6 +16,8 @@ const registration = () => {
     useLayoutEffect(() => navigation.setOptions({ title }), [navigation, title]);
     const router = useRouter()
 
+    const [firstName, setFirstName] = useState("")
+    const [lastName, setLastName] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [confirmPassword, setConfirmPassword] = useState("")
@@ -28,8 +30,8 @@ const registration = () => {
     const handleRegister = async () => {
         const date = new Date();
         let initialUserState = {
-            firstName: labels.user.register.firstName,
-            lastName: labels.user.register.lastName,
+            firstName: '',
+            lastName: '',
             email: '',
             roles: ['ROLE_USER'],
             phone: '',
@@ -42,6 +44,8 @@ const registration = () => {
 
         if (isValidEmail(email)) {
             if (password === confirmPassword) {
+                initialUserState.firstName = firstName
+                initialUserState.lastName = lastName
                 initialUserState.email = email
                 initialUserState.password = password
                 initialUserState.confirmPassword = confirmPassword
@@ -67,7 +71,7 @@ const registration = () => {
             setEmailError(true)
             console.log('invalid email')
         }
-        console.log(email, isValidEmail(email), password, confirmPassword, password === confirmPassword)
+        console.log(firstName, lastName, email, isValidEmail(email), password, confirmPassword, password === confirmPassword)
     }
 
     const isValidEmail = (email: string) => {
@@ -102,6 +106,20 @@ const registration = () => {
                 </Text>
             </View>
             <View style={{ width: '90%', marginHorizontal: 'auto' }}>
+                <TextInput
+                    style={styles.input}
+                    onChangeText={(value: string) => setFirstName(value)}
+                    value={firstName}
+                    placeholder={labels.firstName}
+                    placeholderTextColor="#999"
+                />
+                <TextInput
+                    style={styles.input}
+                    onChangeText={(value: string) => setLastName(value)}
+                    value={lastName}
+                    placeholder={labels.lastName}
+                    placeholderTextColor="#999"
+                />
                 <TextInput
                     style={styles.input}
                     onChangeText={(value: string) => {
@@ -143,6 +161,7 @@ const registration = () => {
             <Snackbar visible={toastVisible} onDismiss={() => setToastVisible(false)} duration={2000}>
                 {saveMessage}
             </Snackbar>
+            <View style={{height: 100}}></View>
         </ScrollView>
     </KeyboardAvoidingView>
   )
