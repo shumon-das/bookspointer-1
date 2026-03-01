@@ -5,6 +5,7 @@ import labels from '@/app/utils/labels'
 import englishNumberToBengali from '@/app/utils/englishNumberToBengali'
 import { styles } from '@/styles/seriesList.styles'
 import { useRouter } from 'expo-router'
+import { useUserStore } from '@/app/store/userStore'
 
 const SeriesList = ({author, isUser, onPressCreateSeries}:{author: User|null, isUser?: boolean, onPressCreateSeries: (value: boolean) => void}) => {
   const [series, setSeries] = useState([] as any[])
@@ -33,12 +34,12 @@ const SeriesList = ({author, isUser, onPressCreateSeries}:{author: User|null, is
 
   return (
     <View style={styles.gridContainer}>
-      <TouchableOpacity style={styles.series} onPress={() => onPressCreateSeries(true)}>
+      {useUserStore.getState().authUser && useUserStore.getState()?.authUser?.uuid === author?.uuid && <TouchableOpacity style={styles.series} onPress={() => onPressCreateSeries(true)}>
         <Text style={styles.text}>{'নতুন সিরিজ তৈরি করুন'}</Text>
         <View style={styles.viewSeries}>
             <Text style={styles.viewSeriesText}>{labels.createNewSeries}</Text>
         </View>
-      </TouchableOpacity> 
+      </TouchableOpacity>} 
       {Object.keys(series).map((s: any, i: number) => renderItem(i))}
     </View>
   )
