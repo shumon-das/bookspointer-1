@@ -1,3 +1,4 @@
+import { useUserStore } from '@/app/store/userStore';
 import { labels } from '@/app/utils/labels';
 import { useHeaderOptions } from '@/helper/setHeaderOptions';
 import { resetUserPassword } from '@/services/userApi';
@@ -66,14 +67,14 @@ const resetPassword = () => {
         </View>
 
         <View style={{ width: '90%', marginHorizontal: 'auto' }}>
-          <TextInput
+          {useUserStore.getState().authUser?.resetPasswordAt && <TextInput
             style={styles.input}
             onChangeText={(value) => setOldPassword(value)}
             value={oldPassword}
             placeholder={labels.resetPassword.currentPassword}
             placeholderTextColor={'#4B5945'}
             secureTextEntry={true}
-          />
+          />}
           <TextInput
             style={styles.input}
             onChangeText={(value) => setPassword(value)}

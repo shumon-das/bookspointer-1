@@ -21,6 +21,8 @@ export interface User {
   followerCount?: number;
   followingCount?: number;
   reviewCount?: number;
+  registrationType?: string;
+  resetPasswordAt?: string;
 }
 
 interface UserDetails {
