@@ -35,7 +35,7 @@ const conversationList = () => {
     }
 
     const message = (item: any) => {
-      const shortText = item.lastMessage?.text.split(' ').slice(0, 5).join(' ');
+      const shortText = item.lastMessage.length > 0 ? item.lastMessage?.text.split(' ').slice(0, 5).join(' ') : '';
       return shortText.length > 5 ? shortText + '...' : shortText
     }
 

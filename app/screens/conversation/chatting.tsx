@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { View, Text, TextInput, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform, SafeAreaView, StatusBar, Keyboard, Image, ActivityIndicator } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, TextInput, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform, StatusBar, Keyboard, Image, ActivityIndicator } from 'react-native';
 import { useFocusEffect, useNavigation } from 'expo-router';
 import { styles } from '@/styles/chatting.styles';
 import { useConversationStore } from '@/app/store/conversationStore';
@@ -92,7 +93,9 @@ const Chatting = () => {
         {/* Message List */}
         <FlatList
           ref={flatListRef}
-          data={chatStore.selectedConversationMessages}
+          data={chatStore.selectedConversationMessages.filter((item, index, self) =>
+            index === self.findIndex((b) => b.id === item.id)
+          )}
           keyExtractor={(item, index) => item?.id?.toString() || index.toString()}
           renderItem={(item) => <Message message={item.item} />}
           inverted
@@ -130,7 +133,7 @@ const Chatting = () => {
               </TouchableOpacity>
             </View>
           )}
-        <View style={[styles.inputContainer, {paddingBottom: !keyboardOpen ? 5 : 40}]}>
+        <View style={[styles.inputContainer, {paddingBottom: !keyboardOpen ? 2 : 35}]}>
           <TextInput
             style={styles.input}
             placeholder="Type a message..."

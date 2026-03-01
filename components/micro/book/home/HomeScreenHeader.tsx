@@ -81,8 +81,7 @@ export default HomeScreenHeader
 
 const styles = StyleSheet.create({
     header: {
-        height: '80%',
-        marginTop: '9%',
+        height: 50,
     },
     headerContent: {
         flexDirection: 'row',

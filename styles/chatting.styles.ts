@@ -1,7 +1,8 @@
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F7FB', height: '94%', marginBottom: 40 },
+  // container: { flex: 1, backgroundColor: '#F5F7FB', height: '94%', marginBottom: 40 },
+  container: { flex: 1, backgroundColor: '#F5F7FB', height: '94%' },
   header: {
     padding: 10,
     backgroundColor: '#764ba2',
@@ -59,19 +60,19 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: 5,
     alignItems: 'flex-end',
+    backgroundColor: 'rgba(200, 200, 200, 0.9)',
   },
   input: {
     flex: 1,
-    backgroundColor: 'rgba(200, 200, 200, 0.9)',
     borderRadius: 5,
     marginRight: 5,
     fontSize: 15,
     color: '#000',
   },
   sendButton: {
-    backgroundColor: '#764ba2',
+    // backgroundColor: '#764ba2',
     paddingVertical: 8,
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
     borderRadius: 5,
   },
   sendButtonText: { color: '#FFF', fontWeight: 'bold' },

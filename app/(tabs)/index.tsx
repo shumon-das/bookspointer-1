@@ -1,6 +1,6 @@
 import BookCard from "@/components/BookCard";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ActivityIndicator, FlatList, View, Text, RefreshControl, TouchableOpacity, Linking } from "react-native";
+import { ActivityIndicator, FlatList, View, Text, RefreshControl, StatusBar } from "react-native";
 import { Snackbar } from "react-native-paper";
 import QuoteCard from "@/components/QuoteCard";
 import { useNetworkStatus } from "@/components/network/networkConnectionStatus";
@@ -10,7 +10,6 @@ import HomeScreenHeader from "@/components/micro/book/home/HomeScreenHeader";
 import { styles } from "@/styles/home.styles";
 import { useSyncAllUsersStore } from "../store/syncAllUsersStore";
 import { useHomeStore } from "../store/homeStore";
-// import { MaterialIcons } from "@expo/vector-icons";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import labels from "../utils/labels";
 import AppUpdateBanner from "@/components/screens/home/AppUpdateBanner";
@@ -96,7 +95,8 @@ export default function Index() {
     }, [handleSnackMessage])
 
     return (<GestureHandlerRootView style={{ flex: 1,backgroundColor: '#f9f0eb', position: 'relative' }} >
-      <View style={{height: '11%', backgroundColor: '#085a80'}}>
+      <StatusBar barStyle="light-content" />
+      <View style={{height: 50, backgroundColor: '#085a80'}}>
         <HomeScreenHeader />
       </View>
       
