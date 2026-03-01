@@ -40,7 +40,7 @@ Notifications.setNotificationHandler({
   }),
 });
 
-setBackgroundMessageHandler(messagingInstance, async (remoteMessage) => {
+setBackgroundMessageHandler(messagingInstance, async (remoteMessage: any) => {
   console.log('Message handled in the background!', remoteMessage);
 });
 
@@ -98,7 +98,7 @@ export default function RootLayout() {
     setupNotifications();
 
     // 2. Handle Foreground Messages (App is OPEN)
-    const unsubscribeOnMessage = onMessage(messagingInstance, async (remoteMessage) => {
+    const unsubscribeOnMessage = onMessage(messagingInstance, async (remoteMessage: any) => {
       await Notifications.scheduleNotificationAsync({
         content: {
           title: remoteMessage.notification?.title ?? '',
@@ -111,14 +111,14 @@ export default function RootLayout() {
     });
 
     // 3. Handle Notification Tap (App was in BACKGROUND)
-    const unsubscribeOnNotificationOpened = onNotificationOpenedApp(messagingInstance, async (remoteMessage) => {
+    const unsubscribeOnNotificationOpened = onNotificationOpenedApp(messagingInstance, async (remoteMessage: any) => {
       console.log('Notification tapped:', remoteMessage.data);
       
       handleNotificationNavigation(remoteMessage.data, router);
     });
 
     // 4. Handle Cold Start (App was CLOSED/KILLED)
-    getInitialNotification(messagingInstance).then((remoteMessage) => {
+    getInitialNotification(messagingInstance).then((remoteMessage: any) => {
       if (remoteMessage) {
         handleNotificationNavigation(remoteMessage.data, router);
       }

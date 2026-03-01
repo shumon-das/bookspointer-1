@@ -10,6 +10,7 @@ interface HomeState {
   limit: number;
   totalPages: number;
   loading: boolean;
+  headerReloadLoading: boolean;
   bannerStyle: {height: number, backgroundColor: string, margin: number};
   bannerMessage: string;
   clearFeedBooks: () => void,
@@ -26,6 +27,7 @@ export const useHomeStore = create<HomeState>((set, get) => ({
   bannerMessage: "",
   totalPages: 1000,
   loading: false,
+  headerReloadLoading: false,
   clearFeedBooks: () => set({ feedBooks: [], page: 1, loading: false }),
   
   fetchFeedBooks: async (isOnline: boolean|null, version?: string) => {
@@ -33,14 +35,7 @@ export const useHomeStore = create<HomeState>((set, get) => ({
 
     const { page, totalPages, limit } = get();
 
-    if (page > totalPages) return;
-
     set({ loading: true });
-    if (!isOnline) {
-        set({ loading: false });
-        return;
-    }
-
     try {
         const anonymousId = await getAnonymousId();
         let endpoint = `${API_CONFIG.BASE_URL}/user-feed/${anonymousId}/${page}/${0}/${limit}`;
@@ -52,8 +47,6 @@ export const useHomeStore = create<HomeState>((set, get) => ({
           }
         });
         const books = await response.json();
-
-        set({ feedBooks: [] });
         set(state => {
           const map = new Map<number, any>();
           [...state.feedBooks, ...books].forEach(b => map.set(b.id, b));
@@ -68,12 +61,10 @@ export const useHomeStore = create<HomeState>((set, get) => ({
 
         const bannerStyle = response.headers.get('x-banner-style');
         const bannerMessage = response.headers.get('x-banner-message');
-
         set({ 
           bannerStyle: bannerStyle ? JSON.parse(bannerStyle || '{}') : get().bannerStyle, 
           bannerMessage: bannerMessage || '' 
         })
-        // console.log(bannerStyle, bannerMessage)
 
     } catch (error) {
         console.error("Failed to fetch Feed Books:", error);
@@ -87,7 +78,9 @@ export const useHomeStore = create<HomeState>((set, get) => ({
     set({ feedBooks: books });
   },
 
-  onRefresh: (version: string) => {
-    get().fetchFeedBooks(true);
+  onRefresh: async (version: string) => {
+    set({ feedBooks: [], page: 1, headerReloadLoading: true });
+    await get().fetchFeedBooks(true, version);
+    set({ headerReloadLoading: false });
   },
 }));

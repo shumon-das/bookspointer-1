@@ -1,29 +1,28 @@
 import BookCard from "@/components/BookCard";
-import { saveToken } from "@/services/notificationApi";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ActivityIndicator, FlatList, View, Text, RefreshControl } from "react-native";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { ActivityIndicator, FlatList, View, Text, RefreshControl, TouchableOpacity, Linking } from "react-native";
 import { Snackbar } from "react-native-paper";
 import QuoteCard from "@/components/QuoteCard";
 import { useNetworkStatus } from "@/components/network/networkConnectionStatus";
 import { useNavigation } from "expo-router";
-import { isAppUpdateExists } from "../utils/app/isUpdate";
-import NativeFeedAds from "@/components/micro/meta/NativeFeedAds";
+// import NativeFeedAds from "@/components/micro/meta/NativeFeedAds";
 import HomeScreenHeader from "@/components/micro/book/home/HomeScreenHeader";
 import { styles } from "@/styles/home.styles";
 import { useSyncAllUsersStore } from "../store/syncAllUsersStore";
 import { useHomeStore } from "../store/homeStore";
-import { MaterialIcons } from "@expo/vector-icons";
+// import { MaterialIcons } from "@expo/vector-icons";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import labels from "../utils/labels";
+import AppUpdateBanner from "@/components/screens/home/AppUpdateBanner";
+// import OfflineComponent from "@/components/OfflineComponent";
 
 export default function Index() {
-  const APP_VERSION = '13_02_2026'
-  isAppUpdateExists(APP_VERSION)
+  const APP_VERSION = '01_03_2026'
   
   const { isOnline, isInitializing } = useNetworkStatus(() => {
     console.log('✅ Online again, syncing data...');
   });
 
-  
 
   // start header
   const navigation = useNavigation();
@@ -34,8 +33,10 @@ export default function Index() {
   const [snackMessage, setSnackMessage] = useState('')
   const [refreshing, setRefreshing] = useState(false);
   const [reviewBook, setReviewBook] = useState(null)
+  const [showOfflineMessage, setShowOfflineMessage] = useState(false)
 
-  const { loading, feedBooks, fetchFeedBooks, fetchCacheBooks, clearFeedBooks } = useHomeStore()
+  const loading = useHomeStore(state => state.loading)
+  const { headerReloadLoading, feedBooks, fetchFeedBooks, fetchCacheBooks, clearFeedBooks } = useHomeStore()
   const syncAllUsers = useSyncAllUsersStore()
 
   const fetchAllUsersFromDbWhoHaveBooks = async () => {    
@@ -68,7 +69,7 @@ export default function Index() {
       }
     });
     
-    return visualData;
+    return visualData.filter((book, index, self) => index === self.findIndex((b) => b.id === book.id))
   }, [feedBooks]);
 
     const handleSnackMessage = (value: string) => {
@@ -92,42 +93,50 @@ export default function Index() {
         snackMessage={handleSnackMessage}
         backurl={JSON.stringify({ pathname: '/(tabs)/', params: {} })}
       />
-    }, [])
+    }, [handleSnackMessage])
 
     return (<GestureHandlerRootView style={{ flex: 1,backgroundColor: '#f9f0eb', position: 'relative' }} >
       <View style={{height: '11%', backgroundColor: '#085a80'}}>
         <HomeScreenHeader />
       </View>
-      <View style={useHomeStore.getState().bannerStyle}>
-        <Text>{useHomeStore.getState().bannerMessage}</Text>
-      </View>
+      
+      {useHomeStore.getState().bannerMessage && <AppUpdateBanner />}
+      <Text>{listData.length}-{loading ? 'loading' : 'not loading'}</Text>
       <View style={styles.container}>
           <FlatList
-            data={listData}
-            keyExtractor={(item, index) => typeof item.id === 'number' ? item.id.toString() : `fallback-key-${index}`}
+            data={feedBooks}
+            keyExtractor={(item) => String(item.id)}
             renderItem={renderItem}
-            onEndReached={() => fetchFeedBooks(isOnline)}
+            onEndReached={() => {
+              useHomeStore.setState((state) => ({ loading: true }));
+              console.log('isOnline', isOnline)
+              if (isOnline) {
+                fetchFeedBooks(isOnline, APP_VERSION)
+              } else {
+                setShowOfflineMessage(!isOnline)
+              }
+            }}
             onEndReachedThreshold={0.5}
+            contentContainerStyle={{ flexGrow: 1 }}
             // Performance optimizations
-            initialNumToRender={10}
-            maxToRenderPerBatch={10}
-            windowSize={5}
-            removeClippedSubviews={true}
+            initialNumToRender={20}
+            maxToRenderPerBatch={20}
+            windowSize={10}
+            removeClippedSubviews={false}
             refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={() => {
                   useHomeStore.getState().onRefresh(APP_VERSION)
                 }} />
             }
-            ListHeaderComponent={() => <View>{loading && <ActivityIndicator size="small" color="#e63946" />}</View>}
-            ListEmptyComponent={() => (<View style={{flex: 1, justifyContent: 'center', alignItems: 'center', height: 500}}>
-              <Text>{isOnline && listData.length !== 0 ? <ActivityIndicator size="small" color="#e63946" /> : 'loading...'}</Text>
-              </View>)}
-            ListFooterComponent={!isOnline 
-                ? <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                      <MaterialIcons name="wifi-off" size={24} color="#444" />
-                      <Text style={{ marginLeft: 10 }}>No internet connection</Text>
-                  </View>
-                : loading ? <ActivityIndicator size="small" color="#e63946" /> : null}
+            ListHeaderComponent={() => <View>{headerReloadLoading && <ActivityIndicator size="small" color="#e63946" />}</View>}
+            ListEmptyComponent={() => (<View style={{flex: 1, justifyContent: 'center', alignItems: 'center', height: 100}}>
+               <Text>{labels.noBooksFound}</Text>
+            </View>)}
+            ListFooterComponent={() => {
+                // if (showOfflineMessage && !useHomeStore.getState().loading) return <OfflineComponent />
+                if (loading) return <ActivityIndicator size="large" color="#e63946" />
+                return null
+            }}
             style={styles.list}
           />
           <Snackbar visible={toastVisible} onDismiss={() => setToastVisible(false)} duration={2000}>

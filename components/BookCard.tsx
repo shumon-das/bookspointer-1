@@ -32,11 +32,10 @@ interface BookCardProps {
   reviewcount: number;
 }
 
-const BookCard = ({ book, snackMessage, backurl }: { book: BookCardProps, snackMessage: (value: string) => void, backurl: string }) => {
+const BookCard = ({ book, snackMessage, backurl }: { book: BookCardProps, snackMessage: (value: string) => void, backurl: string}) => {
   const createdByImg = `https://api.bookspointer.com/uploads/${book.createdBy.image}`;
   const router = useRouter();
-  const userStore = useUserStore();
-  const [loggedInUser, setLoggedInUser] = React.useState<{ uuid: string } | null>(userStore.authUser || null);
+  const [loggedInUser, setLoggedInUser] = React.useState<{ uuid: string } | null>(useUserStore.getState().authUser);
 
   const popoverIcon = <MaterialIcons name="more-vert" size={24} color="black" />
   const popoverMenus = loggedInUser && loggedInUser.uuid === book.createdBy.uuid ? [
@@ -72,27 +71,27 @@ const BookCard = ({ book, snackMessage, backurl }: { book: BookCardProps, snackM
     }
   }
 
-  useEffect(() => {
-    let authUser = userStore.authUser;
-    if (!authUser) {
-      userStore.fetchAuthUserFromDb();
-      authUser = userStore.authUser;
-    }
-    setLoggedInUser(authUser);
-  }, [userStore.authUser]);
+  // useEffect(() => {
+  //   let authUser = userStore.authUser;
+  //   if (!authUser) {
+  //     userStore.fetchAuthUserFromDb();
+  //     authUser = userStore.authUser;
+  //   }
+  //   setLoggedInUser(authUser);
+  // }, [userStore.authUser]);
 
   return (
     <View style={styles.cardBackground} key={book.id}>
       <View className='postHeader' style={styles.postHeader}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <TouchableOpacity onPress={() => router.push({
-            pathname: userStore.authUser && userStore.authUser.uuid === book.createdBy.uuid ? '/screens/user/user-profile' : '/screens/user/visit-user',
+            pathname: useUserStore.getState().authUser && useUserStore.getState()?.authUser?.uuid === book.createdBy.uuid ? '/screens/user/user-profile' : '/screens/user/visit-user',
             params: { uuid: book.createdBy.uuid }
           })}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Image source={{ uri: createdByImg }} style={styles.image} />
               <View>
-                <Text style={styles.userName}>{book.createdBy.fullName}{userStore.authUser && userStore.authUser.uuid === book.createdBy.uuid ? ' (You)' : ''}</Text>
+                <Text style={styles.userName}>{book.createdBy.fullName}{useUserStore.getState().authUser && useUserStore.getState()?.authUser?.uuid === book.createdBy.uuid ? ' (You)' : ''}</Text>
                 <Text style={styles.userRole}>{userRole(book.createdBy)}</Text>
               </View>
             </View>
