@@ -101,7 +101,7 @@ export default function Index() {
       </View>
       
       {useHomeStore.getState().bannerMessage && <AppUpdateBanner />}
-      <Text>{listData.length}-{loading ? 'loading' : 'not loading'}</Text>
+      
       <View style={styles.container}>
           <FlatList
             data={feedBooks}

@@ -28,6 +28,7 @@ import * as Notifications from 'expo-notifications';
 import { requestAndroidNotificationPermission } from './utils/notification/requestPermission';
 import * as Linking from 'expo-linking';
 import { handleDeepLinking } from './utils/notification/deepLinkingHandler';
+import { useUserStore } from './store/userStore';
 
 const messagingInstance = getMessaging();
 
@@ -180,6 +181,10 @@ export default function RootLayout() {
 
     return () => subscription.remove();
   }, []);
+
+  useEffect(() => {
+    useUserStore.getState().fetchAuthUserFromDb();
+  }, [])
 
   return (
     <KeyboardProvider>
