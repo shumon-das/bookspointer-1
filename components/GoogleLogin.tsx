@@ -84,9 +84,9 @@ const GoogleLogin = () => {
 
   if (loggedInUser) {
     return <View style={{ width: '80%', margin: 'auto' }}>
-        <TouchableOpacity style={styles.button} onPress={() => router.replace('/screens/user/user-profile')}> 
+        <TouchableOpacity style={styles.button} onPress={() => router.replace('/')}> 
           <Image source={{uri: `${API_CONFIG.BASE_URL}/uploads/${loggedInUser?.image ? loggedInUser.image : 'user.png'}`}} style={styles.image} />
-          <Text style={{ color: 'white', marginLeft: 10 }}>Go to Profile</Text>
+          <Text style={{ color: 'white', marginLeft: 10 }}>Go to Home</Text>
         </TouchableOpacity>
       </View>;
   } else {
