@@ -36,14 +36,6 @@ const Author = () => {
     const [author, setAuthor] = useState<User|null>(null);
     const [refreshing, setRefreshing] = useState(false);
     const [followersCountChange, setFollowersCountChange] = useState(null as boolean | null)
-    
-    const fetchAuthorFromStore = async () => {
-        const author = await authorsStore.findUserByUuid(authorUuid as string, isOnline);
-        if (author) {
-            setAuthor(author as any);
-            return;
-        }
-    }
 
     const fetchAuthorByApi = async () => {
         const user = await useAuthorsStore.getState().fetchUserByUuidApi(authorUuid as string)
@@ -51,9 +43,9 @@ const Author = () => {
             setAuthor(user as any)
         }
     }
-
+    
     useEffect(() => {
-        fetchAuthorFromStore();
+        setAuthor(authorsStore.currentlyVisitedAuthor);
         fetchAuthorByApi();
     }, [authorUuid, isOnline]);
 

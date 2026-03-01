@@ -4,16 +4,20 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { User } from './types/User';
 import { labels } from '@/app/utils/labels';
 import { englishNumberToBengali } from '@/app/utils/englishNumberToBengali';
+import { useAuthorsStore } from '@/app/store/authorStore';
 
 export default function AuthorCard(author: User) {
     const authorImg = `https://api.bookspointer.com/uploads/${author.image}`
     const router = useRouter()
   return (
     <View style={{backgroundColor: '#f9f0eb'}}>
-        <TouchableOpacity  style={styles.postHeader} onPress={() => router.push({
+        <TouchableOpacity  style={styles.postHeader} onPress={() => {
+          const data = {...author, series: author.series ? JSON.parse(typeof author.series === 'string' ? author.series : '[]') : []}
+          useAuthorsStore.setState({currentlyVisitedAuthor: data});
+          router.push({
             pathname: '/screens/author/author-profile', 
             params: { authorUuid: author.uuid, url: author.url }
-          })}>
+          })}}>
           <Image  source={{ uri: authorImg }} style={styles.image} />
           <View>
               <Text style={styles.userName}>{author.fullName}</Text>
