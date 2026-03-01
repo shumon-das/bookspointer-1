@@ -85,6 +85,15 @@ const Follow = ({author, onFollowUnfollow, onPressSearch, onTryLogin}: FollowPro
       setLoading(false)
     }
   }
+
+  const onPressMessage = async () => {
+    if (!useUserStore.getState().authUser) {
+      onTryLogin(true)
+      return
+    }
+    await useConversationStore.getState().redirectToChatting(author)
+  }
+
   return (
     <View style={styles.followersCountSection}>
       <View style={[styles.followTotalBooksInfo]}>
@@ -100,9 +109,7 @@ const Follow = ({author, onFollowUnfollow, onPressSearch, onTryLogin}: FollowPro
           <TouchableOpacity style={styles.followButton} onPress={toggleFollow}>
             <Text style={styles.followMessageTextBtn}>{isFollowing ? "Following" : "Follow"}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.messageButton} onPress={async () => {
-            await useConversationStore.getState().redirectToChatting(author)
-          }}>
+          <TouchableOpacity style={styles.messageButton} onPress={onPressMessage}>
             <Text style={styles.messageMessageTextBtn}>Message</Text>
           </TouchableOpacity>
       </View>
