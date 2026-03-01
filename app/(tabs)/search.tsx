@@ -111,6 +111,7 @@ const search = () => {
                         }} />}
                         keyExtractor={(item) => item.uuid.toString()}
                         ListHeaderComponent={() => (<SearchListHeader subject={searchSubject} onChangeSubject={(subject) => {
+                            setSearchText('')
                             setSuggessions([])
                             setSearchSubject(subject);
                             handleExtremeSearch(searchText, subject);

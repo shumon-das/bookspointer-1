@@ -15,7 +15,7 @@ const SearchRender = ({item, searchSubject, onSelect}: any) => {
                 pathname: "/screens/book/details", 
                 params: {id: item.id, title: item.title, author: item.author}})
             }}>
-            <SuggessionBookItem item={item} />
+            {item && item.content && <SuggessionBookItem item={item} />}
         </TouchableOpacity>)
     }
 
@@ -27,7 +27,7 @@ const SearchRender = ({item, searchSubject, onSelect}: any) => {
                     : "/screens/user/visit-user", 
                 params: {uuid: item.uuid}})
             }}>
-            <SuggessionAuthorItem item={item} />
+            {item && item.content && (item.fullName || item.author) && <SuggessionAuthorItem item={item} />}
         </TouchableOpacity>)
     }
     // return (<TouchableOpacity onPress={() => {router.push({pathname: "/screens/book/details", params: {id: item.id, title: item.title, author: item.fullName}})}}>
