@@ -54,13 +54,17 @@ export const handleNotificationNavigation = (data: any, router: Router) => {
     }
 
     if (notificationData.type === NOTIFICATION_TYPE.CHAT) {
-      console.log(notificationData.id)
-      useConversationStore.getState().setSelectedConversation({
-        id: notificationData.conversation.id,
-        fullName: notificationData.fullName,
-        image: notificationData.image, 
-        lastSeenAt: notificationData.lastSeenAt
-      })
+      console.log(notificationData)
+      useConversationStore.setState((state) => ({
+        ...state,
+        selectedConversation: {
+          id: notificationData.conversation.id,
+          uuid: notificationData.senderUuid,
+          fullName: notificationData.fullName,
+          image: notificationData.image, 
+          lastSeenAt: notificationData.lastSeenAt
+        }
+      }))
       setTimeout(() => {
         router.push("/screens/conversation/chatting");
       }, 50);
