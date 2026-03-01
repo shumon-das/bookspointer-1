@@ -6,6 +6,7 @@ import labels from '@/app/utils/labels';
 import ReviewSheetReviewCard from '@/components/micro/review/ReviewSheetReviewCard';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from 'expo-router'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const SingleBookReviews = () => {
@@ -73,21 +74,26 @@ const SingleBookReviews = () => {
     }
 
     const onSaveReview = async () => {
-    if (isReply) {
-      await useReviewStore.getState().replyToReview(actionReview.id, useReviewStore.getState().selectedBook.id, content)
-    } else if (isEdit) {
-      await useReviewStore.getState().editReview(actionReview, content)
-      setReviews(reviews.filter((r: any) => r.id === actionReview.id ? r.content = content : r))
-    } else {
-      await createReview()
+        const token = await AsyncStorage.getItem('auth-token')
+        if (!token) {
+            Alert.alert(labels.sorry, labels.pleaseLoginToContinue)
+            return
+        }
+        if (isReply) {
+            await useReviewStore.getState().replyToReview(actionReview.id, useReviewStore.getState().selectedBook.id, content)
+        } else if (isEdit) {
+            await useReviewStore.getState().editReview(actionReview, content)
+        setReviews(reviews.filter((r: any) => r.id === actionReview.id ? r.content = content : r))
+        } else {
+            await createReview()
+        }
+        setIsEdit(false)
+        setIsDelete(false)
+        setIsReply(false)
+        setIsReplyBack(false)
+        setActionReview(null)
+        setContent('')
     }
-    setIsEdit(false)
-    setIsDelete(false)
-    setIsReply(false)
-    setIsReplyBack(false)
-    setActionReview(null)
-    setContent('')
-  }
 
     if (!useReviewStore.getState().selectedBook) {
       return <View>
