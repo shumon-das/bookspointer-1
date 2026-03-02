@@ -35,11 +35,6 @@ const conversationList = () => {
       )
     }
 
-    const message = (item: any) => {
-      const shortText = item.lastMessage.length > 0 ? item.lastMessage?.text.split(' ').slice(0, 5).join(' ') : '';
-      return shortText.length > 5 ? shortText + '...' : shortText
-    }
-
     const renderItem = (item: any) => {
       return (<TouchableOpacity style={styles.conversationItem} onPress={() => {
             chatStore.setSelectedConversation(item)
@@ -65,7 +60,7 @@ const conversationList = () => {
                   color: !item.me && item.unread > 0 ? '#000' : 'gray',
                   fontSize: !item.me && item.unread > 0 ? 16 : 14
                 }}>
-                  {message(item)}
+                  {item.lastMessage?.text?.split(' ').slice(0, 5).join(' ')}
                 </Text>
               </View>
             </View>
