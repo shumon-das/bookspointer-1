@@ -150,10 +150,7 @@ export default function RootLayout() {
       if (nextAppState === 'active') {
         console.log('App has come to the foreground! Connecting Mercure...');
         useMercureStore.getState().setupMercureHub();
-      } else {
-        console.log('App is in background. Closing Mercure...');
-        useMercureStore.getState().closeMercureHub();
-      }
+      } 
     });
 
     // Initial setup
