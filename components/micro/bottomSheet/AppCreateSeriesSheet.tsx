@@ -43,10 +43,8 @@ const AppCreateSeriesSheet = forwardRef((author: User, ref: any) => {
     const user = storageUser ? JSON.parse(storageUser) : null;
     const token = await AsyncStorage.getItem('auth-token');
     if (!token || !user) return;
-
     try {
       author.series = seriesList
-      console.log(author.series.map((s: any) => s.name), seriesList.map((s: any) => s.name))
       const url = `${API_CONFIG.BASE_URL}/admin/update-user`;
       const response = await fetch(url, {
           method: 'POST',
@@ -78,9 +76,31 @@ const AppCreateSeriesSheet = forwardRef((author: User, ref: any) => {
 
   const deleteSeries = async (item: any) => {
     Alert.alert(labels.deleteItem.areYouSure, labels.deleteItem.deleteMessage, [
-      {text: 'Yes', style: 'destructive', onPress: () => {
+      {text: 'Yes', style: 'destructive', onPress: async () => {
         setSeriesList(seriesList.filter((s: any) => s.name !== item.name))
-        createOrEditSeries()
+        author.series = seriesList.filter((s: any) => s.name !== item.name)
+        const storageUser = await AsyncStorage.getItem('auth-user');
+        const user = storageUser ? JSON.parse(storageUser) : null;
+        const token = await AsyncStorage.getItem('auth-token');
+        if (!token || !user) return;
+
+        const url = `${API_CONFIG.BASE_URL}/admin/update-user`;
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {"Authorization": `Bearer ${token}`},
+          body: JSON.stringify(author),
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("Server Error Response:", errorText);
+          return;
+        }
+        
+        const data = await response.json()
+        user.series = data.user.series
+        setSeriesList(data.user.series)
+        AsyncStorage.setItem('auth-user', JSON.stringify(user))
       }},
       {text: 'No', style: 'cancel'}
     ])

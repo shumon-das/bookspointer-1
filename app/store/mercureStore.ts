@@ -82,7 +82,7 @@ export const useMercureStore = create<MercureState>((set, get) => ({
     });
 
     es.addEventListener('error', (event: any) => {
-      console.error("Mercure error:", event);
+      console.log("Mercure error:", event);
     });
 
     set({ eventSourceInstance: es });

@@ -170,10 +170,14 @@ const WriteBook = () => {
                     }
                 </TouchableOpacity>
                 {preview && !content && <Text style={{ color: 'red' }}>{labels.bookCreate.contentRequired}</Text>}
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Text style={{ marginHorizontal: 10, color: 'brown' }}>{content.length < 10 ? 'আরও কিছু লিখুন' : ''}</Text>
+                    <Text style={{ marginHorizontal: 10 }}>{content.length}</Text>
+                </View>
             </View>
 
             <View style={{ marginTop: 50 }}>
-                <TouchableOpacity onPress={previewBook}>
+                <TouchableOpacity onPress={previewBook} disabled={content.length < 10}>
                     {!loading && <Text style={styles.saveButton}>{labels.saveBook}</Text>}
                     {loading && <ActivityIndicator style={styles.saveButton}></ActivityIndicator>}
                 </TouchableOpacity>
