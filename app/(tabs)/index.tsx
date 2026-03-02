@@ -95,8 +95,7 @@ export default function Index() {
     }, [handleSnackMessage])
 
     return (<GestureHandlerRootView style={{ flex: 1,backgroundColor: '#f9f0eb', position: 'relative' }} >
-      <StatusBar barStyle="light-content" />
-      <View style={{height: 50, backgroundColor: '#085a80'}}>
+      <View style={{height: 80, backgroundColor: '#085a80', flexDirection: 'column', justifyContent: 'flex-end'}}>
         <HomeScreenHeader />
       </View>
       

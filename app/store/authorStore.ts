@@ -79,7 +79,7 @@ export const useAuthorsStore = create<AuthorsState>((set, get) => ({
     return null;
   },
   fetchUserByUuidApi: async (uuid: string) => {
-      const endpoint = `${API_CONFIG.BASE_URL}/single-user/${uuid}`;
+      const endpoint = `${API_CONFIG.BASE_URL}/single-author/${uuid}`;
       const response = await fetch(endpoint);
       if (!response.ok) {
         // @ts-ignore
