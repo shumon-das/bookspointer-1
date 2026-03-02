@@ -8,7 +8,8 @@ import API_CONFIG from '@/app/utils/config'
 const conversationList = () => {
   const navigation = useNavigation();
   useLayoutEffect(() => { navigation.setOptions({ headerShown: true, title: 'Conversations' });}, []);
-    const chatStore = useConversationStore();
+  const chatStore = useConversationStore();
+  const conversationList = useConversationStore((state) => state.conversationList)
     const authUser = useUserStore().authUser
     const router = useRouter();
     useFocusEffect(useCallback(() => {
@@ -50,6 +51,12 @@ const conversationList = () => {
                   source={item.image ? {uri: `${API_CONFIG.BASE_URL}/uploads/${item.image}`} : require('@/assets/images/user.png')} 
                   style={styles.conversationImage}
                 />
+                <View style={{position: 'absolute', bottom: 0, right: 0, borderWidth: 2, borderColor: '#fff', borderRadius: 10}}>
+                  <View style={item.isOnline 
+                      ? {width: 10, height: 10, borderRadius: 5, backgroundColor: 'lightgreen'} 
+                      : {width: 10, height: 10, borderRadius: 5, backgroundColor: 'gray'}}>       
+                  </View>
+                </View>
               </View>
               <View style={{marginHorizontal: 10}}>
                 <Text style={styles.conversationName}>{item.fullName}</Text>
@@ -72,7 +79,7 @@ const conversationList = () => {
   return (
     <View style={{flex: 1, backgroundColor: '#fff'}}>
       <FlatList
-        data={chatStore.conversationList}
+        data={conversationList}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => renderItem(item)}
         contentContainerStyle={{paddingBottom: 50}}

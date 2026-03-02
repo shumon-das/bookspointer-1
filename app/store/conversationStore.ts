@@ -213,7 +213,7 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
                 },
                 body: JSON.stringify({ ids: messageIds, conversationId: get().selectedConversation.id })
             });
-            const data = response.json();   
+            const data = await response.json();   
             console.log('completed', data)
         } catch (error) {
             console.error("Failed to mark as read:", error);

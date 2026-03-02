@@ -19,7 +19,6 @@ export const pingServer = async () => {
             body: JSON.stringify({receiverId: selectedConversationUserId})
         });
         const data = await response.json();
-        // {"receiverOnlineStatus": {"lastSeenAt": {"date": "2026-02-26", "time": "18:06:01"}, "status": false}, "status": "online"}
         if (Object.keys(data).includes('receiverOnlineStatus') && Object.keys(data.receiverOnlineStatus).includes('status') && selectedConversationUserId) {
             useConversationStore.setState((state) => ({
             selectedConversation: {
@@ -28,6 +27,20 @@ export const pingServer = async () => {
                     lastSeenAt: data.receiverOnlineStatus.lastSeenAt
                 }
             }));
+        }
+        if (Object.keys(data).includes('conversationListStatus')) {
+            useConversationStore.setState((state) => ({
+                conversationList: state.conversationList.map((item: any) => {
+                    const status = data.conversationListStatus.find((d: any) => d.uuid === item.uuid)
+                    if (status) {
+                        return {
+                            ...item,
+                            isOnline: status.online,
+                        };
+                    }
+                    return item;
+                })
+            }))
         }
     } catch (e) {
         console.error("Ping Error:", e);
