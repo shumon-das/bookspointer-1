@@ -1,6 +1,6 @@
 import BookCard from "@/components/BookCard";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ActivityIndicator, FlatList, View, Text, RefreshControl, StatusBar } from "react-native";
+import { ActivityIndicator, FlatList, View, RefreshControl } from "react-native";
 import { Snackbar } from "react-native-paper";
 import QuoteCard from "@/components/QuoteCard";
 import { useNetworkStatus } from "@/components/network/networkConnectionStatus";
@@ -11,7 +11,6 @@ import { styles } from "@/styles/home.styles";
 import { useSyncAllUsersStore } from "../store/syncAllUsersStore";
 import { useHomeStore } from "../store/homeStore";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import labels from "../utils/labels";
 import AppUpdateBanner from "@/components/screens/home/AppUpdateBanner";
 // import OfflineComponent from "@/components/OfflineComponent";
 
@@ -31,11 +30,10 @@ export default function Index() {
   const [toastVisible, setToastVisible] = useState(false)
   const [snackMessage, setSnackMessage] = useState('')
   const [refreshing, setRefreshing] = useState(false);
-  const [reviewBook, setReviewBook] = useState(null)
   const [showOfflineMessage, setShowOfflineMessage] = useState(false)
 
   const loading = useHomeStore(state => state.loading)
-  const { headerReloadLoading, feedBooks, fetchFeedBooks, fetchCacheBooks, clearFeedBooks } = useHomeStore()
+  const { feedBooks, fetchFeedBooks, fetchCacheBooks, clearFeedBooks } = useHomeStore()
   const syncAllUsers = useSyncAllUsersStore()
 
   const fetchAllUsersFromDbWhoHaveBooks = async () => {    
@@ -117,7 +115,6 @@ export default function Index() {
             }}
             onEndReachedThreshold={0.5}
             contentContainerStyle={{ flexGrow: 1 }}
-            // Performance optimizations
             initialNumToRender={20}
             maxToRenderPerBatch={20}
             windowSize={10}
@@ -127,10 +124,6 @@ export default function Index() {
                   useHomeStore.getState().onRefresh(APP_VERSION)
                 }} />
             }
-            ListHeaderComponent={() => <View>{headerReloadLoading && <ActivityIndicator size="small" color="#e63946" />}</View>}
-            ListEmptyComponent={() => (<View style={{flex: 1, justifyContent: 'center', alignItems: 'center', height: 100}}>
-               <Text>{labels.noBooksFound}</Text>
-            </View>)}
             ListFooterComponent={() => {
                 // if (showOfflineMessage && !useHomeStore.getState().loading) return <OfflineComponent />
                 if (loading) return <ActivityIndicator size="large" color="#e63946" />

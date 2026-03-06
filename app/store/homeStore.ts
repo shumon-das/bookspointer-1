@@ -82,8 +82,7 @@ export const useHomeStore = create<HomeState>((set, get) => ({
   },
 
   onRefresh: async (version: string) => {
-    set({ feedBooks: [], page: 1, headerReloadLoading: true });
+    set({ feedBooks: [], page: 1, loading: false });
     await get().fetchFeedBooks(true, version);
-    set({ headerReloadLoading: false });
   },
 }));
