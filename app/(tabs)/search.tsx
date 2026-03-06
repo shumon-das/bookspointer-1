@@ -5,9 +5,10 @@ import { searchAuthorData, searchData, separateSearchByBookAndAuthorOrAll } from
 import FontAwesome from '@expo/vector-icons/FontAwesome'
 import { Stack, useFocusEffect, useLocalSearchParams } from 'expo-router'
 import React, { useCallback, useEffect, useState } from 'react'
-import { ActivityIndicator, FlatList, SafeAreaView, Text, TextInput, View } from 'react-native'
+import { ActivityIndicator, FlatList, SafeAreaView, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { useCacheStore } from '../store/search'
 import { labels } from '../utils/labels'
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 interface SearchItem {
     id: number;
@@ -77,7 +78,7 @@ const search = () => {
                         <FontAwesome name="search" size={20} color='gray' />
                     </View>
                     <TextInput
-                        style={{ width: '85%', height: 50, color: '#000', fontFamily: 'Poppins', marginLeft: 5 }}
+                        style={{ width: '85%', height: 50, color: '#000', fontFamily: 'Poppins', marginLeft: 5, position: 'relative' }}
                         onChangeText={handleSearch}
                         value={searchText}
                         placeholder={labels.search}
@@ -98,6 +99,9 @@ const search = () => {
                         // Optional: Changes the keyboard button label (e.g., "search", "go", "next")
                         returnKeyType="search"
                     />
+                    {searchText.length > 0 && <TouchableOpacity style={{position: 'absolute', right: 8}} onPress={() => setSearchText('')}>
+                        <Ionicons name="close" size={20} color="gray" />
+                    </TouchableOpacity>}
                 </View>
                 {fullName && <View>
                     <Text style={{ textAlign: 'center', color: 'gray' }}>{`${fullName} ${labels.searhWriterBooks}`}</Text>
