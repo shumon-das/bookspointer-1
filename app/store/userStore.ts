@@ -19,6 +19,7 @@ interface UserState {
   blockUser: (id: string) => Promise<void>;
   unblockUser: (id: string) => Promise<void>;
   resetAuthUser: () => void;
+  fetchCurrentlyReadingBooks: () => Promise<any[]>;
 }
 
 export const useUserStore = create<UserState>((set, get) => ({
@@ -166,4 +167,31 @@ export const useUserStore = create<UserState>((set, get) => ({
     set({ blockedUsers: get().blockedUsers.filter((bu) => bu.id !== id) });
   },
   resetAuthUser: () => set({ authUser: null, loading: false }),
+  fetchCurrentlyReadingBooks: async () => {
+    const token = await AsyncStorage.getItem('auth-token')
+    const storageUser = await AsyncStorage.getItem('auth-user')
+    if (!token || !storageUser) {
+        return
+    }
+
+    try {
+      const endpoint = `${API_CONFIG.BASE_URL}/admin/user/currently-reading-books`;
+      const headers = {
+          'Authorization': `Bearer ${token}` 
+      }
+      const response = await fetch(endpoint, { method: 'POST', headers: headers})
+  
+      if (!response.ok) {
+          const text = await response.text();
+          alert(`Failed to save token: ${response.status} ${text}`);
+      }
+          
+      const data = await response.json();
+      
+      return data.data;
+    } catch (error) {
+      console.error("Failed to fetch currently reading books:", error);
+      return [];
+    }
+  },
 }));

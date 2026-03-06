@@ -1,4 +1,4 @@
-import { View, Text, ActivityIndicator, FlatList } from 'react-native'
+import { View, Text, ActivityIndicator, FlatList, RefreshControl } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { AuthUser } from '@/components/types/User';
 import { useUserStore } from '@/app/store/userStore';
@@ -16,26 +16,26 @@ const CurrentlyReading = () => {
     const [currentlyReading, setCurrentlyReading] = useState([] as any[]);
     const [filteredReading, setFilteredReading] = useState([] as any[]);
     const [isFilterNotFound, setIsFilterNotFound] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
 
     const getAuthorFromDb = async () => {
         setLoading(true);
         const authUser = await useUserStore.getState().fetchAuthUserFromDb() as AuthUser;
         setAuthor(authUser);
-        setCurrentlyReading(authUser.activities.filter((a: any) => a.reading_status === 'reading'));
         setLoading(false);
+    }
+
+    const fetchBooksFromDb = async () => {
+        setRefreshing(true);
+        const books = await useUserStore.getState().fetchCurrentlyReadingBooks();
+        setCurrentlyReading(books);
+        setRefreshing(false);
     }
 
     useEffect(() => {
         getAuthorFromDb();
+        fetchBooksFromDb();
     }, []);
-
-    if (loading) {
-        return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <ActivityIndicator size="large" color="#e63946" />
-            </View>
-        )
-    }
 
     if (!author) {
         return (
@@ -71,12 +71,21 @@ const CurrentlyReading = () => {
                 data={filteredContent()}
                 renderItem={({ item }) => <CurrentlyReadingCard book={item} />}
                 keyExtractor={(item) => item.book_id}
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={async () => {
+                        await fetchBooksFromDb()
+                    }} />
+                }
                 ListFooterComponent={() => (
                     <View style={{ height: 200 }} />
                 )}
                 ListEmptyComponent={() => (
-                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                        <Text>No books found</Text>
+                    loading 
+                    ? (<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                        <ActivityIndicator size="large" color="#e63946" />
+                    </View>)
+                    : <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                        <Text>{labels.noBooksFound}</Text>
                     </View>
                 )}
             />
