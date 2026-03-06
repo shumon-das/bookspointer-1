@@ -14,7 +14,7 @@ const AddToLibrary = ({ book }: {book: any}) => {
         const loadLoggedInUser = async () => {
             const storedUser = await AsyncStorage.getItem('auth-user');
             setUser(storedUser ? JSON.parse(storedUser) : null);
-            setIsSaved(book.details.save.includes(user.id))
+            setIsSaved(book.isSaved)
         }
 
         loadLoggedInUser()
@@ -37,7 +37,7 @@ const AddToLibrary = ({ book }: {book: any}) => {
         }) as any
 
         if (response) {
-            setIsSaved(response.details.save.includes(user.id))
+            setIsSaved(response.isSaved)
         }
     }
   return (

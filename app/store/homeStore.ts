@@ -3,6 +3,7 @@ import API_CONFIG from '../utils/config';
 import { Book } from '@/components/types/Book';
 import { createFeedBooksTable, getAllFeedBooks, getBookIdsOnly, replaceFeedBooksCache } from '../utils/database/bookFeedDb';
 import { getAnonymousId } from '../utils/annonymous';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface HomeState {
   feedBooks: Book[],
@@ -38,7 +39,9 @@ export const useHomeStore = create<HomeState>((set, get) => ({
     set({ loading: true });
     try {
         const anonymousId = await getAnonymousId();
-        let endpoint = `${API_CONFIG.BASE_URL}/user-feed/${anonymousId}/${page}/${0}/${limit}`;
+        const storageUser = await AsyncStorage.getItem('auth-user');
+        const userId = storageUser ? JSON.parse(storageUser).id : 0;
+        let endpoint = `${API_CONFIG.BASE_URL}/user-feed/${anonymousId}/${page}/${userId}/${limit}`;
         const response = await fetch(endpoint, {
           headers: {
             'Accept': 'application/json',
