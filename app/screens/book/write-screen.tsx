@@ -43,7 +43,7 @@ const COLORS = ['#ff0000', '#00ff00', '#0000ff'];
 
 const WriteScreen: React.FC<Props> = () => {
   const navigation = useNavigation();
-  useLayoutEffect(() => { navigation.setOptions({ headerShown: true, title: labels.writeBook });}, []);
+  useLayoutEffect(() => { navigation.setOptions({ headerShown: true, title: labels.textEditor, headerTintColor: '#d4d4d4', headerStyle: { backgroundColor: '#085a80' }, headerTitleStyle: { color: 'white' } });}, []);
   const initialContent = useTempStore.getState().bookContent
 
   const editor = useEditorBridge({

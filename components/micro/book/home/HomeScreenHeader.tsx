@@ -8,6 +8,7 @@ import NotificationBadge from "@/components/NotificationBadge";
 import { useCallback, useState } from "react";
 import { useUserStore } from "@/app/store/userStore";
 import { userImageUri } from "@/app/utils/user/imageUri";
+import { useTempStore } from "@/app/store/temporaryStore";
 
 const HomeScreenHeader = () => {
     const router = useRouter();
@@ -53,7 +54,10 @@ const HomeScreenHeader = () => {
                 <TouchableOpacity onPress={() => router.push('/(tabs)/search')}>
                     <FontAwesome name="search" style={styles2.marginLeft} size={20} color="white" />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => router.push('/screens/book/create-post')}>
+                <TouchableOpacity onPress={() => {
+                    useTempStore.getState().setBookContent('')
+                    router.push('/screens/book/create-post')
+                }}>
                     <Text style={[styles2.marginLeft, {color: 'white'}]}>{labels.writeBook}</Text>
                 </TouchableOpacity>
                 

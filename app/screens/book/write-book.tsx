@@ -3,7 +3,7 @@ import { useTempStore } from "@/app/store/temporaryStore";
 import { useUserStore } from "@/app/store/user";
 import { labels } from "@/app/utils/labels";
 import Dropdown from "@/components/micro/Dropdown";
-import HtmlContent from "@/components/micro/HtmlContent";
+import TextContent from "@/components/screens/book/TextContent";
 import { Category } from "@/components/types/Category";
 import { User } from "@/components/types/User";
 import goToProfile from "@/helper/redirectToProfile";
@@ -67,6 +67,7 @@ const WriteBook = () => {
                 setCategory(data.category)
                 setAuthor(data.author)
                 useTempStore.getState().setBookContent(data.content)
+                setContent(data.content)
                 setLoading(false)
             }
         }
@@ -134,7 +135,7 @@ const WriteBook = () => {
                 {loading && <ActivityIndicator></ActivityIndicator>}
                 {loading && <Text>{labels.loadingBook}</Text>}
             </View>
-            <View style={styles.title}>
+             <View style={styles.title}>
                 <TextInput
                     style={styles.input}
                     onChangeText={(event) => setTitle(event)}
@@ -156,16 +157,16 @@ const WriteBook = () => {
                 {preview && !category && <Text style={{ color: 'red' }}>{labels.bookCreate.categoryRequired}</Text>}
             </View>
 
-            <View style={{ height: 320 }}>
+            <View style={{ height: 320, overflow: 'hidden', paddingBottom: 20 }}>
                 <TouchableOpacity
-                    style={{ height: 300, borderWidth: 1, borderColor: 'gray', borderRadius: 5, margin: 10 }}
+                    style={{ height: 300, margin: 10, backgroundColor: '#fff' }}
                     onPress={() => router.push({
                         pathname: '/screens/book/write-screen',
                         params: { content: useTempStore.getState().bookContent?.substring(1, 10) }
                     })}
                 >
                     {useTempStore.getState().bookContent.length > 0
-                        ? <HtmlContent content={content} />
+                        ? <Text style={{ marginHorizontal: 10 }}><TextContent content={content.substring(0, 700)} /></Text>
                         : <Text style={{ padding: 10, }}>{labels.startWriting}</Text>
                     }
                 </TouchableOpacity>

@@ -1,11 +1,14 @@
-import useCacheStore from '@/app/store/search';
 import labels from '@/app/utils/labels';
 import { searchAuthorData } from '@/services/searchapi';
 import BottomSheet, { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { useRouter } from 'expo-router';
 import React, { forwardRef, useMemo, useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { User } from '../../types/User';
+import { FontAwesome } from '@expo/vector-icons';
+import { useBooksStore } from '@/app/store/bookStore';
+import { styles } from '@/styles/appBottomSheet.styles';
+import { useUserStore } from '@/app/store/userStore';
 
 interface SearchItem {
   id: number;
@@ -19,29 +22,62 @@ const AppBottomSheet = forwardRef((author: User, ref: any) => {
   const [searchText, setSearchText] = useState('')
   const [data, setData] = useState([] as SearchItem[])
   const router = useRouter();
+  const bookStore = useBooksStore();
+  const isAuthor = author.id === useUserStore.getState().authUser?.id;
 
-  const cache = useCacheStore((state) => state.cache)
-  const hasInCache = useCacheStore((state) => state.hasInCache)
-  const setInCache = useCacheStore((state) => state.setInCache)
-  const getFromCache = useCacheStore((state) => state.getFromCache)
   const handleSearch = async (text: string) => {
     setSearchText(text)
-    if (!hasInCache(text.trim())) {
-      if (text.trim().length < 2) return;
-      const result = await searchAuthorData(text, author.id);
-      setData(result)
-      setInCache(text.trim(), result)
-      return
-    }
-    setData(getFromCache(text.trim()))
+    if (text.trim().length < 2) return;
+    const result = await searchAuthorData(text, author.id);
+    setData(result)
+    return
   }
 
-  const Item = ({ searchItem }: { searchItem: SearchItem }) => (
-    <View style={styles.searchItem}>
-      <Text style={styles.searchItemText}>{searchItem.title}</Text>
-      <Text style={styles.searchItemAuthor}>{author.fullName}</Text>
-    </View>
-  );
+  const handleDeleteItem = (book: SearchItem) => {
+    Alert.alert(
+        book.title, // Title
+        "Are you sure you want to permanently delete this book?", // Message
+        [
+        {
+            text: "Cancel",
+            onPress: () => console.log("Cancel Pressed"),
+            style: "cancel" // On iOS, this makes the text bold
+        },
+        { 
+            text: "OK", 
+            onPress: () => bookStore.deleteBook(book.id as any),
+        }
+        ]
+    );
+  }
+
+  const Item = ({ searchItem }: { searchItem: SearchItem }) => {
+    return (<View>
+        <View style={styles.searchItem}>
+          <TouchableOpacity onPress={() => {
+            router.push({
+              pathname: "/screens/book/details",
+              params: { id: searchItem.id, title: searchItem.title, author: searchItem.fullName }
+            })
+          }} style={{width: '80%'}}>
+            <Text style={styles.searchItemText}>{searchItem.title}</Text>
+            <Text style={styles.searchItemAuthor}>{author.fullName}</Text>
+          </TouchableOpacity>
+          
+          {isAuthor && <View style={styles.searchItemActions}>
+            <TouchableOpacity style={styles.searchItemAction} onPress={() => {
+              router.push({pathname: "/screens/book/write-book", params: { bookuuid: searchItem.uuid, id: searchItem.id }})
+            }}>
+              <FontAwesome name="edit" size={18} color="black" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.searchItemAction} onPress={() => handleDeleteItem(searchItem)}>
+              <FontAwesome name="trash" size={18} color="black" />
+            </TouchableOpacity>
+          </View>}
+        </View>
+      </View>  
+    )
+  };
 
   return (
     <BottomSheet
@@ -67,58 +103,11 @@ const AppBottomSheet = forwardRef((author: User, ref: any) => {
             />
           </View>
         }
-
-        renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => {
-            router.push({
-              pathname: "/screens/book/details",
-              params: { id: item.id, title: item.title, author: item.fullName }
-            })
-          }}>
-            <Item searchItem={item} />
-          </TouchableOpacity>
-        )}
-
+        renderItem={({ item }) => <Item searchItem={item} />}
         ListFooterComponent={<View style={{ height: 100 }} />}
       />
     </BottomSheet>
   );
-});
-
-const styles = StyleSheet.create({
-  contentContainer: {
-    paddingVertical: 20,
-    alignItems: 'center',
-  },
-  text: {
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  input: {
-    backgroundColor: '#F5F5F5',
-    width: '90%',
-    borderRadius: 50,
-    paddingHorizontal: 20,
-    marginHorizontal: 'auto',
-    marginVertical: 10,
-    borderWidth: 1,
-    borderColor: 'lightgray',
-  },
-  searchItem: {
-    backgroundColor: '#fff',
-    marginBottom: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc'
-  },
-  searchItemText: {
-    paddingBottom: 3,
-    fontSize: 15,
-    fontWeight: '600'
-  },
-  searchItemAuthor: {
-    fontSize: 12,
-    color: 'gray'
-  }
 });
 
 export default AppBottomSheet;
