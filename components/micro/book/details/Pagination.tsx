@@ -4,12 +4,17 @@ import englishNumberToBengali from "@/app/utils/englishNumberToBengali";
 import { useFocusEffect } from "expo-router";
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { styles } from "@/styles/pagination.styles";
+import { useNetworkStatus } from "@/components/network/networkConnectionStatus";
 
 const ITEM_WIDTH = 45; // width of each page button (must match your styling)
 
 const Pagination = ({currentPage, data, onChange}: {currentPage: number; data: any; onChange: (value: number) => void;}) => {
   const [page, setPage] = useState(currentPage);
   const scrollRef = useRef<ScrollView>(null);
+
+  const {isOnline, isInitializing} = useNetworkStatus(() => {
+    console.log('✅ Online again, syncing data...');
+  });
 
   const pages = Array.from({ length: data.total_pages }, (_, i) => i + 1);
 
@@ -41,7 +46,7 @@ const Pagination = ({currentPage, data, onChange}: {currentPage: number; data: a
     <View>
       <View style={{flexDirection: "row",justifyContent: "center",marginTop: 0,height: 60,alignItems: "flex-start"}}>
         {/* Last page */}
-        <TouchableOpacity style={[styles.totalPages, { marginVertical: 2, marginHorizontal: 1, }]} onPress={() => onPageChange(page)}>
+        <TouchableOpacity style={[styles.totalPages, { marginVertical: 2, marginHorizontal: 1, }]} onPress={() => onPageChange(page)} disabled={isInitializing || !isOnline}>
           <Text style={[styles.totalTexts, {borderBottomWidth: 1, borderColor: 'lightgray'}]}>
             {englishNumberToBengali(page)}
           </Text>
@@ -50,7 +55,7 @@ const Pagination = ({currentPage, data, onChange}: {currentPage: number; data: a
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.prevButton} onPress={() => onPageChange(page - 1)} disabled={page === 1}>
+        <TouchableOpacity style={styles.prevButton} onPress={() => onPageChange(page - 1)} disabled={page === 1 || isInitializing || !isOnline}>
           <Text style={styles.nxtPrevbuttonText}><FontAwesome5 name="angle-double-left" size={20} color="gray" /></Text>
         </TouchableOpacity>
 
@@ -63,7 +68,7 @@ const Pagination = ({currentPage, data, onChange}: {currentPage: number; data: a
           style={{ maxWidth: "65%" }}
         >
           {pages.map((p) => (
-            <TouchableOpacity key={p} style={page === p ? styles.activeButton : styles.button} onPress={() => onPageChange(p)}>
+            <TouchableOpacity key={p} style={page === p ? styles.activeButton : styles.button} onPress={() => onPageChange(p)} disabled={isInitializing || !isOnline}>
               <Text
                 style={
                   page === p
@@ -78,7 +83,7 @@ const Pagination = ({currentPage, data, onChange}: {currentPage: number; data: a
         </ScrollView>
 
         {/* Next */}
-        <TouchableOpacity style={styles.nextButton} onPress={() => onPageChange(page + 1)} disabled={page === data.total_pages}>
+        <TouchableOpacity style={styles.nextButton} onPress={() => onPageChange(page + 1)} disabled={page === data.total_pages || isInitializing || !isOnline}>
           <Text style={styles.nxtPrevbuttonText}><FontAwesome5 name="angle-double-right" size={20} color="gray" /></Text>
         </TouchableOpacity>
       </View>

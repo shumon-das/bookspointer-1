@@ -14,9 +14,11 @@ interface Response {
 }
 
 interface BookDetailsState {
-  pages: {page_number: number, text: string}[];
   current_page_number: number;
   total_pages: number;
+  currentPageTexts: string;
+  prevPageTexts: string;
+  nextPageTexts: string;
   textsWithPrevAndNextPage: (bookId: number, page: number, isFirstRequest?: boolean) => Promise<Response>;
   selectedBook: any;
   setSelectedBook: (book: any) => void;
@@ -25,11 +27,20 @@ interface BookDetailsState {
 }
 
 export const useBookDetailsStore = create<BookDetailsState>((set, get) => ({
-    pages: [],
     current_page_number: 1,
     total_pages: 0,
     relatedBooks: [],
+    currentPageTexts: '',
+    prevPageTexts: '',
+    nextPageTexts: '',
     textsWithPrevAndNextPage: async (bookId, page, isFirstRequest = false) => {
+        if ((get().current_page_number -1) === page && !isFirstRequest) { // prev page
+            set({currentPageTexts: get().prevPageTexts, nextPageTexts: get().currentPageTexts})
+        }
+        if ((get().current_page_number +1) === page && !isFirstRequest) { // next page
+            set({prevPageTexts: get().currentPageTexts, currentPageTexts: get().nextPageTexts})
+        }
+
         const annonymousId = await getAnonymousId();
         try {
             const response = await fetch(`${API_CONFIG.BASE_URL}/book-text-with-next-and-prev-page`, {
@@ -44,21 +55,21 @@ export const useBookDetailsStore = create<BookDetailsState>((set, get) => ({
             });
 
             const data = await response.json();
-            set({total_pages: data.total_pages})
-            set({current_page_number: data.current_page.page_number})
-            const {pages} = get()
-            if (pages.length > 0) {
-                if (!pages.find((p) => p.page_number === data.current_page.page_number)) {
-                    set({pages: [...pages, data.current_page]})
-                }
-                if (!pages.find((p) => p.page_number === data.nextPage.page_number)) {
-                    set({pages: [...pages, data.nextPage]})
-                }
-                if (!pages.find((p) => p.page_number === data.prevPage.page_number)) {
-                    set({pages: [...pages, data.prevPage]})
-                }
+            set({current_page_number: data.current_page.page_number, total_pages: data.total_pages})
+
+            if (isFirstRequest) {
+                set({ prevPageTexts: data.prevPage.text, currentPageTexts: data.current_page.text, nextPageTexts: data.nextPage.text })
             } else {
-                set({pages: [data.current_page, data.nextPage, data.prevPage].filter((p) => p.page_number !== null)})
+                if ((get().current_page_number -1) === page && !isFirstRequest) { // prev page
+                    set({prevPageTexts: data.prevPage.text})
+                }
+                if ((get().current_page_number +1) === page && !isFirstRequest) { // next page
+                    set({nextPageTexts: data.nextPage.text})
+                }
+
+                if ((get().current_page_number -1) !== page && (get().current_page_number +1) !== page) {
+                    set({currentPageTexts: data.current_page.text, nextPageTexts: data.nextPage.text, prevPageTexts: data.prevPage.text})
+                }
             }
             return data;
         } catch (error) {

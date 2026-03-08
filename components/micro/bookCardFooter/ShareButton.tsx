@@ -4,7 +4,7 @@ import { View, Button, Share, TouchableOpacity, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 
-const ShareButton = ({ title, message, url, style }: {title: string; message: string; url: string, style?: any}) => {
+const ShareButton = ({ title, message, url, style, iconColor }: {title: string; message: string; url: string, style?: any, iconColor?: string}) => {
   const onShare = async () => {
     try {
       const result = await Share.share({
@@ -31,8 +31,8 @@ const ShareButton = ({ title, message, url, style }: {title: string; message: st
   return (
     <View>
       <TouchableOpacity onPress={onShare} style={style ? style : { flexDirection: 'column', alignItems: 'center' }}  >
-        <Icon name="share-alt" size={14} color="gray" />
-        <Text style={{fontSize: 10}}>{labels.share}</Text>
+        <Icon name="share-alt" size={14} color={iconColor ? iconColor : "gray"} />
+        <Text style={{fontSize: 10, color: iconColor ? iconColor : "gray"}}>{labels.share}</Text>
       </TouchableOpacity>
     </View>
   );
