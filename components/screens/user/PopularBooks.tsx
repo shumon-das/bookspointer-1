@@ -26,6 +26,13 @@ const PopularBooks = ({author}: {author: User|null}) => {
     }, [author])
 
     const router = useRouter()
+
+    const imageUrl = (img: string) => {
+        if (img && img.startsWith('http')) return img;
+        
+        return `${API_CONFIG.BASE_URL}/uploads/${null === img || '' === img ? 'mb_default_cover_2.jpg' : img}`;
+    }
+
     return (
         <View style={styles.container}>
             <Text style={styles.sectionTitle}>{labels.popularBooks}</Text>
@@ -47,7 +54,7 @@ const PopularBooks = ({author}: {author: User|null}) => {
                       }})}>
                         <View style={styles.bookCard}>
                             <Image 
-                                source={{ uri: `${API_CONFIG.BASE_URL}/uploads/${null === item.image || '' === item.image ? 'mb_default_cover_2.jpg' : item.image}` }} 
+                                source={{ uri: imageUrl(item.image) }} 
                                 style={styles.miniCover} 
                             />
                             <Text style={styles.miniTitle} numberOfLines={1}>
