@@ -46,6 +46,22 @@ const notifications = () => {
     } 
 
     const renderItem = ({ item }: { item: any }) => {
+        if (item.data.type === 'create_book') {
+            return renderCreateBookNotification(item);
+        }
+
+        if (item.data.type === 'review') {
+            return renderReviewNotification(item);
+        }
+
+        if (item.data.type === 'follow') {
+            return renderFollowNotification(item);
+        }
+
+        return <></>
+    };
+
+    const renderCreateBookNotification = (item: any) => {
         return (<TouchableOpacity onPress={() => onPressNotification(item)} 
           style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: '#ccc', backgroundColor: 'white' }}
         >
@@ -53,10 +69,32 @@ const notifications = () => {
             <Text style={{ paddingHorizontal: 14, fontSize: 12, fontWeight: 'bold', color: item.viewed ? 'gray' : 'black' }}>{item.data.author.full_name}</Text>
             <Text style={{ paddingHorizontal: 10, fontSize: 12, fontStyle: 'italic', color: item.viewed ? 'gray' : 'black' }}>{englishNumberToBengali(item.sentAt.date)}</Text>
             <View style={{ paddingHorizontal: 10, paddingVertical: 5 }}>
-                <TextContent content={item.body} textColor={item.viewed ? 'gray' : 'black'} />
+                <TextContent content={item.body} textColor={item.viewed ? 'gray' : 'black'} fontSize={12}/>
             </View>
         </TouchableOpacity>)
-    };
+    }
+
+    const renderReviewNotification = (item: any) => {
+        return <TouchableOpacity onPress={() => console.log(item)} 
+          style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: '#ccc', backgroundColor: 'white' }}
+        >
+            <Text style={{ paddingHorizontal: 10, fontWeight: 'bold', fontSize: 16, color: item.viewed ? 'gray' : 'black' }}>{item.title}</Text>
+            <View style={{ paddingHorizontal: 10, paddingVertical: 5 }}>
+                <TextContent content={item.body} textColor={item.viewed ? 'gray' : 'black'} fontSize={12}/>
+            </View>
+        </TouchableOpacity>
+    }
+
+    const renderFollowNotification = (item: any) => {
+        return <TouchableOpacity onPress={() => console.log(item)} 
+          style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: '#ccc', backgroundColor: 'white' }}
+        >
+            <Text style={{ paddingHorizontal: 10, fontWeight: 'bold', fontSize: 16, color: item.viewed ? 'gray' : 'black' }}>{item.title}</Text>
+            <View style={{ paddingHorizontal: 10, paddingVertical: 5 }}>
+                <TextContent content={item.body} textColor={item.viewed ? 'gray' : 'black'} fontSize={12}/>
+            </View>
+        </TouchableOpacity>
+    }
 
     if (!items || items.length === 0) {
         return (
