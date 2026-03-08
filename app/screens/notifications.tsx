@@ -1,49 +1,43 @@
-import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, BackHandler, FlatList, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, FlatList, Text, TouchableOpacity, View } from "react-native";
 import labels from "../utils/labels";
-import { getNotificationBooks, markNotificationAsRead } from "@/services/notificationApi";
 import { useBookStore } from "../store/book";
-import HtmlContent from "@/components/micro/HtmlContent";
+import TextContent from "@/components/screens/book/TextContent";
+import englishNumberToBengali from "../utils/englishNumberToBengali";
+import { useNotificationStore } from "../store/notificationStore";
+import { useBookDetailsStore } from "../store/bookDetailsStore";
 
 const notifications = () => {
     const [loading, setLoading] = useState(false);
     const router = useRouter();
     const navigation = useNavigation()
-    useEffect(() => navigation.setOptions({ title: labels.notifications }), []);
+    const notificationStore = useNotificationStore();
+    useEffect(() => navigation.setOptions({ title: labels.notifications, headerTintColor: '#d4d4d4', headerStyle: { backgroundColor: '#085a80' } }), []);
     
-    const {data} = useLocalSearchParams();
     const [items, setItems] = useState<any>(useBookStore.getState().notificationBooks);
 
     useEffect(() => {
         const getItems = async () => {
             setLoading(true);
-            const dbData = await getNotificationBooks();
+            const dbData = await notificationStore.getNotifications();
             setItems(dbData.data);
             useBookStore.getState().setNotificationBooks(dbData.data);
             setLoading(false);
+            
+            await notificationStore.markAllNotificationAsRead(); // mark all notifications as read after load screen
         }
         getItems();
     }, []);
 
-    useEffect(() => {
-        const deviceBackButtonAction = () => {
-            router.back();
-            return true
-        }
-        
-        const backHandler = BackHandler.addEventListener('hardwareBackPress', deviceBackButtonAction);
-        return () => backHandler.remove();
-    }, [])
-
     const onPressNotification = (item: any) => {
-        markNotificationAsRead(item.notificationId);
+        useBookDetailsStore.getState().setSelectedBook({id: item.data.id, title: item.data.title, url: item.data.url})
         router.push({
             pathname: "/screens/book/details", 
             params: { 
-                id: item.id, 
-                title: item.title,
-                author: item.author,
+                id: item.data.id, 
+                title: item.data.title,
+                author: item.data.author.full_name,
                 content: null,
                 isQuote: 'no',
                 backurl: JSON.stringify({pathname: "/screens/notifications"})
@@ -51,15 +45,18 @@ const notifications = () => {
         )
     } 
 
-    const renderItem = ({ item }: { item: any }) => (
-        <TouchableOpacity onPress={() => onPressNotification(item)} 
-          style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: '#ccc', backgroundColor: '#fff' }}
+    const renderItem = ({ item }: { item: any }) => {
+        return (<TouchableOpacity onPress={() => onPressNotification(item)} 
+          style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: '#ccc', backgroundColor: 'white' }}
         >
-            <Text style={{ paddingHorizontal: 10, fontWeight: 'bold', fontSize: 16 }}>{item.title}</Text>
-            <Text style={{ paddingHorizontal: 10, fontSize: 12, fontStyle: 'italic' }}>{item.author}</Text>
-            <HtmlContent content={item.content} />
-        </TouchableOpacity>
-    );
+            <Text style={{ paddingHorizontal: 10, fontWeight: 'bold', fontSize: 16, color: item.viewed ? 'gray' : 'black' }}>{item.data.title}</Text>
+            <Text style={{ paddingHorizontal: 14, fontSize: 12, fontWeight: 'bold', color: item.viewed ? 'gray' : 'black' }}>{item.data.author.full_name}</Text>
+            <Text style={{ paddingHorizontal: 10, fontSize: 12, fontStyle: 'italic', color: item.viewed ? 'gray' : 'black' }}>{englishNumberToBengali(item.sentAt.date)}</Text>
+            <View style={{ paddingHorizontal: 10, paddingVertical: 5 }}>
+                <TextContent content={item.body} textColor={item.viewed ? 'gray' : 'black'} />
+            </View>
+        </TouchableOpacity>)
+    };
 
     if (!items || items.length === 0) {
         return (
@@ -74,7 +71,12 @@ const notifications = () => {
     return (
         loading 
         ? <ActivityIndicator size="large" color="#0000ff" className="mt-10 self-center" />
-        : <FlatList data={items} keyExtractor={(item: any) => item.id} renderItem={renderItem} />
+        : <FlatList 
+            data={items} 
+            keyExtractor={(item: any) => item.id} 
+            renderItem={renderItem}
+            ListFooterComponent={() => <View style={{height: 100}}></View>}
+          />
     );
 }
 
