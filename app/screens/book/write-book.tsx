@@ -1,12 +1,10 @@
 import { useCategoryStore } from "@/app/store/categories";
 import { useTempStore } from "@/app/store/temporaryStore";
-import { useUserStore } from "@/app/store/user";
+import { useUserStore } from "@/app/store/userStore";
 import { labels } from "@/app/utils/labels";
 import Dropdown from "@/components/micro/Dropdown";
 import TextContent from "@/components/screens/book/TextContent";
 import { Category } from "@/components/types/Category";
-import { User } from "@/components/types/User";
-import goToProfile from "@/helper/redirectToProfile";
 import { saveBook } from "@/services/api";
 import { styles } from "@/styles/writeBookScreen.styles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -37,11 +35,11 @@ const WriteBook = () => {
     })
 
     const [categories, setCategories] = React.useState(useCategoryStore((state) => state.categories));
-    const [authors, setAuthors] = React.useState(useUserStore((state) => state.authors))
+    const [series] = React.useState(useUserStore((state) => state.authUser?.series ?? []))
+    const [selectedSeries, setSelectedSeries] = React.useState(series.length > 0 ? series.find((s) => s.name === 'বইসমূহ') : [])
 
     const [title, setTitle] = React.useState('');
     const [category, setCategory] = React.useState<Category | null>(null);
-    const [author, setAuthor] = React.useState<User | null>(null);
     const [content, setContent] = React.useState('');
     const [preview, setPreview] = useState(false)
     const [loading, setLoading] = useState(false)
@@ -65,7 +63,6 @@ const WriteBook = () => {
                 const data = await response.json();
                 setTitle(data.title);
                 setCategory(data.category)
-                setAuthor(data.author)
                 useTempStore.getState().setBookContent(data.content)
                 setContent(data.content)
                 setLoading(false)
@@ -80,19 +77,8 @@ const WriteBook = () => {
             }
         };
 
-        const loadAuthors = async () => {
-            if (authors.length <= 0) {
-                const response = await fetch('https://api.bookspointer.com/authors', {
-                    method: "POST",
-                });
-                const data = await response.json();
-                setAuthors(data.authors);
-            }
-        };
-
         loadSingleFullBook();
         loadCategories();
-        loadAuthors();
     }, [bookuuid, id]);
 
     const previewBook = async () => {
@@ -111,7 +97,7 @@ const WriteBook = () => {
             author: JSON.parse(storageUser),
             content: content,
             estimatedReadTime: { words: 1, minutes: 1 },
-            seriesName: '',
+            seriesName: selectedSeries?.name ?? '',
             tags: [],
         } as any;
 
@@ -121,10 +107,12 @@ const WriteBook = () => {
         setShowSnakBar(true)
 
         if (response?.status) {
+            console.log('Book saved successfully')
             useTempStore.getState().setBookContent('')
             setTimeout(() => {
-                goToProfile(router, useTempStore)
-            }, 3000);
+                console.log('Navigating to profile')
+                router.replace('/screens/user/user-profile')
+            }, 1000);
         }
         setLoading(false)
     }
@@ -141,6 +129,7 @@ const WriteBook = () => {
                     onChangeText={(event) => setTitle(event)}
                     value={title}
                     placeholder={labels.bookTitle}
+                    placeholderTextColor={'gray'}
                 />
                 {preview && !title && <Text style={{ marginHorizontal: 10, color: 'red' }}>{labels.bookCreate.titleRequired}</Text>}
             </View>
@@ -157,9 +146,21 @@ const WriteBook = () => {
                 {preview && !category && <Text style={{ color: 'red' }}>{labels.bookCreate.categoryRequired}</Text>}
             </View>
 
+            <View style={styles.category}>
+                <Dropdown
+                    selectedOption={selectedSeries}
+                    options={series.length > 0 ? series.map((s, index) => ({...s, id: index + 1})) : []}
+                    optionLabel="name"
+                    placeholder={labels.selectCategory}
+                    filterPlaceholder={labels.search}
+                    onSelect={(item: any) => setSelectedSeries(item)}
+                />
+                <Text style={{ color: 'gray', fontSize: 10, marginHorizontal: 10 }}>{labels.selectSeriesIfYouWant}</Text>
+            </View>
+
             <View style={{ height: 320, overflow: 'hidden', paddingBottom: 20 }}>
                 <TouchableOpacity
-                    style={{ height: 300, margin: 10, backgroundColor: '#fff' }}
+                    style={{ height: 300, margin: 10, backgroundColor: '#fff', borderColor: '#f1f1f1ff', borderWidth: 1 }}
                     onPress={() => router.push({
                         pathname: '/screens/book/write-screen',
                         params: { content: useTempStore.getState().bookContent?.substring(1, 10) }

@@ -11,34 +11,34 @@ const CreatePost = () => {
     const theme = useTheme();
     const categories = {
         0: {id:0, name:"write-book"},
-        1: {id:8, name:"eternal-word"},
-        2: {id:17,name:"song"},
-        3: {id:2, name:"jokes"},
-        4: {id:12,name:"poetry"}
+        // 1: {id:8, name:"eternal-word"},
+        // 2: {id:17,name:"song"},
+        // 3: {id:2, name:"jokes"},
+        // 4: {id:12,name:"poetry"}
     } as any;
 
     const [index, setIndex] = React.useState(0);
 
     const [routes] = React.useState([
         { key: 'first', title: labels.createBook.book },
-        { key: 'second', title: labels.createBook.ethernelWord },
-        { key: 'third', title: labels.createBook.song },
-        { key: 'fourth', title: labels.createBook.joke },
-        { key: 'fifth', title: labels.createBook.poem },
+        // { key: 'second', title: labels.createBook.ethernelWord },
+        // { key: 'third', title: labels.createBook.song },
+        // { key: 'fourth', title: labels.createBook.joke },
+        // { key: 'fifth', title: labels.createBook.poem },
     ]);
 
     const renderScene = ({ route }: any) => {
         switch (route.key) {
             case 'first':
                 return <WriteBook />;
-            case 'second':
-                return <EthernelWord category={categories[index]} />;
-            case 'third':
-                return <EthernelWord category={categories[index]} />;
-            case 'fourth':
-                return <EthernelWord category={categories[index]} />;
-            case 'fifth':
-                return <EthernelWord category={categories[index]} />;
+            // case 'second':
+            //     return <EthernelWord category={categories[index]} />;
+            // case 'third':
+            //     return <EthernelWord category={categories[index]} />;
+            // case 'fourth':
+            //     return <EthernelWord category={categories[index]} />;
+            // case 'fifth':
+            //     return <EthernelWord category={categories[index]} />;
             default:
                 return null;
         }
@@ -53,6 +53,7 @@ const CreatePost = () => {
             lazy
             style={{ backgroundColor: theme.colors.background }}
             swipeEnabled={false}
+            
         />
     )
 }

@@ -4,13 +4,13 @@ export const styles = StyleSheet.create({
     screen: {
         marginHorizontal: 5
     },
-    title: {},
+    title: {paddingVertical: 5,},
     category: {
-        paddingVertical: 10,
+        paddingVertical: 5,
         marginHorizontal: 10,
     },
     author: {
-        paddingVertical: 10,
+        paddingVertical: 5,
         marginHorizontal: 10,
     },
     input: {

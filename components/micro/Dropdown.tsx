@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, TextInput } from 'react-native';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import labels from '@/app/utils/labels';
 
-const Dropdown = ({ selectedOption, options = [], optionLabel, placeholder = "", filterPlaceholder = '', onSelect }: any) => {
+const Dropdown = ({ selectedOption, options = [], optionLabel, placeholder = "", filterPlaceholder = labels.search, onSelect }: any) => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(selectedOption);
   const [searchText, setSearchText] = useState('')
@@ -38,9 +40,10 @@ const Dropdown = ({ selectedOption, options = [], optionLabel, placeholder = "",
         onPress={() => setVisible(!visible)}
         activeOpacity={0.8}
       >
-        <Text style={styles.dropdownText}>
-          {selected ? selected[optionLabel] : placeholder}
-        </Text>
+        <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
+          <Text style={styles.dropdownText}>{selected ? selected[optionLabel] : placeholder}</Text>
+          <FontAwesome name={visible ? "chevron-up" : "chevron-down"} size={14} color="gray" />
+        </View>
       </TouchableOpacity>
 
       {visible && (
@@ -50,6 +53,7 @@ const Dropdown = ({ selectedOption, options = [], optionLabel, placeholder = "",
               onChangeText={(event) => filteredOptions(event)}
               value={searchText}
               placeholder={filterPlaceholder}
+              placeholderTextColor={'gray'}
           />
           <FlatList
             data={optionsData}
@@ -93,7 +97,7 @@ const styles = StyleSheet.create({
     borderColor: '#aaa',
     borderRadius: 6,
     backgroundColor: '#fff',
-    maxHeight: 150,
+    maxHeight: 250,
   },
   dropdownItem: {
     padding: 10,
