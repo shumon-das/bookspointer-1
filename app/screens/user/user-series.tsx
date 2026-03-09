@@ -1,4 +1,6 @@
+import { useUserStore } from '@/app/store/userStore';
 import AppBottomSheet from '@/components/micro/bottomSheet/AppBottomSheet';
+import UserSelfSearchAndUpdate from '@/components/micro/user/profile/UserSelfSearchAndUpdate';
 import Follow from '@/components/screens/user/Follow';
 import HeaderBackground from '@/components/screens/user/HeaderBackground';
 import SeriesBooks from '@/components/screens/user/SeriesBooks';
@@ -22,6 +24,7 @@ configureReanimatedLogger({
 const UserSeries = () => {
     const navigation = useNavigation();
     useEffect(() => navigation.setOptions({ headerShown: false }), []);
+    const authUser = useUserStore((state) => state.authUser);
 
     const {authorUuid, url, series} = useLocalSearchParams();
     const [author, setAuthor] = useState<User|null>(null);
@@ -52,12 +55,16 @@ const UserSeries = () => {
                     </View>
                 </View>
                 <View style={styles.section}>
-                    <Follow 
-                        author={author} 
-                        onFollowUnfollow={() => console.log('follow/unfollow')}
-                        onPressSearch={handleBottomSheet} 
-                        onTryLogin={() => console.log('try login')}
-                    />
+                    {authUser && authUser.uuid === author?.uuid 
+                        ? <UserSelfSearchAndUpdate author={author} onPressSearch={handleBottomSheet} /> 
+                        : (<Follow 
+                            author={author} 
+                            onFollowUnfollow={() => console.log('follow/unfollow')}
+                            onPressSearch={handleBottomSheet} 
+                            onTryLogin={() => console.log('try login')}
+                        />)
+                    }
+               
                 </View>
                 <View style={styles.section}>
                     <SeriesBooks series={series as string} author={author} isUser={true} />

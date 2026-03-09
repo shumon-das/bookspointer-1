@@ -35,7 +35,8 @@ const WriteBook = () => {
     })
 
     const [categories, setCategories] = React.useState(useCategoryStore((state) => state.categories));
-    const [series] = React.useState(useUserStore((state) => state.authUser?.series ?? []))
+    const authUser = useUserStore((state) => state?.authUser);
+    const [series] = React.useState(authUser ? authUser?.series : [])
     const [selectedSeries, setSelectedSeries] = React.useState(series.length > 0 ? series.find((s) => s.name === 'বইসমূহ') : [])
 
     const [title, setTitle] = React.useState('');
@@ -146,7 +147,7 @@ const WriteBook = () => {
                 {preview && !category && <Text style={{ color: 'red' }}>{labels.bookCreate.categoryRequired}</Text>}
             </View>
 
-            <View style={styles.category}>
+            {series.length > 0 && <View style={styles.category}>
                 <Dropdown
                     selectedOption={selectedSeries}
                     options={series.length > 0 ? series.map((s, index) => ({...s, id: index + 1})) : []}
@@ -156,7 +157,7 @@ const WriteBook = () => {
                     onSelect={(item: any) => setSelectedSeries(item)}
                 />
                 <Text style={{ color: 'gray', fontSize: 10, marginHorizontal: 10 }}>{labels.selectSeriesIfYouWant}</Text>
-            </View>
+            </View>}
 
             <View style={{ height: 320, overflow: 'hidden', paddingBottom: 20 }}>
                 <TouchableOpacity
