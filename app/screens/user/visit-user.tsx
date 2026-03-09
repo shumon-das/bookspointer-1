@@ -77,6 +77,14 @@ const VisitUser = () => {
         setRefreshing(false);
     }, []);
 
+    if (isInitializing) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color="#e63946" />
+            </View>
+        )
+    }
+
     if (!visitUser && !isOnline) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>

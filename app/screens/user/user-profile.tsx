@@ -44,13 +44,14 @@ const UserProfile = () => {
     }
 
     const fetchAuthUser = async () => {
-        setLoading(true);
+        // setLoading(true);
         const fetchAuthUser = await useUserStore.getState().fetchAuthUserByAPi();
         setAuthor(fetchAuthUser);
-        setLoading(false);
+        // setLoading(false);
     }
     
     useEffect(() => {
+        setAuthor(useUserStore.getState().authUser);
         getAuthorFromDb();
         fetchAuthUser();
     }, [isOnline, isInitializing]);
