@@ -8,7 +8,7 @@ import { useRouter } from 'expo-router';
 import { useBooksStore } from '@/app/store/bookStore';
 import { UserInterface } from '@/types/interfeces';
 
-const SeriesBookCardActions = ({book, author}: {book: any, author: any}) => {
+const SeriesBookCardActions = ({book, author, onDelete}: {book: any, author: any, onDelete: (bookId: number) => void}) => {
     const [loggedInUser, setLoggedInUser] = React.useState<UserInterface|null>(null);
     const loadLoggedInUser = async () => {
         const storedUser = await AsyncStorage.getItem('auth-user');
@@ -61,7 +61,10 @@ const SeriesBookCardActions = ({book, author}: {book: any, author: any}) => {
                 },
                 { 
                     text: "OK", 
-                    onPress: () => bookStore.deleteBook(book.id),
+                    onPress: () => {
+                        bookStore.deleteBook(book.id)
+                        onDelete(book.id)
+                    },
                 }
                 ]
             );

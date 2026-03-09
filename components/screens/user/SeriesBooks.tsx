@@ -1,4 +1,4 @@
-import { View, Text, ActivityIndicator, TouchableOpacity, Image, StyleSheet, FlatList } from 'react-native'
+import { View, Text, ActivityIndicator, TouchableOpacity, Image, StyleSheet, FlatList, RefreshControl } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { User } from '@/components/types/User'
 import API_CONFIG from '@/app/utils/config'
@@ -7,6 +7,7 @@ import { useRouter } from 'expo-router'
 import { useUserStore } from '@/app/store/userStore';
 
 const SeriesBooks = ({series, author, isUser}: {series: string, author: User|null, isUser?: boolean}) => {
+    const [refreshing, setRefreshing] = useState(false)
     const [seriesBooks, setSeriesBooks] = useState([] as any[])
     const router = useRouter();
     const authUser = useUserStore((state) => state.authUser);
@@ -45,13 +46,23 @@ const SeriesBooks = ({series, author, isUser}: {series: string, author: User|nul
                             <Text style={styles.miniTitle}>{item.title}</Text>
                             <Text style={styles.miniAuthor}>{author?.fullName}</Text>
                         </TouchableOpacity>
-                        {authUser && authUser.uuid === author?.uuid &&<SeriesBookCardActions book={item} author={author} />}
+                        {authUser && authUser.uuid === author?.uuid &&<SeriesBookCardActions book={item} author={author} onDelete={(bookId) => {
+                            setSeriesBooks(seriesBooks.filter((book) => book.id !== bookId));
+                        }} />}
                     </View>
                 )}
                 keyExtractor={(item) => item.id.toString()}
                 numColumns={2}
                 columnWrapperStyle={styles.gridContainer}
                 ListFooterComponent={<View style={{height: 900}}></View>}
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={() => {
+                        if (author) {
+                            fetchSeriesBooks(author);
+                        }
+                        setRefreshing(false);
+                    }} />
+                }
             />)
 }
 
