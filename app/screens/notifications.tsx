@@ -7,6 +7,7 @@ import TextContent from "@/components/screens/book/TextContent";
 import englishNumberToBengali from "../utils/englishNumberToBengali";
 import { useNotificationStore } from "../store/notificationStore";
 import { useBookDetailsStore } from "../store/bookDetailsStore";
+import { useReviewStore } from "../store/reviewStore";
 
 const notifications = () => {
     const [loading, setLoading] = useState(false);
@@ -75,9 +76,17 @@ const notifications = () => {
     }
 
     const renderReviewNotification = (item: any) => {
-        return <TouchableOpacity onPress={() => console.log(item)} 
+        return <TouchableOpacity onPress={() => {
+            if (Object.keys(item.data).includes("book_id") && Object.keys(item.data).includes("review_id")) {
+                useReviewStore.getState().setSelectedBook({id: item.data.book_id, createdBy: item.data.book_created_by})
+                setTimeout(() => {
+                    router.push("/screens/book/single-book-reviews");
+                }, 50);
+            }
+        }} 
           style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: '#ccc', backgroundColor: 'white' }}
         >
+            <Text style={{paddingVertical: 2, paddingHorizontal: 5, backgroundColor: 'indigo', color: 'white'}}>{item.data.type}</Text>
             <Text style={{ paddingHorizontal: 10, fontWeight: 'bold', fontSize: 16, color: item.viewed ? 'gray' : 'black' }}>{item.title}</Text>
             <View style={{ paddingHorizontal: 10, paddingVertical: 5 }}>
                 <TextContent content={item.body} textColor={item.viewed ? 'gray' : 'black'} fontSize={12}/>
@@ -86,7 +95,14 @@ const notifications = () => {
     }
 
     const renderFollowNotification = (item: any) => {
-        return <TouchableOpacity onPress={() => console.log(item)} 
+        return <TouchableOpacity onPress={() => {
+            if (item.data.roles && item.data.roles.includes("ROLE_AUTHOR")) {
+                router.push({ pathname: "/screens/author/author-profile", params: { uuid: item.data.user_uuid } });
+            }
+            if (item.data.roles && item.data.roles.includes("ROLE_USER")) {
+                router.push({ pathname: "/screens/user/visit-user", params: { uuid: item.data.user_uuid } });
+            }
+        }} 
           style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: '#ccc', backgroundColor: 'white' }}
         >
             <Text style={{ paddingHorizontal: 10, fontWeight: 'bold', fontSize: 16, color: item.viewed ? 'gray' : 'black' }}>{item.title}</Text>

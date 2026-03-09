@@ -27,7 +27,7 @@ export const handleNotificationNavigation = (data: any, router: Router) => {
 
     if (notificationData.type === NOTIFICATION_TYPE.REVIEW) {
       if (Object.keys(notificationData).includes("book_id") && Object.keys(notificationData).includes("review_id")) {
-        useReviewStore.getState().setSelectedBook({id: notificationData.book_id})
+        useReviewStore.getState().setSelectedBook({id: notificationData.book_id, createdBy: notificationData.book_created_by})
         setTimeout(() => {
           router.push("/screens/book/single-book-reviews");
         }, 50);
@@ -54,7 +54,6 @@ export const handleNotificationNavigation = (data: any, router: Router) => {
     }
 
     if (notificationData.type === NOTIFICATION_TYPE.CHAT) {
-      console.log(notificationData)
       useConversationStore.setState((state) => ({
         ...state,
         selectedConversation: {
