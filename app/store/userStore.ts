@@ -1,17 +1,19 @@
 import { create } from 'zustand';
 import API_CONFIG from '../utils/config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AuthUser } from '@/components/types/User';
+import { AuthUser, User } from '@/components/types/User';
 import { getAnonymousId } from '../utils/annonymous';
 
 interface UserState {
   authUser: AuthUser|null,
+  visitUser: User|null,
   authToken: string|null,
   loading: boolean,
   blockedUsers: any[],
   fetchAuthUserFromDb: () => Promise<AuthUser|null>;
   fetchAuthUserByAPi: () => Promise<AuthUser|null>;
   setAuthUser: (user: AuthUser) => void;
+  setVisitUser: (user: User) => void;
   setAuthToken: (token: string) => void;
   updateAuthUser: (user: AuthUser) => void;
   updateAuthUserImage: (image: string, type: 'profile' | 'cover') => Promise<any>;
@@ -24,6 +26,7 @@ interface UserState {
 
 export const useUserStore = create<UserState>((set, get) => ({
   authUser: null,
+  visitUser: null,
   authToken: null,
   loading: true,
   blockedUsers: [],
@@ -72,6 +75,9 @@ export const useUserStore = create<UserState>((set, get) => ({
   },
   setAuthUser: (user: AuthUser) => {
     set({ authUser: user })
+  },
+  setVisitUser: (user: User) => {
+    set({ visitUser: user })
   },
   setAuthToken: (token: string) => set({ authToken: token }),
   updateAuthUser: (user: AuthUser) => {

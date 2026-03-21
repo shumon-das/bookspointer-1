@@ -1,4 +1,5 @@
 import { useAuthorsStore } from '@/app/store/authorStore'
+import { useUserStore } from '@/app/store/userStore'
 import labels from '@/app/utils/labels'
 import AppBottomSheet from '@/components/micro/bottomSheet/AppBottomSheet'
 import AppLoginBottomSheet from '@/components/micro/bottomSheet/AppLoginBottomSheet'
@@ -66,6 +67,7 @@ const VisitUser = () => {
     }
     
     useEffect(() => {
+        setVisitUser(useUserStore.getState().visitUser)
         if (isInitializing) return;
         fetchUser()
         fetchUserByApi()
@@ -76,14 +78,6 @@ const VisitUser = () => {
         fetchUserByApi();
         setRefreshing(false);
     }, []);
-
-    if (isInitializing) {
-        return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <ActivityIndicator size="large" color="#e63946" />
-            </View>
-        )
-    }
 
     if (!visitUser && !isOnline) {
         return (

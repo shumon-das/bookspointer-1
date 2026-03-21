@@ -71,23 +71,18 @@ const BookCard = ({ book, snackMessage, backurl }: { book: BookCardProps, snackM
     }
   }
 
-  // useEffect(() => {
-  //   let authUser = userStore.authUser;
-  //   if (!authUser) {
-  //     userStore.fetchAuthUserFromDb();
-  //     authUser = userStore.authUser;
-  //   }
-  //   setLoggedInUser(authUser);
-  // }, [userStore.authUser]);
-
   return (
     <View style={styles.cardBackground} key={book.id}>
       <View className='postHeader' style={styles.postHeader}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <TouchableOpacity onPress={() => router.push({
-            pathname: useUserStore.getState().authUser && useUserStore.getState()?.authUser?.uuid === book.createdBy.uuid ? '/screens/user/user-profile' : '/screens/user/visit-user',
-            params: { uuid: book.createdBy.uuid }
-          })}>
+          <TouchableOpacity onPress={() => {
+            const isCreator = useUserStore.getState().authUser && useUserStore.getState()?.authUser?.uuid === book.createdBy.uuid;
+            if (!isCreator) useUserStore.getState().setVisitUser(book.createdBy as any)
+            router.push({
+              pathname: isCreator ? '/screens/user/user-profile' : '/screens/user/visit-user',
+              params: { uuid: book.createdBy.uuid }
+            })
+          }}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Image source={{ uri: createdByImg }} style={styles.image} />
               <View>
