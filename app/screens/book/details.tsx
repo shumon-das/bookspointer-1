@@ -87,6 +87,9 @@ const details = () => {
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
               <MaterialIcons name="wifi-off" size={48} color="#444" />
               <Text>{labels.onlyForDownloadedBooks}</Text>
+              <TouchableOpacity style={{backgroundColor: '#085a80', padding: 10, borderRadius: 5, marginTop: 10}} onPress={() => getPageBook(page)}>
+                <Text style={{ color: '#fff', fontWeight: 'bold' }}>{labels.tryAgain}</Text>
+              </TouchableOpacity>
             </View>
 
           ) : (<ScrollView style={{ flex: 1 }} overScrollMode="never" bounces={false} ref={scrollRef}>
@@ -119,7 +122,7 @@ const details = () => {
               :  (<View style={{ margin: 10 }}>
                   <TextContent content={pageText} isDetailsScreen={true} fontSize={fontSize} backgroundColor={backgroundColor} />
                   <View style={{ marginTop: 30, marginBottom: 10 }}>
-                    {!loading && <Pagination currentPage={page} data={{total_pages: totalPages, book_id: id}} onChange={getPageBook} />}
+                    {!loading && <Pagination currentPage={page} data={{total_pages: totalPages, book_id: parseInt(id as string)}} onChange={getPageBook} screenType='online' />}
                     <View style={{ height: 10 }}></View>
                   </View>
                 </View>)

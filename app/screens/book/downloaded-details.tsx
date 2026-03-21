@@ -112,7 +112,7 @@ const DownloadedDetails = () => {
             <View style={{ margin: 10 }}>
               <TextContent content={pageText} isDetailsScreen={true} fontSize={fontSize} />
               <View style={{ marginVertical: 30 }}>
-                <Pagination currentPage={activePage} data={{total_pages: pages.length, book_id: bookMeta?.id}} onChange={(page) => onChangePage(page)} />
+                <Pagination currentPage={activePage} data={{total_pages: pages.length, book_id: bookMeta?.id}} onChange={(page) => onChangePage(page)} screenType="offline" />
                 <View style={{ height: 10 }}></View>
               </View>
             </View>
