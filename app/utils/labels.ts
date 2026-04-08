@@ -232,6 +232,7 @@ export const labelsBN = {
     block: "ব্লক করুন (Block)",
     readBanglaBooks: "বাংলা বইসমূহ পড়ুন",
     readEnglishBooks: "Read English Books",
+    authorNoDescription: "লেখকের সম্পর্কে কোন তথ্য নেই।"
 }
 
 export const labelsEN = {
@@ -465,6 +466,7 @@ export const labelsEN = {
     block: "Block",
     readBanglaBooks: "বাংলা বইসমূহ পড়ুন",
     readEnglishBooks: "Read English Books",
+    authorNoDescription: "No information about the author."
 }
 export const getLabels = (lang: string) => lang === 'bn' ? labelsBN : labelsEN;
 
