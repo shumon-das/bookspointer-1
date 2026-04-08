@@ -30,9 +30,9 @@ export const styles = StyleSheet.create({
         marginLeft: 10,
     },
     loginBtn: {
-        marginHorizontal: 10, 
+        marginLeft: 5, 
         backgroundColor: 'lightgray',
-        paddingHorizontal: 8,
+        paddingHorizontal: 5,
         paddingVertical: 4,
         borderRadius: 5,
     },

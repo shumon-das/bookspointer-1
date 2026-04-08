@@ -9,6 +9,7 @@ import { useCallback, useState } from "react";
 import { useUserStore } from "@/app/store/userStore";
 import { userImageUri } from "@/app/utils/user/imageUri";
 import { useTempStore } from "@/app/store/temporaryStore";
+import ChangeLanguage from "./ChangeLanguage";
 
 const HomeScreenHeader = () => {
     const router = useRouter();
@@ -48,7 +49,10 @@ const HomeScreenHeader = () => {
                  <Text style={{color: 'white', fontSize: 10}}>{labels.booksPointer}</Text>
             </View>
             
-            <View></View>
+            <View>
+                <View></View>
+                <ChangeLanguage />
+            </View>
             
             <View style={styles.headerRight}>
                 <TouchableOpacity onPress={() => router.push('/(tabs)/search')}>
@@ -58,7 +62,7 @@ const HomeScreenHeader = () => {
                     useTempStore.getState().setBookContent('')
                     router.push('/screens/book/create-post')
                 }}>
-                    <Text style={[styles2.marginLeft, {color: 'white'}]}>{labels.writeBook}</Text>
+                    <Text style={[styles2.marginLeft, {color: 'white', fontSize: 12}]}>{labels.writeBook}</Text>
                 </TouchableOpacity>
                 
                 <NotificationBadge />
@@ -73,7 +77,7 @@ const HomeScreenHeader = () => {
                 )}
                 {!loggedInUser &&  (
                     <TouchableOpacity onPress={goToProfile} style={styles2.loginBtn}>
-                        <Text>{labels.signIn}</Text>
+                        <Text style={{fontSize: 12}}>{labels.signIn}</Text>
                     </TouchableOpacity>
                 )}
             </View>
@@ -94,13 +98,13 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     headerLeft: {
-        marginHorizontal: 10,
+        marginHorizontal: 5,
         textAlign: 'center',
         marginVertical: 5
     },
     headerRight: {
         flexDirection: 'row', 
         alignItems: 'center',
-        marginRight: 10,
+        marginRight: 8,
     },
 })

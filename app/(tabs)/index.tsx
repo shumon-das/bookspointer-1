@@ -1,31 +1,25 @@
 import BookCard from "@/components/BookCard";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { ActivityIndicator, FlatList, View, RefreshControl } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import { ActivityIndicator, FlatList, View, RefreshControl, Text } from "react-native";
 import { Snackbar } from "react-native-paper";
 import QuoteCard from "@/components/QuoteCard";
 import { useNetworkStatus } from "@/components/network/networkConnectionStatus";
-import { useNavigation } from "expo-router";
 // import NativeFeedAds from "@/components/micro/meta/NativeFeedAds";
-import HomeScreenHeader from "@/components/micro/book/home/HomeScreenHeader";
 import { styles } from "@/styles/home.styles";
 import { useSyncAllUsersStore } from "../store/syncAllUsersStore";
 import { useHomeStore } from "../store/homeStore";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import AppUpdateBanner from "@/components/screens/home/AppUpdateBanner";
+import { useSystemStore } from "../store/systemStore";
 // import OfflineComponent from "@/components/OfflineComponent";
 
 export default function Index() {
   const APP_VERSION = '01_03_2026'
+  const lang = useSystemStore((state) => state.lang);
   
   const { isOnline, isInitializing } = useNetworkStatus(() => {
     console.log('✅ Online again, syncing data...');
   });
-
-
-  // start header
-  const navigation = useNavigation();
-  useEffect(() => navigation.setOptions({ headerShown: false }), []);
-  // end header 
 
   const [toastVisible, setToastVisible] = useState(false)
   const [snackMessage, setSnackMessage] = useState('')
@@ -51,23 +45,30 @@ export default function Index() {
     fetchAllUsersFromDbWhoHaveBooks()
   }, [isOnline]);
 
-  const listData = useMemo(() => {
-    const visualData = [] as any[];
+  useEffect(() => {
+    if (lang) {
+      clearFeedBooks()
+      fetchFeedBooks(isOnline, APP_VERSION)
+    }
+  }, [lang])
+
+  // const listData = useMemo(() => {
+  //   const visualData = [] as any[];
     
-    feedBooks.forEach((book, index) => {
-      visualData.push(book);
+  //   feedBooks.forEach((book, index) => {
+  //     visualData.push(book);
       
-      if ((index + 1) % 10 === 0) {
-        visualData.push({
-          id: `ad-${book.id}`, // Stable ID linked to the book above it
-          isAd: true,
-          title: 'ads-item'
-        });
-      }
-    });
+  //     if ((index + 1) % 10 === 0) {
+  //       visualData.push({
+  //         id: `ad-${book.id}`, // Stable ID linked to the book above it
+  //         isAd: true,
+  //         title: 'ads-item'
+  //       });
+  //     }
+  //   });
     
-    return visualData.filter((book, index, self) => index === self.findIndex((b) => b.id === book.id))
-  }, [feedBooks]);
+  //   return visualData.filter((book, index, self) => index === self.findIndex((b) => b.id === book.id))
+  // }, [feedBooks]);
 
     const handleSnackMessage = (value: string) => {
       setSnackMessage(value);
@@ -93,10 +94,6 @@ export default function Index() {
     }, [handleSnackMessage])
 
     return (<GestureHandlerRootView style={{ flex: 1,backgroundColor: '#f9f0eb', position: 'relative' }} >
-      <View style={{height: 80, backgroundColor: '#085a80', flexDirection: 'column', justifyContent: 'flex-end'}}>
-        <HomeScreenHeader />
-      </View>
-      
       {useHomeStore.getState().bannerMessage && <AppUpdateBanner />}
       
       <View style={styles.container}>
@@ -128,6 +125,21 @@ export default function Index() {
                 // if (showOfflineMessage && !useHomeStore.getState().loading) return <OfflineComponent />
                 if (loading) return <ActivityIndicator size="large" color="#e63946" />
                 return null
+            }}
+            ListEmptyComponent={() => {
+              if (loading || isInitializing) {
+                return (
+                  <View style={styles.emptyState}>
+                    <ActivityIndicator size="large" color="#e63946" />
+                  </View>
+                );
+              }
+
+              return (
+                <View style={styles.emptyState}>
+                  <Text>{isOnline === false ? 'No cached books available.' : 'No books found.'}</Text>
+                </View>
+              );
             }}
             style={styles.list}
           />

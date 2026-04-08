@@ -25,4 +25,10 @@ export const styles = StyleSheet.create({
   list: {
     width: "100%"
   },
+  emptyState: {
+    flex: 1,
+    minHeight: 300,
+    justifyContent: "center",
+    alignItems: "center",
+  },
 })

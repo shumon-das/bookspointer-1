@@ -1,9 +1,10 @@
 import { styles } from '@/styles/bottomNav.styles';
+import HomeScreenHeader from '@/components/micro/book/home/HomeScreenHeader';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { Text, View } from 'react-native';
-import { labels } from '../utils/labels';
+import { useLabels } from '../utils/labels';
 
 const TabIcon = ({focused, icon, title}: any) => {            
     return (
@@ -15,6 +16,8 @@ const TabIcon = ({focused, icon, title}: any) => {
 }
 
 const _layout = () => {
+  const labels = useLabels();
+
   return (
     <Tabs
         screenOptions={{
@@ -26,11 +29,20 @@ const _layout = () => {
             tabBarStyle: {
                 backgroundColor: '#085a80',
             },
+            sceneStyle: {
+                backgroundColor: '#f9f0eb',
+            },
         }}
     >
         <Tabs.Screen
             name="index"
             options={{ 
+                headerShown: true,
+                header: () => (
+                    <View style={{ height: 80, backgroundColor: '#085a80', justifyContent: 'flex-end' }}>
+                        <HomeScreenHeader />
+                    </View>
+                ),
                 // title: labels.booksPointer,
                 tabBarIcon: ({ focused }: { focused: boolean }) => (
                    <TabIcon

@@ -39,7 +39,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     const token = await AsyncStorage.getItem('auth-token');
     if (!token) {
         console.log('no token found for getNotifications')
-        return null;
+        return [];
     }
     try {
         const endpoint = `${API_CONFIG.BASE_URL}/admin/user/notifications`;

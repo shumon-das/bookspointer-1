@@ -29,6 +29,7 @@ import { requestAndroidNotificationPermission } from './utils/notification/reque
 import * as Linking from 'expo-linking';
 import { handleDeepLinking } from './utils/notification/deepLinkingHandler';
 import { useUserStore } from './store/userStore';
+import { useSystemStore } from './store/systemStore';
 
 const messagingInstance = getMessaging();
 
@@ -47,6 +48,7 @@ setBackgroundMessageHandler(messagingInstance, async (remoteMessage: any) => {
 
 export default function RootLayout() {
   const router = useRouter();
+  useSystemStore((state) => state.lang);
 
   useEffect(() => {
     initTables()

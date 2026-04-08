@@ -1,5 +1,6 @@
+import { useSystemStore } from '@/app/store/systemStore';
 import { englishNumberToBengali } from '@/app/utils/englishNumberToBengali';
-import { labels } from '@/app/utils/labels';
+import { useLabels } from '@/app/utils/labels';
 import Entypo from '@expo/vector-icons/Entypo';
 import { useRouter } from 'expo-router';
 import React from 'react';
@@ -11,10 +12,15 @@ interface CategoryProps {
   icon: string;
   label: string;
   name: string;
+  totalEnBooksCount?: number;
+  totalBnBooksCount?: number;
 }
 
 export default function CategoryCard(category: CategoryProps) {
   const router = useRouter()
+  const lang = useSystemStore((state) => state.lang);
+  const labels = useLabels();
+    
   return (
     <View className='postHeader'>
       <TouchableOpacity  style={styles.postHeader} onPress={() => router.push({
@@ -23,8 +29,8 @@ export default function CategoryCard(category: CategoryProps) {
                 })}>
         <Entypo name="open-book" size={32} color="black" style={styles.icon} />
         <View>
-            <Text style={styles.categoryName}>{category.label}</Text>
-            <Text style={styles.categoryBookCount}>{englishNumberToBengali(category.totalBooksCount)} টি {labels.book}</Text>
+            <Text style={styles.categoryName}>{category[lang === 'bn' ? 'label' : 'name']}</Text>
+            <Text style={styles.categoryBookCount}>{englishNumberToBengali(lang === 'en' ? category?.totalEnBooksCount ?? 0 : category?.totalBnBooksCount ?? 0)} {labels.book}</Text>
         </View>
       </TouchableOpacity>
     </View>

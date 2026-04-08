@@ -4,6 +4,7 @@ import { Book } from '@/components/types/Book';
 import { createFeedBooksTable, getAllFeedBooks, getBookIdsOnly, replaceFeedBooksCache } from '../utils/database/bookFeedDb';
 import { getAnonymousId } from '../utils/annonymous';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getRegionCode } from '../utils/regionCode';
 
 interface HomeState {
   feedBooks: Book[],
@@ -38,10 +39,13 @@ export const useHomeStore = create<HomeState>((set, get) => ({
 
     set({ loading: true });
     try {
+
+        const lang = await getRegionCode();
         const anonymousId = await getAnonymousId();
         const storageUser = await AsyncStorage.getItem('auth-user');
         const userId = storageUser ? JSON.parse(storageUser).id : 0;
-        let endpoint = `${API_CONFIG.BASE_URL}/user-feed/${anonymousId}/${page}/${userId}/${limit}`;
+        let endpoint = `${API_CONFIG.BASE_URL}/user-feed/${anonymousId}/${page}/${userId}/${limit}?lang=${lang}`;
+        console.log('lang:', lang, endpoint);
         const response = await fetch(endpoint, {
           headers: {
             'Accept': 'application/json',
@@ -50,6 +54,7 @@ export const useHomeStore = create<HomeState>((set, get) => ({
           }
         });
         const books = await response.json();
+        console.log(books.length)
         set(state => {
           const map = new Map<number, any>();
           [...state.feedBooks, ...books].forEach(b => map.set(b.id, b));

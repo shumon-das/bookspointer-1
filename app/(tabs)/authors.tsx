@@ -4,19 +4,25 @@ import { ActivityIndicator, FlatList, StyleSheet, View, Text } from 'react-nativ
 import { useAuthorsStore } from '../store/authorStore';
 import { useNavigation } from 'expo-router';
 import SearchInput from '@/components/micro/SearchInput';
-import labels from '../utils/labels';
+import { useLabels } from '../utils/labels';
+import { useSystemStore } from '../store/systemStore';
 
 const authors = () => {
   const navigation = useNavigation();
   useEffect(() => navigation.setOptions({ headerShown: false }), []);
+  const lang = useSystemStore((state) => state.lang);
+  const labels = useLabels();
   
-  const { authors, loading, fetchAuthors, totalPages, page } = useAuthorsStore();
+  const { authors, loading, fetchAuthors, resetAuthors } = useAuthorsStore();
   const [filteredAuthors, setFilteredAuthors] = useState<any[]>(authors)
   const [isFilterNotFound, setIsFilterNotFound] = useState(false)
 
   useEffect(() => {
-    fetchAuthors(); // Initial load
-  }, []);
+    resetAuthors();
+    setFilteredAuthors([]);
+    setIsFilterNotFound(false);
+    fetchAuthors();
+  }, [lang]);
 
   const renderFooter = () => {
     if (!loading) return null;

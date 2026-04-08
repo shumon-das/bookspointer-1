@@ -31,7 +31,7 @@ export default NotificationBadge;
 const styles = StyleSheet.create({
   iconContainer: {
     position: 'relative', 
-    marginHorizontal: 10,
+    marginHorizontal: 5,
   },
 
   badge: {

@@ -18,6 +18,7 @@ import { useReviewStore } from '@/app/store/reviewStore';
 import { useBookDetailsStore } from '@/app/store/bookDetailsStore';
 import englishNumberToBengali from '@/app/utils/englishNumberToBengali';
 import { Foundation } from '@expo/vector-icons';
+import { category, popoverAction } from '@/app/utils/bookCard';
 
 interface BookCardProps {
   id: number;
@@ -36,40 +37,18 @@ const BookCard = ({ book, snackMessage, backurl }: { book: BookCardProps, snackM
   const createdByImg = `https://api.bookspointer.com/uploads/${book.createdBy.image}`;
   const router = useRouter();
   const [loggedInUser, setLoggedInUser] = React.useState<{ uuid: string } | null>(useUserStore.getState().authUser);
+  const authUser = useUserStore((state) => state.authUser)
+  useEffect(() => {
+    setLoggedInUser(authUser)
+  }, [authUser])
 
   const popoverIcon = <MaterialIcons name="more-vert" size={24} color="black" />
   const popoverMenus = loggedInUser && loggedInUser.uuid === book.createdBy.uuid ? [
-    { label: 'Edit', icon: <FontAwesome name="edit" size={18} color="black" /> },
+    { label: 'Edit', name: 'edit', icon: <FontAwesome name="edit" size={18} color="black" /> },
   ] : [
-    { label: `রিপোর্ট (Report)`, icon: <MaterialIcons name="report" size={18} color="black" /> },
-    { label: `ব্লক করুন (Block)`, icon: <FontAwesome name="ban" size={18} color="black" /> },
+    { label: labels.report, name: 'report', icon: <MaterialIcons name="report" size={18} color="black" /> },
+    { label: labels.block, name: 'block', icon: <FontAwesome name="ban" size={18} color="black" /> },
   ];
-
-  const popoverAction = (item: any) => {
-    if ('edit' === item.label.toLowerCase()) {
-      if (loggedInUser && loggedInUser.uuid === book.createdBy.uuid) {
-        router.push({ pathname: "/screens/book/write-book", params: { bookuuid: book.uuid, id: book.id } })
-      } else {
-        alert(labels.pleaseLoginToContinue)
-      }
-    }
-
-    if ('রিপোর্ট (report)' === item.label.toLowerCase()) {
-      if (loggedInUser) {
-        router.push({ pathname: "/screens/report/report-post", params: { targetPost: book.id, targetUser: book.createdBy.id, title: book.title } });
-      } else {
-        alert(labels.pleaseLoginToContinue)
-      }
-    }
-
-    if ('ব্লক করুন (block)' === item.label.toLowerCase()) {
-      if (loggedInUser) {
-        router.push({ pathname: "/screens/block/block-user", params: { id: book.createdBy.id, username: book.createdBy.fullName, } });
-      } else {
-        alert(labels.pleaseLoginToContinue)
-      }
-    }
-  }
 
   return (
     <View style={styles.cardBackground} key={book.id}>
@@ -95,7 +74,7 @@ const BookCard = ({ book, snackMessage, backurl }: { book: BookCardProps, snackM
 
         <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20 }}>
           {/* { loggedInUser && loggedInUser.uuid === book.createdBy.uuid && */}
-          <PopOver icon={popoverIcon} menus={popoverMenus} action={popoverAction} />
+          <PopOver icon={popoverIcon} menus={popoverMenus} action={(item) => popoverAction(item, loggedInUser, book, router)} />
           {/* } */}
         </View>
 
@@ -113,14 +92,13 @@ const BookCard = ({ book, snackMessage, backurl }: { book: BookCardProps, snackM
           }
         })}}>
         <View style={styles.postImageAndTitle}>
-          {/* {!book.content.includes('<img src=') && <DefaultPostImage book={book} />} */}
           <View style={{ width: '11%', marginTop: 10, marginLeft: 5 }}>
             <Entypo name="open-book" size={40} color="black" style={{ transform: [{ rotate: '18deg' }] }} />
           </View>
           <View style={{ width: '87%', marginTop: 10, marginLeft: 5 }}>
             <Text style={styles.postTitle}>{book.title}</Text>
             <Text style={styles.postAuthorName}>{book.author.fullName}</Text>
-            <Text style={styles.postCategory}>{typeof book.category === 'string' ? book.category : book.category.label}</Text>
+            <Text style={styles.postCategory}>{category(book)}</Text>
           </View>
         </View>
 

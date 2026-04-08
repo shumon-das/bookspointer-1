@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import API_CONFIG from '../utils/config';
 import { getAllAuthors, inserSingleUser } from '../utils/database/insertAllUsers';
 import { User } from '@react-native-google-signin/google-signin';
+import { getRegionCode } from '../utils/regionCode';
 
 interface AuthorsState {
   currentlyVisitedAuthor: any,
@@ -27,23 +28,21 @@ export const useAuthorsStore = create<AuthorsState>((set, get) => ({
   loading: false,
 
   fetchAuthors: async () => {
-    const authorsData = await getAllAuthors();
-    // if (authorsData.length > 0) {
-    //   set({ authors: authorsData });
-    //   return;
-    // }
+    console.log('one...')
     const { loading, page, totalPages, authors, limit } = get();
     
-    // Logic: Stop if already loading or reached the end
     if (loading || (page > totalPages && authors.length > 0)) return;
+    console.log('two...')
 
     set({ loading: true });
+    console.log('three...')
 
     try {
-      const response = await fetch(
-        `${API_CONFIG.BASE_URL}/authors-paginated?page=${page}&limit=${limit}`
-      );
+      const lang = await getRegionCode();
+      const url = `${API_CONFIG.BASE_URL}/authors-paginated?page=${page}&limit=${limit}&lang=${lang}`;
+      const response = await fetch(url);
       const result = await response.json();
+      console.log(lang, url, result.data.authors)
 
       if (result.status) {
         set({

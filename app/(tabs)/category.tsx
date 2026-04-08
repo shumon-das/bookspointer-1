@@ -4,12 +4,13 @@ import useFetch from '@/services/useFetch'
 import { fetchCategories } from '@/services/api'
 import CategoryCard from '@/components/CategoryCard'
 import { useCategoryStore } from '../store/categories'
-import { labels } from '../utils/labels'
+import { useLabels } from '../utils/labels'
 import { useNavigation } from 'expo-router'
 
 const category = () => {
   const setCategories = useCategoryStore((state) => state.setCategories)
   const { data: categories, loading: categoriesLoading, error: booksError } = useFetch(() => fetchCategories())
+  const labels = useLabels();
 
   const navigation = useNavigation();
   useLayoutEffect(() => {

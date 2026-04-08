@@ -21,7 +21,7 @@ export default function AuthorCard(author: User) {
           <Image  source={{ uri: authorImg }} style={styles.image} />
           <View>
               <Text style={styles.userName}>{author.fullName}</Text>
-              <Text style={styles.userRole}> {englishNumberToBengali(author.totalBooks)} টি {labels.book}</Text>
+              <Text style={styles.userRole}> {englishNumberToBengali(author.totalBooks)} {labels.book}</Text>
           </View>
         </TouchableOpacity>
     </View>
