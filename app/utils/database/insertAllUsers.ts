@@ -29,7 +29,7 @@ export const inserSingleUser = async (user: any) => {
             [user.id, user.uuid, user.fullName, JSON.stringify(user), Date.now()]
         );
     } catch (e) {
-        console.error('Insert transaction failed', e);
+        console.error('Insert single user transaction failed', e);
         throw e;
     }
 }
@@ -47,7 +47,7 @@ export const insertAllUsers = async (users: any[]) => {
         // });
         console.log(`Successfully synced ${users.length} users`);
     } catch (e) {
-        console.error('Insert transaction failed', e);
+        console.error('Insert all users transaction failed', e);
         throw e;
     }
 }
@@ -113,7 +113,7 @@ export const insertAuthUser = async (data: any) => {
             [data.id, data.uuid, data.fullName, JSON.stringify(data), Date.now()]
         );
     } catch (e) {
-        console.error('Insert transaction failed', e);
+        console.error('Insert auth user transaction failed', e);
         throw e;
     }
 }

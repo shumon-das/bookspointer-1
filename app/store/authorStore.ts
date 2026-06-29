@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import API_CONFIG from '../utils/config';
-import { getAllAuthors, inserSingleUser } from '../utils/database/insertAllUsers';
+import { createTable, getAllAuthors, inserSingleUser } from '../utils/database/insertAllUsers';
 import { User } from '@react-native-google-signin/google-signin';
 import { getRegionCode } from '../utils/regionCode';
 
@@ -28,21 +28,17 @@ export const useAuthorsStore = create<AuthorsState>((set, get) => ({
   loading: false,
 
   fetchAuthors: async () => {
-    console.log('one...')
     const { loading, page, totalPages, authors, limit } = get();
     
     if (loading || (page > totalPages && authors.length > 0)) return;
-    console.log('two...')
 
     set({ loading: true });
-    console.log('three...')
 
     try {
       const lang = await getRegionCode();
       const url = `${API_CONFIG.BASE_URL}/authors-paginated?page=${page}&limit=${limit}&lang=${lang}`;
       const response = await fetch(url);
       const result = await response.json();
-      console.log(lang, url, result.data.authors)
 
       if (result.status) {
         set({
@@ -87,6 +83,7 @@ export const useAuthorsStore = create<AuthorsState>((set, get) => ({
       }
       const data = await response.json();
 
+      await createTable();
       await inserSingleUser(data);
       
       return data;
