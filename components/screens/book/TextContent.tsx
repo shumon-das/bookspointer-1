@@ -1,5 +1,5 @@
 import React from 'react';
-import { Linking, useWindowDimensions } from 'react-native';
+import { useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import API_CONFIG from '@/app/utils/config';
 import { useBookDetailsStore } from '@/app/store/bookDetailsStore';
@@ -74,7 +74,7 @@ const TextContent = ({ content, isDetailsScreen=false, fontSize=16, textColor='b
       console.warn('Could not open BookPointer link in app:', error);
     }
 
-    Linking.openURL(href);
+    router.push({ pathname: '/screens/in-app-browser' as any, params: { url: href } });
   };
   const styles = {
     ...tagsStyles,
