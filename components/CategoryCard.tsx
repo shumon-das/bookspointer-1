@@ -25,7 +25,7 @@ export default function CategoryCard(category: CategoryProps) {
     <View className='postHeader'>
       <TouchableOpacity  style={styles.postHeader} onPress={() => router.push({
                   pathname: '/book/categoryBooks', 
-                  params: { category: category.name, categoryLabel: category.label }
+                  params: { category: category.name, categoryLabel: category[lang === 'bn' ? 'label' : 'name'] }
                 })}>
         <Entypo name="open-book" size={32} color="black" style={styles.icon} />
         <View>

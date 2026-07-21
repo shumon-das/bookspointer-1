@@ -86,6 +86,6 @@ export const styles = StyleSheet.create({
       borderTopColor: "gray",
     },
     reviewIcon: { textAlign: 'center' },
-    reviewText: { color: '#282C35', fontSize: 10 },
+    reviewText: { color: '#8a8a8a', fontSize: 9 },
   })
   

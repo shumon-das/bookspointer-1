@@ -23,4 +23,9 @@ export const QuoteStyles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'right',
   },
+  category: {
+    marginTop: 4,
+    fontSize: 12,
+    textAlign: 'right',
+  },
 });

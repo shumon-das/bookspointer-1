@@ -1,5 +1,4 @@
 import FeedBookCard from "@/components/FeedBookCard";
-import QuoteCard from "@/components/QuoteCard";
 import { fetchBooks } from "@/services/api";
 import { useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useCallback, useEffect, useState } from "react";
@@ -68,10 +67,6 @@ export default function CategoryBooks() {
   };
 
   const renderItem = ({item}: {item: any}) => {
-    if (item.title.includes('quote song poem') || item.title.includes('quote-song-poem')) {
-      return <QuoteCard key={item.id} book={item} snackMessage={handleSnackMessage} />
-    }
-
     return <FeedBookCard key={item.id} book={item} snackMessage={handleSnackMessage} />
   }
 

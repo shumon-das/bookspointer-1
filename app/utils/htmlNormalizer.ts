@@ -19,11 +19,11 @@ export function toQuillHtml(html: any) {
 export function toPellHtml(html: any) {
   if (!html) return '';
   return html
-    .replace(/<p>/g, '<div>')
+    .replace(/<p\b[^>]*>/gi, '<div>')
     .replace(/<\/p>/g, '</div>')
     .replace(/<div><br><\/div>/g, '') // remove empty lines
     .replace(/<div>\s*<\/div>/g, '')  // remove empty divs
-    .replace(/\s+/g, ' ')
+
     .trim();
 }
 

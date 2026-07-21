@@ -17,6 +17,8 @@ import { Foundation } from '@expo/vector-icons';
 import { useReviewStore } from '@/app/store/reviewStore';
 import labels from '@/app/utils/labels';
 import englishNumberToBengali from '@/app/utils/englishNumberToBengali';
+import { category } from '@/app/utils/bookCard';
+import { useSystemStore } from '@/app/store/systemStore';
 
 
 interface BookCardProps {
@@ -37,6 +39,8 @@ const QuoteCard = React.memo(({ book, snackMessage, compact = false }: { book: B
   const createdByImg = !book || !book.createdBy ? '' : `https://api.bookspointer.com/uploads/${book.createdBy.image}`;
   const router = useRouter();
   const userStore = useUserStore();
+  const lang = useSystemStore((state) => state.lang);
+  const categoryName = category(book, lang);
 
   const themeIndex = Math.abs(book?.id ?? 0) % quoteThemes.length;
 
@@ -84,30 +88,26 @@ const QuoteCard = React.memo(({ book, snackMessage, compact = false }: { book: B
         </View>
       </View>
       <View className='postBody' style={[QuoteStyles.card, { backgroundColor: quoteThemes[themeIndex].backgroundColor, }]}>
-        <Text style={[QuoteStyles.quote, { color: quoteThemes[themeIndex].textColor }]}>
-          {book && book.content ? (compact ? <Text numberOfLines={6}>{stripHtmlTags(book.content)}</Text> : <QuoteContent content={book.content} />) : ''}
-        </Text>
+        {book && book.content ? (compact ?
+          <Text style={[QuoteStyles.quote, { color: quoteThemes[themeIndex].textColor }]} numberOfLines={6}>
+            {stripHtmlTags(book.content)}
+          </Text> :
+          <QuoteContent content={book.content} />
+        ) : null}
         <Text style={[QuoteStyles.author, { color: quoteThemes[themeIndex].authorColor }]}>{book.seriesName}</Text>
+        {!!categoryName && <Text style={[QuoteStyles.category, { color: quoteThemes[themeIndex].authorColor }]}>{categoryName}</Text>}
       </View>
 
-      <View className='postFooter' style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', paddingVertical: 2, borderTopWidth: 0.2, borderTopColor: "gray" }}>
-        <Text>
-          {/* <DownloadButton bookId={book.id} title={book.title} author={book.author.fullName} uuid={book.uuid} onDownloaded={() => snackMessage(labels.downloaded)}/> */}
-        </Text>
-        <Text style={{marginRight: 15}}>
-          <ShareButton
-            title="Check this out!"
-            message={book.title}
-            url={`https://bookspointer.com${book.url}`}
-          />
-        </Text>
-        <Text style={{marginRight: 15}}>
-          {/* <SaveButton bookId={book.id} onSaveToLibrary={() => snackMessage(labels.saveBookIntoLibrary)} /> */}
-          <TouchableOpacity onPress={() => { useReviewStore.getState().setSelectedBook(book); router.push({ pathname: '/screens/book/single-book-reviews' }); }}>
-            <Text style={styles.reviewIcon}><Foundation name="comment-quotes" size={14} color="gray" /></Text>
+      <View className="postFooter" style={{ flexDirection: "row", justifyContent: "flex-end", alignItems: "center", paddingHorizontal: 12, paddingVertical: 4, borderTopWidth: 0.5, borderTopColor: "#e6e6e6" }}>
+        <View style={{ width: 72, alignItems: "center" }}>
+          <ShareButton title="Check this out!" message={book.title} url={"https://bookspointer.com" + book.url} iconColor="#8a8a8a" style={{ width: "100%", alignItems: "center" }} />
+        </View>
+        <View style={{ width: 72, alignItems: "center", marginLeft: 8 }}>
+          <TouchableOpacity style={{ width: "100%", alignItems: "center" }} onPress={() => { useReviewStore.getState().setSelectedBook(book); router.push({ pathname: "/screens/book/single-book-reviews" }); }}>
+            <Text style={styles.reviewIcon}><Foundation name="comment-quotes" size={12} color="#8a8a8a" /></Text>
             <Text style={styles.reviewText}>{englishNumberToBengali((book as any).reviewcount ?? 0)} {labels.review}</Text>
           </TouchableOpacity>
-        </Text>
+        </View>
       </View>
     </View>
   )

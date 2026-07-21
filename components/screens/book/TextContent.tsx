@@ -40,6 +40,19 @@ const tagsStyles = {
   li: {
     marginBottom: 6,
   },
+  blockquote: {
+    marginVertical: 8,
+    paddingLeft: 12,
+    borderLeftWidth: 3,
+    borderLeftColor: '#c58b4e',
+    color: '#596579',
+    fontStyle: 'italic' as const,
+  },
+  pre: {
+    padding: 10,
+    borderRadius: 8,
+    backgroundColor: '#f3f4f6',
+  },
 } as const;
 
 const TextContent = ({ content, isDetailsScreen=false, fontSize=16, textColor='black', backgroundColor='#fff' }: any) => {

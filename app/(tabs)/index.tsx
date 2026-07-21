@@ -70,10 +70,6 @@ export default function Index() {
       return <></>
     }
 
-    if (item.title === 'quote-song-poem' || item.title.includes('quote')) {
-      return <QuoteCard book={item} snackMessage={handleSnackMessage} />
-    }
-
     return <FeedBookCard
       book={item}
       snackMessage={handleSnackMessage}

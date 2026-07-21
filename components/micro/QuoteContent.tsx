@@ -1,19 +1,22 @@
 import React from "react";
-import { ScrollView, View } from "react-native";
-import HTMLView from "react-native-htmlview";
+import { ScrollView, Text } from "react-native";
 
 
 const QuoteContent = ({ content }: any) => {
-  const cleanHtml = (html: string) => html.replace(/<p>\s*<br\s*\/?>\s*<\/p>/g, "<p></p>")
-                                          .replace(new RegExp('<p>', 'g'), '<span>')
-                                          .replace(new RegExp('</p>', 'g'), '</span>');
-  
+  const text = String(content || "")
+    .replace(/<br\s*\/?>(?:\s*)/gi, "\n")
+    .replace(/<\/(?:p|div|li|h[1-6])>/gi, "\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/\n[ \t]+/g, "\n")
+    .trim();
+
   return (
     <ScrollView style={{ paddingHorizontal: 10, paddingTop: 5, paddingBottom: 30 }}>
-        <HTMLView
-          value={cleanHtml(content)}
-          stylesheet={{ span: { fontSize: 20 }, p: { fontSize: 20 }, br: { height: 0 } }}
-        />
+      <Text style={{ fontSize: 20, lineHeight: 28, fontStyle: "italic" }}>{text}</Text>
     </ScrollView>
   );
 };

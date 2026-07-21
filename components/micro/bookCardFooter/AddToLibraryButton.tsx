@@ -5,7 +5,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useBookLibraryStore } from '@/app/store/bookLibraryStore';
 
-const AddToLibrary = ({ book }: {book: any}) => {
+const AddToLibrary = ({ book, variant }: {book: any; variant?: 'feed'}) => {
     const [isSaved, setIsSaved] = useState(false)
     const [user, setUser] = useState(null as any)
     const bookLibraryStore = useBookLibraryStore()
@@ -41,13 +41,14 @@ const AddToLibrary = ({ book }: {book: any}) => {
         }
     }
   return (
-    <View style={{}}>
-        <TouchableOpacity onPress={onSave} >
-            <Text style={{ textAlign: 'center', color: 'lightgray'}}>
+    <View style={variant === 'feed' ? { alignItems: 'center' } : {}}>
+        <TouchableOpacity onPress={onSave} style={variant === 'feed' ? { alignItems: 'center' } : undefined}>
+            {variant === 'feed' && <View style={{ width: 30, height: 30, borderRadius: 10, backgroundColor: isSaved ? '#e8f6ef' : '#eef2f7', alignItems: 'center', justifyContent: 'center' }}><MaterialIcons name={isSaved ? 'library-add-check' : 'my-library-add'} size={16} color={isSaved ? '#3e9566' : '#526173'} /></View>}
+            {variant !== 'feed' && <Text style={{ textAlign: 'center', color: 'lightgray'}}>
                 {isSaved && <MaterialIcons name="library-add-check" size={14} color="black" />}
                 {!isSaved && <MaterialIcons name="my-library-add" size={14} color="gray" /> }
-            </Text>
-            <Text style={{fontSize: 10, color: '#282C35'}}>{isSaved ? labels.AddedToLibrary : labels.AddToLibrary}</Text>
+            </Text>}
+            <Text style={{fontSize: 10, color: variant === 'feed' ? (isSaved ? '#3e9566' : '#526173') : '#282C35', fontWeight: variant === 'feed' ? '700' : undefined, marginTop: variant === 'feed' ? 3 : undefined}}>{isSaved ? labels.AddedToLibrary : labels.AddToLibrary}</Text>
         </TouchableOpacity>
     </View>
   )

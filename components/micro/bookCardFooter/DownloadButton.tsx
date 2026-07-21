@@ -8,7 +8,7 @@ import { isBookDownloaded, saveEncryptedBook } from '@/helper/details';
 import { createBookMetaTable, insertBookMeta } from '@/app/utils/database/bookMetaDb';
 
 
-const DownloadButton = ({ bookId, title, author, uuid, onDownloaded }: {bookId: number; title: string; author: string; uuid: string, onDownloaded: (isSave: Boolean) => void}) => {
+const DownloadButton = ({ bookId, title, author, uuid, onDownloaded, variant }: {bookId: number; title: string; author: string; uuid: string, onDownloaded: (isSave: Boolean) => void; variant?: 'feed'}) => {
   const [loading, setLoading] = useState(false)
   const [downloaded, setDownloaded] = useState(false)
 
@@ -19,7 +19,7 @@ const DownloadButton = ({ bookId, title, author, uuid, onDownloaded }: {bookId: 
     }
 
     checkIsDownloaded()
-  })
+  }, [bookId])
 
   const onDownload = async () => {
     try {
@@ -31,6 +31,7 @@ const DownloadButton = ({ bookId, title, author, uuid, onDownloaded }: {bookId: 
         const savedMeta = await insertBookMeta(bookId, book.uuid, book.title, book.author.fullName, book.category.label, 1, downloadPath);
       }
   
+      setDownloaded(true)
       setLoading(false)
       onDownloaded(true);
     } catch (error) {
@@ -40,16 +41,16 @@ const DownloadButton = ({ bookId, title, author, uuid, onDownloaded }: {bookId: 
   };
 
   const renderIcon = () => {
+    const feed = variant === 'feed';
     return <>
         {downloaded 
             ? <>
-                <Text style={{textAlign: 'center'}}><FontAwesome name="download" size={14} color={'blue'} /></Text>
-                <Text style={{fontSize: 10, color: '#282C35'}}>{labels.downloadedAlready}</Text>
+                <View style={feed ? { alignItems: 'center' } : undefined}><View style={feed ? { width: 30, height: 30, borderRadius: 10, backgroundColor: '#eaf0ff', alignItems: 'center', justifyContent: 'center' } : undefined}><FontAwesome name="download" size={14} color={'#5267d8'} /></View><Text style={{fontSize: 10, color: '#5267d8', fontWeight: feed ? '700' : undefined, marginTop: feed ? 3 : undefined}}>{labels.downloadedAlready}</Text></View>
               </>
             : (<>
-                <TouchableOpacity onPress={onDownload}>
-                  <Text style={{textAlign: 'center'}}><FontAwesome name="download" size={14} color={'#282C35'} /></Text>
-                  <Text style={{fontSize: 10, color: '#282C35'}}>{labels.download}</Text>
+                <TouchableOpacity onPress={onDownload} style={feed ? { alignItems: 'center' } : undefined}>
+                  <View style={feed ? { width: 30, height: 30, borderRadius: 10, backgroundColor: '#eef2f7', alignItems: 'center', justifyContent: 'center' } : undefined}><FontAwesome name="download" size={14} color={'#526173'} /></View>
+                  <Text style={{fontSize: 10, color: '#526173', fontWeight: feed ? '700' : undefined, marginTop: feed ? 3 : undefined}}>{labels.download}</Text>
                 </TouchableOpacity>
               </>)
         }

@@ -4,7 +4,7 @@ import { View, Button, Share, TouchableOpacity, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 
-const ShareButton = ({ title, message, url, style, iconColor }: {title: string; message: string; url: string, style?: any, iconColor?: string}) => {
+const ShareButton = ({ title, message, url, style, iconColor, variant }: {title: string; message: string; url: string, style?: any, iconColor?: string, variant?: 'feed'}) => {
   const onShare = async () => {
     try {
       const result = await Share.share({
@@ -31,8 +31,9 @@ const ShareButton = ({ title, message, url, style, iconColor }: {title: string; 
   return (
     <View>
       <TouchableOpacity onPress={onShare} style={style ? style : { flexDirection: 'column', alignItems: 'center' }}  >
-        <Icon name="share-alt" size={14} color={iconColor ? iconColor : "gray"} />
-        <Text style={{fontSize: 10, color: iconColor ? iconColor : "gray"}}>{labels.share}</Text>
+        {variant === 'feed' && <View style={{ width: 30, height: 30, borderRadius: 10, backgroundColor: '#fff3e8', alignItems: 'center', justifyContent: 'center' }}><Icon name="share-alt" size={12} color="#c77a3b" /></View>}
+        {variant !== 'feed' && <Icon name="share-alt" size={12} color={iconColor ? iconColor : "gray"} />}
+        <Text style={{fontSize: 9, color: variant === 'feed' ? '#8f5a2e' : (iconColor ? iconColor : "gray"), fontWeight: variant === 'feed' ? '700' : undefined, marginTop: variant === 'feed' ? 3 : undefined}}>{labels.share}</Text>
       </TouchableOpacity>
     </View>
   );
