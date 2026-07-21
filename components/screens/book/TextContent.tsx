@@ -1,5 +1,8 @@
 import React from 'react';
 import { Linking, useWindowDimensions } from 'react-native';
+import { useRouter } from 'expo-router';
+import API_CONFIG from '@/app/utils/config';
+import { useBookDetailsStore } from '@/app/store/bookDetailsStore';
 import RenderHtml from 'react-native-render-html';
 
 const tagsStyles = {
@@ -41,6 +44,38 @@ const tagsStyles = {
 
 const TextContent = ({ content, isDetailsScreen=false, fontSize=16, textColor='black', backgroundColor='#fff' }: any) => {
   const { width } = useWindowDimensions();
+  const router = useRouter();
+
+  const openLink = async (href: string) => {
+    try {
+      const parsed = new URL(href, API_CONFIG.BASE_URL);
+      const isBookPointer = parsed.hostname === 'bookspointer.com' || parsed.hostname === 'www.bookspointer.com' || parsed.hostname === 'api.bookspointer.com';
+      const path = parsed.pathname;
+      const isBookPath = path.length > 1 && !path.startsWith('/user/') && !path.startsWith('/author/') && !path.startsWith('/history/');
+
+      if (isBookPointer && isBookPath) {
+        const response = await fetch(API_CONFIG.BASE_URL + '/book' + path);
+        if (!response.ok) throw new Error('Book not found');
+        const book = await response.json();
+        if (!book?.id) throw new Error('Invalid book response');
+        useBookDetailsStore.getState().setSelectedBook(book);
+        router.push({
+          pathname: '/screens/book/details',
+          params: {
+            id: String(book.id),
+            title: book.title || '',
+            author: typeof book.author === 'string' ? book.author : book.author?.fullName || '',
+            isQuote: 'no',
+          },
+        });
+        return;
+      }
+    } catch (error) {
+      console.warn('Could not open BookPointer link in app:', error);
+    }
+
+    Linking.openURL(href);
+  };
   const styles = {
     ...tagsStyles,
     body: {
@@ -74,7 +109,7 @@ const TextContent = ({ content, isDetailsScreen=false, fontSize=16, textColor='b
         a: {
           onPress: (_, href) => {
             if (href) {
-              Linking.openURL(href);
+              openLink(href);
             }
           },
         },
