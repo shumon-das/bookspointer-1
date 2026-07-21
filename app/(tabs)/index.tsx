@@ -13,6 +13,8 @@ import AppUpdateBanner from "@/components/screens/home/AppUpdateBanner";
 import { useSystemStore } from "../store/systemStore";
 import FeedBookCard from "@/components/FeedBookCard";
 import ThreeDotsLoader from "@/components/micro/ThreeDotsLoader";
+import AuthorMilestoneCard from "@/components/AuthorMilestoneCard";
+import { fetchAuthorHighlight } from "@/services/api";
 // import OfflineComponent from "@/components/OfflineComponent";
 
 export default function Index() {
@@ -27,6 +29,7 @@ export default function Index() {
   const [snackMessage, setSnackMessage] = useState('')
   const [refreshing, setRefreshing] = useState(false);
   const [showOfflineMessage, setShowOfflineMessage] = useState(false)
+  const [authorHighlight, setAuthorHighlight] = useState<any | null>(null)
 
   const loading = useHomeStore(state => state.loading)
   const { feedBooks, fetchFeedBooks, fetchCacheBooks, clearFeedBooks } = useHomeStore()
@@ -36,6 +39,7 @@ export default function Index() {
     await syncAllUsers.syncAllUsers()
   }
   useEffect(() => {
+    fetchAuthorHighlight().then(setAuthorHighlight).catch((error) => console.error("Failed to load author highlight:", error));
     if (isOnline && feedBooks.length === 0) {
       console.log('online')
       fetchFeedBooks(true, APP_VERSION);
@@ -97,6 +101,7 @@ export default function Index() {
         scrollEventThrottle={16}
         decelerationRate="normal"
         contentContainerStyle={{ flexGrow: 1 }}
+        ListHeaderComponent={() => authorHighlight ? <AuthorMilestoneCard author={authorHighlight} /> : null}
         initialNumToRender={20}
         maxToRenderPerBatch={20}
         windowSize={10}

@@ -80,7 +80,7 @@ const Author = () => {
                         <HeaderBackground author={author} authorScreen={true} />
                     </View>
                     <View style={styles.userImageAndName}>
-                        <UserImageAndName author={author} />
+                        <UserImageAndName author={author} isAuthor={true} />
                     </View>
                 </View>
                 <View style={styles.section}>

@@ -8,7 +8,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import * as ImagePicker from 'expo-image-picker';
 import { userImageUri } from '@/app/utils/user/imageUri'
 
-const UserImageAndName = ({author}: {author: User | AuthUser | null}) => {
+const UserImageAndName = ({author, isAuthor}: {author: User | AuthUser | null, isAuthor?: boolean}) => {
   const [userImage, setUserImage] = useState(require('../../../assets/images/bp_logo_gold.png'))
   const [userName, setUserName] = useState('-')
   const authUser = useUserStore();
@@ -58,10 +58,10 @@ const UserImageAndName = ({author}: {author: User | AuthUser | null}) => {
         </View>
         <View style={{ width: '60%', flex: 1, marginLeft: 5 }}>
             <Text style={{fontWeight: 'bold', fontSize: 16}}>{userName}</Text>
-            <Text>@{author && author.roles && author.roles.length && author?.roles.includes('ROLE_AUTHOR') 
+            {isAuthor ? <Text>{labels.author}</Text> : <Text>@{author && author.roles && author.roles.length && author?.roles.includes('ROLE_AUTHOR') 
                 ? labels.author 
                 : labels.reader + ' | ' + labels.publisher
-            }</Text>
+            }</Text>}
         </View>
     </View>
   )

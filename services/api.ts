@@ -48,6 +48,13 @@ export const fetchIndexFeeds = async ({pageNumber, limit}: {pageNumber: number, 
     return data;
 }
 
+export const fetchAuthorHighlight = async () => {
+    const response = await fetch(API_CONFIG.BASE_URL + "/author-highlight");
+    if (!response.ok) throw new Error("Failed to fetch author highlight");
+    const data = await response.json();
+    return data.author ?? null;
+};
+
 export const stringifyToParse = (book: any) => {
     return {
         ...book,
