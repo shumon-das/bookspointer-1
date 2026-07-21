@@ -60,7 +60,7 @@ const HomeScreenHeader = () => {
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => {
                     useTempStore.getState().setBookContent('')
-                    router.push('/screens/book/create-post')
+                    router.push('/screens/book/write-new-book')
                 }}>
                     <Text style={[styles2.marginLeft, {color: 'white', fontSize: 12}]}>{labels.writeBook}</Text>
                 </TouchableOpacity>

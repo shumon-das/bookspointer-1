@@ -58,7 +58,7 @@ const Chatting = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" />
+      <StatusBar hidden />
       
       {/* Header */}
       <View style={styles.header}>
