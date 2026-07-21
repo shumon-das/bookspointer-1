@@ -25,7 +25,7 @@ const VisitUser = () => {
 
     const navigation = useNavigation();
     useEffect(() => navigation.setOptions({ headerShown: false }), [isOnline]);
-    const { uuid } = useLocalSearchParams()
+    const { uuid } = useLocalSearchParams<{ uuid?: string }>()
 
     const [visitUser, setVisitUser] = useState<User | null>(null)
     const [loading, setLoading] = useState(false)
@@ -51,18 +51,25 @@ const VisitUser = () => {
 
     const authorStore = useAuthorsStore()
     const fetchUser = async () => {
+        if (!uuid) return
         setLoading(true)
-        const user = await authorStore.findUserByUuid(uuid as string, isOnline)
-        if (user) {
-            setVisitUser(user as any)
+        try {
+            const user = await authorStore.findUserByUuid(uuid, isOnline)
+            if (user) setVisitUser(user as any)
+        } catch (error) {
+            console.error('Failed to load cached user profile:', error)
+        } finally {
+            setLoading(false)
         }
-        setLoading(false)
     }
 
     const fetchUserByApi = async () => {
-        const user = await authorStore.fetchUserByUuidApi(uuid as string)
-        if (user) {
-            setVisitUser(user as any)
+        if (!uuid) return
+        try {
+            const user = await authorStore.fetchUserByUuidApi(uuid)
+            if (user) setVisitUser(user as any)
+        } catch (error) {
+            console.error('Failed to load user profile:', error)
         }
     }
     
@@ -79,16 +86,13 @@ const VisitUser = () => {
         setRefreshing(false);
     }, []);
 
-    if (!visitUser && !isOnline) {
-        return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <MaterialIcons name="wifi-off" size={48} color="#444" />
-                <Text>No internet connection</Text>
-            </View>
-        )
+    if (!visitUser && isInitializing) {
+        return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <ActivityIndicator size="large" color="#e63946" />
+        </View>
     }
 
-    if (!visitUser && !isInitializing && !isOnline) {
+    if (!visitUser && !isOnline) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 <Text>{labels.userNotFound}</Text>

@@ -32,21 +32,24 @@ const Author = () => {
     const {isOnline} = useNetworkStatus(() => {
         console.log('✅ Online again, syncing data...');
     });
-    const {authorUuid, url} = useLocalSearchParams();
+    const params = useLocalSearchParams<{ authorUuid?: string; uuid?: string }>();
+    const authorUuid = params.authorUuid ?? params.uuid;
     const [author, setAuthor] = useState<User|null>(null);
     const [refreshing, setRefreshing] = useState(false);
     const [followersCountChange, setFollowersCountChange] = useState(null as boolean | null)
 
     const fetchAuthorByApi = async () => {
-        const user = await useAuthorsStore.getState().fetchUserByUuidApi(authorUuid as string)
-        if (user) {
-            setAuthor(user as any)
+        try {
+            const user = await useAuthorsStore.getState().fetchUserByUuidApi(authorUuid as string)
+            if (user) setAuthor(user as any)
+        } catch (error) {
+            console.error('Failed to load author profile:', error)
         }
     }
     
     useEffect(() => {
         setAuthor(authorsStore.currentlyVisitedAuthor);
-        fetchAuthorByApi();
+        if (authorUuid) fetchAuthorByApi();
     }, [authorUuid, isOnline]);
 
     const sheetRef = useRef<any>(null);
@@ -64,6 +67,12 @@ const Author = () => {
         fetchAuthorByApi();
         setRefreshing(false);
     }, []);
+
+    if (!author) {
+        return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <ActivityIndicator size="large" color="#e63946" />
+        </View>
+    }
 
     return (
         <GestureHandlerRootView style={{ flex: 1, position: 'relative' }}>

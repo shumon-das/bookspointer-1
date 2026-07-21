@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import API_CONFIG from '../utils/config';
 import { createTable, getAllAuthors, inserSingleUser } from '../utils/database/insertAllUsers';
-import { User } from '@react-native-google-signin/google-signin';
+import type { User } from '@/components/types/User';
 import { getRegionCode } from '../utils/regionCode';
 
 interface AuthorsState {
@@ -74,14 +74,23 @@ export const useAuthorsStore = create<AuthorsState>((set, get) => ({
     return null;
   },
   fetchUserByUuidApi: async (uuid: string) => {
+      if (!uuid) return null;
+
       const endpoint = `${API_CONFIG.BASE_URL}/single-author/${uuid}`;
-      const response = await fetch(endpoint);
+      let response: Response;
+      try {
+        response = await fetch(endpoint);
+      } catch (error) {
+        console.error('Failed to fetch author:', error);
+        return null;
+      }
       if (!response.ok) {
         // @ts-ignore
-        console.log('Failed to fetch author', response.message);
+        console.log('Failed to fetch author', response.status);
         return null;
       }
       const data = await response.json();
+      if (!data || !data.id || !data.uuid) return null;
 
       await createTable();
       await inserSingleUser(data);

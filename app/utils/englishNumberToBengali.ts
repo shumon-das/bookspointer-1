@@ -1,7 +1,7 @@
 import { useSystemStore } from "../store/systemStore";
 
 export const englishNumberToBengali = (englishNumber: number) => {
-        const lang = useSystemStore((state) => state.lang);
+        const lang = useSystemStore.getState().lang;
         if (lang === 'en') return englishNumber;
         const englishToBengaliMap = {
                 '0': '০',

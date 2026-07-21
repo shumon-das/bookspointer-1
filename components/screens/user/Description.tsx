@@ -11,9 +11,8 @@ const Description = ({author}: {author: User | AuthUser | null}) => {
 
   useEffect(() => {
     if (author) {
-      setDescription(Object.keys(author).includes('description') 
-        ? author?.description || labels.authorNoDescription
-        : author?.details?.description || labels.authorNoDescription)
+      const value = Object.keys(author).includes('description') ? author.description : author.details?.description;
+      setDescription(typeof value === 'string' && value.trim() ? value : labels.authorNoDescription)
     }
   }, [author])
 

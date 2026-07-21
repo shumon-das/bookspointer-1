@@ -16,7 +16,7 @@ const AuthUserContent = ({author}: {author: AuthUser}) => {
     ]
     return (
        <View>
-           <RecommendedBooks author={author} recommendedBooks={author.recommendedBooks} />
+           <RecommendedBooks author={author} recommendedBooks={author.recommendedBooks ?? []} />
            <View style={styles.container}>
                {screens.map((item, index) => (
                     <TouchableOpacity key={index} onPress={item.onPress} style={styles.item}>
