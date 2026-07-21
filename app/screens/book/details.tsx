@@ -4,14 +4,15 @@ import { useNetworkStatus } from '@/components/network/networkConnectionStatus';
 import TextContent from '@/components/screens/book/TextContent';
 import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import TextFormating from '@/components/micro/book/details/TextFormating';
 import { useBookDetailsStore } from '@/app/store/bookDetailsStore';
 import DetailsScreenHeader from '@/components/screens/book/DetailsScreenHeader';
 import { MaterialIcons } from '@expo/vector-icons';
+import BookChapters from '@/components/micro/book/details/BookChapters';
 
-const details = () => {
+const Details = () => {
     const {id, title, author, content = null, isQuote = 'no', backurl = null} = useLocalSearchParams();
     const navigation = useNavigation();
     useEffect(() => navigation.setOptions({ headerShown: false }), []);
@@ -28,22 +29,25 @@ const details = () => {
     const [fontSize, setFontSize] = useState(15);
     const [backgroundColor, setBackgroundColor] = useState('white');
     const [isTextFormating, setIsTextFormating] = useState(false);
-    const [bookId, setBookId] = useState(parseInt(id as string));
+    const parsedBookId = parseInt(id as string);
+    const [bookId, setBookId] = useState(parsedBookId);
 
     const storeBook = useBookDetailsStore.getState().selectedBook;
     const [relatedBooks, setRelatedBooks] = useState([] as any[]);
     const pageText = useBookDetailsStore((state) => state.currentPageTexts)
     const totalPages = useBookDetailsStore((state) => state.total_pages)
+    const hasChapters = useBookDetailsStore((state) => state.has_chapters)
+    const chaptersList = useBookDetailsStore((state) => state.chapters_list)
+    const currentChapter = useBookDetailsStore((state) => state.current_chapter)
 
     useFocusEffect(
       useCallback(() => {
-        if (id) {
-          setBookId(parseInt(id as string))
-        }
+        const activeBookId = parseInt(id as string);
+        if (id) setBookId(activeBookId)
         
         const fetchActivePageTexts = async () => {
           setLoading(true)
-          await useBookDetailsStore.getState().textsWithPrevAndNextPage(bookId, page, true)
+          await useBookDetailsStore.getState().textsWithPrevAndNextPage(activeBookId, 1, true)
           setPage(useBookDetailsStore.getState().current_page_number)
           setLoading(false)
         }
@@ -61,10 +65,18 @@ const details = () => {
       }, [id, navigation])
     );
 
-    const getPageBook = async (pageNumber: number) => {
-      if (useBookDetailsStore.getState().current_page_number === pageNumber) return;
+    const getPageBook = async (pageNumber: number, chapter = currentChapter) => {
+      if (useBookDetailsStore.getState().current_page_number === pageNumber && useBookDetailsStore.getState().current_chapter === chapter) return;
       setPage(pageNumber)
-      await useBookDetailsStore.getState().textsWithPrevAndNextPage(bookId, pageNumber, false)
+      setLoading(true)
+      await useBookDetailsStore.getState().textsWithPrevAndNextPage(bookId, pageNumber, false, chapter)
+      setPage(useBookDetailsStore.getState().current_page_number)
+      setLoading(false)
+    }
+
+    const switchChapter = async (chapter: number) => {
+      if (chapter === currentChapter) return;
+      await getPageBook(1, chapter)
     }
 
     return (
@@ -115,6 +127,13 @@ const details = () => {
               </TouchableOpacity>
             </View>}
 
+            {hasChapters && <BookChapters
+              chapters={chaptersList}
+              activeChapter={currentChapter}
+              onSelect={switchChapter}
+              disabled={loading}
+            />}
+
             {loading && page === 1 
               ? (<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                   <ActivityIndicator size="large" color="#085a80" />
@@ -122,7 +141,29 @@ const details = () => {
               :  (<View style={{ margin: 10 }}>
                   <TextContent content={pageText} isDetailsScreen={true} fontSize={fontSize} backgroundColor={backgroundColor} />
                   <View style={{ marginTop: 30, marginBottom: 10 }}>
-                    {!loading && <Pagination currentPage={page} data={{total_pages: totalPages, book_id: parseInt(id as string)}} onChange={getPageBook} screenType='online' />}
+                    {!loading && totalPages > 1 && <Pagination currentPage={page} data={{total_pages: totalPages, book_id: parseInt(id as string)}} onChange={getPageBook} screenType='online' />}
+                    {hasChapters && <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 10, marginTop: 16 }}>
+                      <TouchableOpacity
+                        disabled={loading || currentChapter <= 1}
+                        onPress={() => switchChapter(currentChapter - 1)}
+                        style={{ flex: 1, minHeight: 44, borderWidth: 1, borderColor: '#d1d5db', borderRadius: 12, paddingHorizontal: 10, flexDirection: 'row', alignItems: 'center', opacity: currentChapter <= 1 || loading ? 0.3 : 1 }}
+                      >
+                        <MaterialIcons name="chevron-left" size={20} color="#374151" />
+                        <Text numberOfLines={1} style={{ flex: 1, fontSize: 13, fontWeight: '600', color: '#374151' }}>
+                          {chaptersList.find((chapter) => chapter.index === currentChapter - 1)?.title || `Chapter ${currentChapter - 1}`}
+                        </Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        disabled={loading || currentChapter >= chaptersList.length}
+                        onPress={() => switchChapter(currentChapter + 1)}
+                        style={{ flex: 1, minHeight: 44, borderWidth: 1, borderColor: '#d1d5db', borderRadius: 12, paddingHorizontal: 10, flexDirection: 'row', alignItems: 'center', opacity: currentChapter >= chaptersList.length || loading ? 0.3 : 1 }}
+                      >
+                        <Text numberOfLines={1} style={{ flex: 1, textAlign: 'right', fontSize: 13, fontWeight: '600', color: '#374151' }}>
+                          {chaptersList.find((chapter) => chapter.index === currentChapter + 1)?.title || `Chapter ${currentChapter + 1}`}
+                        </Text>
+                        <MaterialIcons name="chevron-right" size={20} color="#374151" />
+                      </TouchableOpacity>
+                    </View>}
                     <View style={{ height: 10 }}></View>
                   </View>
                 </View>)
@@ -156,4 +197,4 @@ const details = () => {
   )
 }
 
-export default details
+export default Details

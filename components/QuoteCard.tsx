@@ -12,6 +12,11 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import ShareButton from './micro/bookCardFooter/ShareButton';
 import PopOver from './micro/PopOver';
 import QuoteContent from './micro/QuoteContent';
+import { stripHtmlTags } from '@/app/utils/htmlNormalizer';
+import { Foundation } from '@expo/vector-icons';
+import { useReviewStore } from '@/app/store/reviewStore';
+import labels from '@/app/utils/labels';
+import englishNumberToBengali from '@/app/utils/englishNumberToBengali';
 
 
 interface BookCardProps {
@@ -28,12 +33,12 @@ interface BookCardProps {
 }
 
 
-const QuoteCard = React.memo(({ book, snackMessage }: { book: BookCardProps, snackMessage: (value: string) => void }) => {
+const QuoteCard = React.memo(({ book, snackMessage, compact = false }: { book: BookCardProps, snackMessage: (value: string) => void, compact?: boolean }) => {
   const createdByImg = !book || !book.createdBy ? '' : `https://api.bookspointer.com/uploads/${book.createdBy.image}`;
   const router = useRouter();
   const userStore = useUserStore();
 
-  const randomThemeIndex = Math.floor(Math.random() * quoteThemes.length);
+  const themeIndex = Math.abs(book?.id ?? 0) % quoteThemes.length;
 
   const popoverIcon = <FontAwesome name="ellipsis-v" size={24} color="gray" />
   const popoverMenus = [
@@ -78,26 +83,30 @@ const QuoteCard = React.memo(({ book, snackMessage }: { book: BookCardProps, sna
           }
         </View>
       </View>
-      <View className='postBody' style={[QuoteStyles.card, { backgroundColor: quoteThemes[randomThemeIndex].backgroundColor, }]}>
-        <Text style={[QuoteStyles.quote, { color: quoteThemes[randomThemeIndex].textColor }]}>
-          {book && book.content ? <QuoteContent content={book.content} /> : ''}
+      <View className='postBody' style={[QuoteStyles.card, { backgroundColor: quoteThemes[themeIndex].backgroundColor, }]}>
+        <Text style={[QuoteStyles.quote, { color: quoteThemes[themeIndex].textColor }]}>
+          {book && book.content ? (compact ? <Text numberOfLines={6}>{stripHtmlTags(book.content)}</Text> : <QuoteContent content={book.content} />) : ''}
         </Text>
-        <Text style={[QuoteStyles.author, { color: quoteThemes[randomThemeIndex].authorColor }]}>{book.seriesName}</Text>
+        <Text style={[QuoteStyles.author, { color: quoteThemes[themeIndex].authorColor }]}>{book.seriesName}</Text>
       </View>
 
-      <View className='postFooter' style={styles.postFooter}>
+      <View className='postFooter' style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', paddingVertical: 2, borderTopWidth: 0.2, borderTopColor: "gray" }}>
         <Text>
           {/* <DownloadButton bookId={book.id} title={book.title} author={book.author.fullName} uuid={book.uuid} onDownloaded={() => snackMessage(labels.downloaded)}/> */}
         </Text>
-        <Text>
+        <Text style={{marginRight: 15}}>
           <ShareButton
             title="Check this out!"
             message={book.title}
             url={`https://bookspointer.com${book.url}`}
           />
         </Text>
-        <Text>
+        <Text style={{marginRight: 15}}>
           {/* <SaveButton bookId={book.id} onSaveToLibrary={() => snackMessage(labels.saveBookIntoLibrary)} /> */}
+          <TouchableOpacity onPress={() => { useReviewStore.getState().setSelectedBook(book); router.push({ pathname: '/screens/book/single-book-reviews' }); }}>
+            <Text style={styles.reviewIcon}><Foundation name="comment-quotes" size={14} color="gray" /></Text>
+            <Text style={styles.reviewText}>{englishNumberToBengali((book as any).reviewcount ?? 0)} {labels.review}</Text>
+          </TouchableOpacity>
         </Text>
       </View>
     </View>

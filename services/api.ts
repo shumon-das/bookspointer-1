@@ -2,10 +2,12 @@ import annonymous, { getAnonymousId } from "@/app/utils/annonymous";
 import { API_CONFIG } from "@/app/utils/config";
 import { SaveRequestParams } from "@/components/types/Book";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getRegionCode } from "@/app/utils/regionCode";
 
 export const fetchBooks = async ({pageNumber, limit, categoryName}: {pageNumber: number, limit: number, categoryName?: string}) => {
     const storedUser = await AsyncStorage.getItem('auth-user');
     const userId = storedUser ? JSON.parse(storedUser).id : 0;
+    const lang = await getRegionCode();
 
     let endpoint = API_CONFIG.BASE_URL + '/books';
     if (categoryName) {
@@ -15,7 +17,7 @@ export const fetchBooks = async ({pageNumber, limit, categoryName}: {pageNumber:
     const response = await fetch(endpoint, {
         method: 'POST',
         headers: API_CONFIG.HEADERS,
-        body: JSON.stringify({page: pageNumber, limit: limit, userId: userId})
+        body: JSON.stringify({page: pageNumber, limit: limit, userId: userId, lang: lang})
     })
     
     if (!response.ok) {

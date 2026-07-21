@@ -45,7 +45,6 @@ export const useHomeStore = create<HomeState>((set, get) => ({
         const storageUser = await AsyncStorage.getItem('auth-user');
         const userId = storageUser ? JSON.parse(storageUser).id : 0;
         let endpoint = `${API_CONFIG.BASE_URL}/user-feed/${anonymousId}/${page}/${userId}/${limit}?lang=${lang}`;
-        console.log('lang:', lang, endpoint);
         const response = await fetch(endpoint, {
           headers: {
             'Accept': 'application/json',

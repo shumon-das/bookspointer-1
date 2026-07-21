@@ -1,4 +1,4 @@
-import BookCard from "@/components/BookCard";
+import FeedBookCard from "@/components/FeedBookCard";
 import QuoteCard from "@/components/QuoteCard";
 import { fetchBooks } from "@/services/api";
 import { useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
@@ -72,10 +72,7 @@ export default function CategoryBooks() {
       return <QuoteCard key={item.id} book={item} snackMessage={handleSnackMessage} />
     }
 
-    return <BookCard key={item.id} book={item} snackMessage={handleSnackMessage} backurl={JSON.stringify({
-                  pathname: '/book/categoryBooks', 
-                  params: { category: category, categoryLabel: categoryLabel }
-                })} />
+    return <FeedBookCard key={item.id} book={item} snackMessage={handleSnackMessage} />
   }
 
   return (
@@ -96,7 +93,7 @@ export default function CategoryBooks() {
             onEndReachedThreshold={0.5}
             ListFooterComponent={loading ? <ActivityIndicator size="small" /> : null}
             ListEmptyComponent={<View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-              <Text>No books found</Text>
+              <Text>Loading...</Text>
             </View>}
             style={styles.list}
           />

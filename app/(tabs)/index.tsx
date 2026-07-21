@@ -11,6 +11,8 @@ import { useHomeStore } from "../store/homeStore";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import AppUpdateBanner from "@/components/screens/home/AppUpdateBanner";
 import { useSystemStore } from "../store/systemStore";
+import FeedBookCard from "@/components/FeedBookCard";
+import ThreeDotsLoader from "@/components/micro/ThreeDotsLoader";
 // import OfflineComponent from "@/components/OfflineComponent";
 
 export default function Index() {
@@ -30,7 +32,7 @@ export default function Index() {
   const { feedBooks, fetchFeedBooks, fetchCacheBooks, clearFeedBooks } = useHomeStore()
   const syncAllUsers = useSyncAllUsersStore()
 
-  const fetchAllUsersFromDbWhoHaveBooks = async () => {    
+  const fetchAllUsersFromDbWhoHaveBooks = async () => {
     await syncAllUsers.syncAllUsers()
   }
   useEffect(() => {
@@ -52,102 +54,86 @@ export default function Index() {
     }
   }, [lang])
 
-  // const listData = useMemo(() => {
-  //   const visualData = [] as any[];
-    
-  //   feedBooks.forEach((book, index) => {
-  //     visualData.push(book);
-      
-  //     if ((index + 1) % 10 === 0) {
-  //       visualData.push({
-  //         id: `ad-${book.id}`, // Stable ID linked to the book above it
-  //         isAd: true,
-  //         title: 'ads-item'
-  //       });
-  //     }
-  //   });
-    
-  //   return visualData.filter((book, index, self) => index === self.findIndex((b) => b.id === book.id))
-  // }, [feedBooks]);
+  const handleSnackMessage = (value: string) => {
+    setSnackMessage(value);
+    setToastVisible(true);
+    setTimeout(() => setToastVisible(false), 2000);
+  };
 
-    const handleSnackMessage = (value: string) => {
-      setSnackMessage(value);
-      setToastVisible(true);
-      setTimeout(() => setToastVisible(false), 2000);
-    };
+  const renderItem = useCallback(({ item, index }: { item: any, index: number }) => {
+    if (item.title === 'ads-item' && index != 0) {
+      // return <NativeFeedAds />
+      return <></>
+    }
 
-    const renderItem = useCallback(({item, index}: {item: any, index: number}) => {
-      if (item.title === 'ads-item' && index != 0) {
-        // return <NativeFeedAds />
-        return <></>
-      }
+    if (item.title === 'quote-song-poem' || item.title.includes('quote')) {
+      return <QuoteCard book={item} snackMessage={handleSnackMessage} />
+    }
 
-      if (item.title === 'quote-song-poem' || item.title.includes('quote')) {
-        return <QuoteCard book={item} snackMessage={handleSnackMessage} />
-      }
+    return <FeedBookCard
+      book={item}
+      snackMessage={handleSnackMessage}
+    />
+  }, [handleSnackMessage])
 
-      return <BookCard
-        book={item}
-        snackMessage={handleSnackMessage}
-        backurl={JSON.stringify({ pathname: '/(tabs)/', params: {} })}
+  return (<GestureHandlerRootView style={{ flex: 1, backgroundColor: '#f9f0eb', position: 'relative' }} >
+    {useHomeStore.getState().bannerMessage && <AppUpdateBanner />}
+
+    <View style={styles.container}>
+      <FlatList
+        data={feedBooks}
+        keyExtractor={(item) => String(item.id)}
+        renderItem={renderItem}
+        onEndReached={() => {
+          useHomeStore.setState((state) => ({ loading: true }));
+          console.log('isOnline', isOnline)
+          if (isOnline) {
+            fetchFeedBooks(isOnline, APP_VERSION)
+          } else {
+            setShowOfflineMessage(!isOnline)
+          }
+        }}
+        onEndReachedThreshold={0.5}
+        scrollEventThrottle={16}
+        decelerationRate="normal"
+        contentContainerStyle={{ flexGrow: 1 }}
+        initialNumToRender={20}
+        maxToRenderPerBatch={20}
+        windowSize={10}
+        removeClippedSubviews={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={() => {
+            useHomeStore.getState().onRefresh(APP_VERSION)
+          }} />
+        }
+        ListFooterComponent={() => {
+          // if (showOfflineMessage && !useHomeStore.getState().loading) return <OfflineComponent />
+          if (loading) return <ActivityIndicator size="small" color="#e63946" />
+          // if (loading) return <ThreeDotsLoader />
+          return null
+        }}
+        ListEmptyComponent={() => {
+          if (loading || isInitializing) {
+            return (
+              <View style={styles.emptyState}>
+                <Text>{isOnline === false ? 'No cached books available.' : 'getting books...'}</Text>
+              </View>
+            );
+          }
+
+          return (
+            <View style={styles.emptyState}>
+              <Text>{isOnline === false ? 'No cached books available.' : 'No books found.'}</Text>
+            </View>
+          );
+        }}
+        style={styles.list}
       />
-    }, [handleSnackMessage])
+      <Snackbar visible={toastVisible} onDismiss={() => setToastVisible(false)} duration={2000}>
+        {snackMessage}
+      </Snackbar>
+    </View>
 
-    return (<GestureHandlerRootView style={{ flex: 1,backgroundColor: '#f9f0eb', position: 'relative' }} >
-      {useHomeStore.getState().bannerMessage && <AppUpdateBanner />}
-      
-      <View style={styles.container}>
-          <FlatList
-            data={feedBooks}
-            keyExtractor={(item) => String(item.id)}
-            renderItem={renderItem}
-            onEndReached={() => {
-              useHomeStore.setState((state) => ({ loading: true }));
-              console.log('isOnline', isOnline)
-              if (isOnline) {
-                fetchFeedBooks(isOnline, APP_VERSION)
-              } else {
-                setShowOfflineMessage(!isOnline)
-              }
-            }}
-            onEndReachedThreshold={0.5}
-            contentContainerStyle={{ flexGrow: 1 }}
-            initialNumToRender={20}
-            maxToRenderPerBatch={20}
-            windowSize={10}
-            removeClippedSubviews={false}
-            refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={() => {
-                  useHomeStore.getState().onRefresh(APP_VERSION)
-                }} />
-            }
-            ListFooterComponent={() => {
-                // if (showOfflineMessage && !useHomeStore.getState().loading) return <OfflineComponent />
-                if (loading) return <ActivityIndicator size="large" color="#e63946" />
-                return null
-            }}
-            ListEmptyComponent={() => {
-              if (loading || isInitializing) {
-                return (
-                  <View style={styles.emptyState}>
-                    <ActivityIndicator size="large" color="#e63946" />
-                  </View>
-                );
-              }
-
-              return (
-                <View style={styles.emptyState}>
-                  <Text>{isOnline === false ? 'No cached books available.' : 'No books found.'}</Text>
-                </View>
-              );
-            }}
-            style={styles.list}
-          />
-          <Snackbar visible={toastVisible} onDismiss={() => setToastVisible(false)} duration={2000}>
-              {snackMessage}
-          </Snackbar>
-      </View>
-
-    </GestureHandlerRootView>
-    );
+  </GestureHandlerRootView>
+  );
 }

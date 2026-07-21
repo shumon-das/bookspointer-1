@@ -93,7 +93,7 @@ const BookCard = ({ book, snackMessage, backurl }: { book: BookCardProps, snackM
         })}}>
         <View style={styles.postImageAndTitle}>
           <View style={{ width: '11%', marginTop: 10, marginLeft: 5 }}>
-            <Entypo name="open-book" size={40} color="black" style={{ transform: [{ rotate: '18deg' }] }} />
+              <Entypo name="open-book" size={40} color="black" style={{ transform: [{ rotate: '18deg' }] }} />
           </View>
           <View style={{ width: '87%', marginTop: 10, marginLeft: 5 }}>
             <Text style={styles.postTitle}>{book.title}</Text>
@@ -102,7 +102,7 @@ const BookCard = ({ book, snackMessage, backurl }: { book: BookCardProps, snackM
           </View>
         </View>
 
-        <View style={{ padding: 10 }}><TextContent content={book.content} fontSize={15} /></View>
+          <View style={{ padding: 10 }}><TextContent content={book.content} fontSize={15} /></View>
       </TouchableOpacity>
 
       <View className='postFooter' style={styles.postFooter}>

@@ -40,6 +40,13 @@ export const styles = StyleSheet.create({
       height: 80,
       marginRight: 12,
     },
+
+    feedBookImage: {
+      width: 56,
+      height: 70,
+      borderRadius: 6,
+      backgroundColor: '#eee',
+    },
   
     postTitle: {
       fontSize: 18,
@@ -61,6 +68,14 @@ export const styles = StyleSheet.create({
       paddingHorizontal: 0
     },
 
+    postPreview: {
+      paddingHorizontal: 10,
+      paddingVertical: 8,
+      color: '#333',
+      fontSize: 15,
+      lineHeight: 21,
+    },
+
     postFooter: {
       flex: 1,
       flexDirection: 'row',
@@ -69,6 +84,8 @@ export const styles = StyleSheet.create({
       paddingVertical: 2,
       borderTopWidth: 0.2,
       borderTopColor: "gray",
-    }
+    },
+    reviewIcon: { textAlign: 'center' },
+    reviewText: { color: '#282C35', fontSize: 10 },
   })
   

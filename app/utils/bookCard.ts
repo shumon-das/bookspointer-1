@@ -1,18 +1,13 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import labels from "./labels";
 
-export const category = async (book: any) => {
-  const userLang = await AsyncStorage.getItem('user-lang');
-  if (typeof book.category === 'string') {
-    return Object.keys(book).includes('categoryData') && userLang === 'en'
-      ? book.categoryData?.name.replace('-', ' ') 
-      : book.category;
-  }
-  if (userLang === 'en') {
-    return typeof book.category === 'string' ? book.category : book.category.name.replace('-', ' ');
-  }
-  return typeof book.category === 'string' ? book.category : book.category.label;
-}
+export const category = (book: any): string => {
+  const value = book?.category;
+  if (typeof value === 'string') return value;
+  if (value && typeof value === 'object') return value.label ?? value.name ?? '';
+  const categoryData = book?.categoryData;
+  if (categoryData && typeof categoryData === 'object') return categoryData.label ?? categoryData.name ?? '';
+  return '';
+};
 
 export const popoverAction = (item: any, loggedInUser: any, book: any, router: any) => {
     if ('edit' === item.name) {
