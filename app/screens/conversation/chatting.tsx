@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { View, Text, TextInput, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform, StatusBar, Keyboard, Image, ActivityIndicator } from 'react-native';
-import { useFocusEffect, useNavigation } from 'expo-router';
+import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
 import { styles } from '@/styles/chatting.styles';
 import { useConversationStore } from '@/app/store/conversationStore';
 import API_CONFIG from '@/app/utils/config';
@@ -15,11 +15,15 @@ const viewabilityConfig = {
 
 const Chatting = () => {
   const navigation = useNavigation();
-  useEffect(() => navigation.setOptions({ headerShown: false }), []);
+  const router = useRouter();
+  useEffect(() => navigation.setOptions({ headerShown: false }), [navigation]);
   const chatStore = useConversationStore();
+  const fetchSelectedConversationMessages = useConversationStore((state) => state.fetchSelectedConversationMessages);
   useFocusEffect(useCallback(() => {
-    chatStore.fetchSelectedConversationMessages(chatStore.selectedConversation.id);
-  }, [chatStore.selectedConversation.id]));
+    if (chatStore.selectedConversation?.id) {
+      fetchSelectedConversationMessages(chatStore.selectedConversation.id);
+    }
+  }, [chatStore.selectedConversation?.id, fetchSelectedConversationMessages]));
 
   const [inputText, setInputText] = useState(chatStore.selectedEditMessage ? chatStore.selectedEditMessage.text : '');
   const [keyboardOpen, setKeyboardOpen] = useState(false);
@@ -30,10 +34,10 @@ const Chatting = () => {
   }, [chatStore.selectedEditMessage]);
 
   const sendMessage = async () => {
-    if (inputText.trim().length > 0) {
-      await chatStore.sendMessage(inputText, null, null);
-      setInputText('');  
-    }
+    const text = inputText.trim();
+    if (!text || chatStore.sending) return;
+    await chatStore.sendMessage(text, null, null);
+    setInputText('');
   };
 
   useEffect(() => {
@@ -56,12 +60,30 @@ const Chatting = () => {
       }
   }).current;
 
+  if (!chatStore.selectedConversation) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.fallback}>
+          <Text style={styles.fallbackTitle}>Conversation unavailable</Text>
+          <Text style={styles.fallbackText}>Choose a conversation to start chatting.</Text>
+          <TouchableOpacity style={styles.fallbackButton} onPress={() => router.back()}><Text style={styles.fallbackButtonText}>Go back</Text></TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  const lastSeen = chatStore.selectedConversation.lastSeenAt;
+  const lastSeenLabel = lastSeenDate(lastSeen) ? `${lastSeen.date ?? ''} ${lastSeen.time ?? ''}`.trim() : (lastSeen?.time ?? 'Offline');
+
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar hidden />
+      <StatusBar barStyle="light-content" />
       
       {/* Header */}
       <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton} hitSlop={8}>
+          <Feather name="arrow-left" size={22} color="#FFF" />
+        </TouchableOpacity>
         <Image 
           style={styles.statusDot} 
           source={chatStore.selectedConversation.image 
@@ -71,15 +93,8 @@ const Chatting = () => {
         <View>
           <Text style={styles.headerTitle}>{chatStore.selectedConversation.fullName}</Text>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <View style={chatStore.selectedConversation.isOnline 
-                ? {width: 10, height: 10, borderRadius: 5, backgroundColor: 'lightgreen'} 
-                : {width: 10, height: 10, borderRadius: 5, backgroundColor: 'gray'}}></View>
-            {!chatStore.selectedConversation.isOnline && <Text style={{marginLeft: 5, color: 'lightgray', fontSize: 12}}>Last seen at {
-              lastSeenDate(chatStore.selectedConversation?.lastSeenAt)
-                    ? chatStore.selectedConversation?.lastSeenAt.date + ' ' + chatStore.selectedConversation?.lastSeenAt.time
-                    : chatStore.selectedConversation?.lastSeenAt.time
-            }</Text>}
-            {chatStore.selectedConversation.isOnline && <Text style={{marginLeft: 5, color: 'lightgray', fontSize: 12}}>Online</Text>}
+            <View style={[styles.headerOnlineDot, { backgroundColor: chatStore.selectedConversation.isOnline ? '#86EFAC' : '#CBD5E1' }]} />
+            <Text style={styles.headerSubtitle}>{chatStore.selectedConversation.isOnline ? 'Online' : `Last seen ${lastSeenLabel}`}</Text>
           </View>
         </View>
       </View>
@@ -106,12 +121,7 @@ const Chatting = () => {
           automaticallyAdjustContentInsets={false}
           onViewableItemsChanged={onViewableItemsChanged}
           viewabilityConfig={viewabilityConfig}
-          ListEmptyComponent={chatStore.loading ? <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-            <ActivityIndicator size="large" color="#764ba2" />
-            <Text>Loading messages...</Text>
-          </View> : <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-            <Text>No messages found</Text>
-          </View>}
+          ListEmptyComponent={chatStore.loading ? <View style={styles.emptyMessages}><ActivityIndicator size="large" color="#7C3AED" /><Text style={styles.muted}>Loading messages…</Text></View> : <View style={styles.emptyMessages}><Feather name="message-circle" size={30} color="#C4B5FD" /><Text style={styles.emptyTitle}>Start the conversation</Text><Text style={styles.muted}>Say hello and begin chatting.</Text></View>}
           style={{ flex: 1 }}
         />
         {chatStore.selectedReplyMessage && (
@@ -133,7 +143,8 @@ const Chatting = () => {
               </TouchableOpacity>
             </View>
           )}
-        <View style={[styles.inputContainer, {paddingBottom: !keyboardOpen ? 2 : 35}]}>
+        {chatStore.selectedEditMessage && <View style={styles.editPreview}><Feather name="edit-2" size={14} color="#7C3AED" /><Text style={styles.editText}>Editing message</Text><TouchableOpacity onPress={() => { chatStore.setSelectedEditMessage(null); setInputText(''); }}><Feather name="x" size={18} color="#64748B" /></TouchableOpacity></View>}
+        <View style={[styles.inputContainer, {paddingBottom: !keyboardOpen ? 8 : 8}]}>
           <TextInput
             style={styles.input}
             placeholder="Type a message..."
@@ -141,9 +152,11 @@ const Chatting = () => {
             onChangeText={setInputText}
             placeholderTextColor="#999"
             multiline
+            maxLength={2000}
+            onSubmitEditing={Platform.OS === 'ios' ? undefined : sendMessage}
           />
-          <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
-            <MaterialIcons name="send" size={24} color="blue" />
+          <TouchableOpacity disabled={!inputText.trim() || chatStore.sending} style={[styles.sendButton, (!inputText.trim() || chatStore.sending) && styles.sendButtonDisabled]} onPress={sendMessage}>
+            {chatStore.sending ? <ActivityIndicator size="small" color="#FFF" /> : <MaterialIcons name="send" size={21} color="#FFF" />}
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>

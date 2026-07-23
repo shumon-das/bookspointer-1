@@ -10,6 +10,7 @@ interface ConversationState {
     selectedConversationMessages: any[];
     conversationsListLoading: boolean;
     loading: boolean;
+    sending: boolean;
     selectedEditMessage: any;
     selectedReplyMessage: any;
     fetchConversations: () => Promise<void>;
@@ -35,6 +36,7 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
     selectedConversationMessages: [],
     conversationsListLoading: false,
     loading: false,
+    sending: false,
     selectedEditMessage: null,
     selectedReplyMessage: null,
     fetchConversations: async () => {
@@ -42,11 +44,10 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
         const storageUser = await AsyncStorage.getItem('auth-user');
         const user = storageUser ? JSON.parse(storageUser) : null;
         if (!token || !user) {
-            alert('No token or user found')
             return;
         }
 
-        const { conversationsListLoading, conversationList } = get();
+        const { conversationsListLoading } = get();
         if (conversationsListLoading) return;
 
         set({ conversationsListLoading: true });
@@ -72,7 +73,6 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
         const storageUser = await AsyncStorage.getItem('auth-user');
         const user = storageUser ? JSON.parse(storageUser) : null;
         if (!token || !user || !conversationId) {
-            console.log('toke or user or conversationId is missing')
             return;
         }
 
@@ -97,23 +97,27 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
         const storageUser = await AsyncStorage.getItem('auth-user');
         const user = storageUser ? JSON.parse(storageUser) : null;
         const jwtToken = await AsyncStorage.getItem('auth-token')
-        if (!text || !jwtToken || !user) {
+        if (!text || !jwtToken || !user || !get().selectedConversation?.uuid) {
             return;
         }
-        const response = await fetch(`${API_CONFIG.BASE_URL}/admin/messages/send`, {
-            method: 'POST',
-            headers: { Authorization: `Bearer ${jwtToken}` },
-            body: JSON.stringify({ 
-                id: get().selectedEditMessage ? get().selectedEditMessage.id : null, 
-                receiverId: get().selectedConversation.uuid,
-                content: text,
-                replyId: get().selectedReplyMessage ? get().selectedReplyMessage.id : null,
-            })
-        })
-
-        const result = await response.json();
-        if (result.status) {
-            get().addNewMessageToSelectedConversation(result.message)   
+        set({ sending: true });
+        try {
+            const response = await fetch(`${API_CONFIG.BASE_URL}/admin/messages/send`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${jwtToken}` },
+                body: JSON.stringify({
+                    id: get().selectedEditMessage ? get().selectedEditMessage.id : null,
+                    receiverId: get().selectedConversation.uuid,
+                    content: text,
+                    replyId: get().selectedReplyMessage ? get().selectedReplyMessage.id : null,
+                })
+            });
+            const result = await response.json();
+            if (result.status) get().addNewMessageToSelectedConversation(result.message);
+        } catch (error) {
+            console.error('Failed to send message:', error);
+        } finally {
+            set({ sending: false });
         }
         get().setSelectedReplyMessage(null);
         get().setSelectedEditMessage(null);
@@ -124,9 +128,10 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
 
         const user = useUserStore.getState().authUser;
         message.me = user && user.id !== message.receiverId;
+        const exists = get().selectedConversationMessages.some(item => String(item.id) === String(message.id));
         const newMessages = message.isUpdate 
             ? get().selectedConversationMessages.map(item => item.id === message.id ? message : item) 
-            : [message, ...get().selectedConversationMessages]
+            : exists ? get().selectedConversationMessages.map(item => String(item.id) === String(message.id) ? message : item) : [message, ...get().selectedConversationMessages]
         set({ selectedConversationMessages: newMessages }) 
     },
 
@@ -151,7 +156,8 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
             method: 'GET',
             headers: { Authorization: `Bearer ${token}` }
         })
-        await response.json();
+        const result = await response.json();
+        if (result.status !== false) get().removeMessageFromSelectedConversation(messageId);
     },
     removeMessageFromSelectedConversation: (messageId: string) => {
         set((state) => ({
@@ -166,7 +172,7 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
         }
         const response = await fetch(`${API_CONFIG.BASE_URL}/admin/messages/${messageId}`, {
             method: 'PUT',
-            headers: { Authorization: `Bearer ${token}` },
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
             body: JSON.stringify({ content: text })
         })
         const result = await response.json();
@@ -201,7 +207,7 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
         }
         set((state) => ({
             selectedConversationMessages: state.selectedConversationMessages.map(msg => 
-                messageIds.includes(msg.id) ? { ...msg, isRead: true } : msg
+                messageIds.map(String).includes(String(msg.id)) ? { ...msg, isRead: true } : msg
             )
         }));
         try {
@@ -211,7 +217,7 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}` 
                 },
-                body: JSON.stringify({ ids: messageIds, conversationId: get().selectedConversation.id })
+                body: JSON.stringify({ ids: messageIds, conversationId: get().selectedConversation?.id })
             });
             const data = await response.json();   
             console.log('completed', data)
@@ -231,9 +237,7 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
         const result = await response.json();
         if (result.status) {
             set({ selectedConversation: result.data });
-            setTimeout(() => {
-                router.push('/screens/conversation/chatting')
-            }, 1000)
+            router.push('/screens/conversation/chatting')
         }
     }
 }))

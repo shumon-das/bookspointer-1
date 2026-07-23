@@ -31,20 +31,10 @@ const Message = ({message}: any) => {
     if (!message) {
         return <></>
     }
-    const getWidth = () => {
-        if (message && message.text && message.text.length > 10) {
-            return '80%';
-        } else if (message && message.text && message.text.length > 5) {
-            return '50%';
-        } else if (message && message.text && message.text.length > 2) {
-            return '40%';
-        }
-        return '30%';
-    }
   return (
       <View style={[styles.messageBubble, message.me ? styles.myMessage : styles.theirMessage]}>
         {/* 1. THE REPLY PREVIEW BOX */}
-        {message.isReply && (
+        {(message.isReply || message.replyId) && (
             <View style={[
                 replyStyles.replyContainer, 
                 { backgroundColor: message.me ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.05)' }
@@ -65,10 +55,7 @@ const Message = ({message}: any) => {
         )}
 
         <View style={{flexDirection: 'row', alignItems: 'flex-start', justifyContent: message.me ? 'flex-end' : 'space-between'}}>
-            <Text style={message.me 
-                ? [styles.myText, {width: getWidth()}] 
-                : [styles.theirText, {width: getWidth()}]
-            }>{message.text}</Text>
+            <Text style={message.me ? styles.myText : styles.theirText}>{message.text}</Text>
             <MessageActions message={message} />
         </View>
         
@@ -91,19 +78,16 @@ const replyStyles = StyleSheet.create({
     overflow: 'hidden',
     paddingVertical: 4,
   },
-  replyAccentBar: {
-    width: 4,
-    backgroundColor: '#764ba2',
-  },
+  replyAccentBar: { width: 4, backgroundColor: '#7C3AED' },
   replySenderName: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#6305c0ff',
+    color: '#6D28D9',
     marginBottom: 2,
   },
   replyTextPreview: {
     fontSize: 13,
-    color: '#332222ff',
+    color: '#475569',
     fontStyle: 'italic',
   },
 });
