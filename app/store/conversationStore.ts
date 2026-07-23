@@ -4,6 +4,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useUserStore } from './userStore';
 import { router } from 'expo-router';
 
+const asOnlineBoolean = (value: unknown) =>
+    value === true || value === 1 || value === '1' || value === 'true' || value === 'online';
+
 interface ConversationState {
     conversationList: any[];
     selectedConversation: any;
@@ -57,7 +60,11 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
             });
             const result = await response.json();
             if (result.status) {
-                set({ conversationList: result.data });
+                const conversations = Array.isArray(result.data) ? result.data : [];
+                set({ conversationList: conversations.map((item: any) => ({
+                    ...item,
+                    isOnline: [item.isOnline, item.online, item.status, item.is_online].some(asOnlineBoolean),
+                })) });
             }
         } catch (error) {
             console.error("Failed to fetch conversations:", error);

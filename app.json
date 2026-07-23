@@ -13,7 +13,7 @@
       "bundleIdentifier": "com.monoranjan.bookspointer"
     },
     "android": {
-      "versionCode": 24,
+      "versionCode": 27,
       "permissions": [
         "POST_NOTIFICATIONS"
       ],

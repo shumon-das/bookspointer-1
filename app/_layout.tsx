@@ -6,6 +6,7 @@ import {
   onMessage, 
   onNotificationOpenedApp, 
   getInitialNotification, 
+  onTokenRefresh,
   setBackgroundMessageHandler,
   AuthorizationStatus 
 } from '@react-native-firebase/messaging';
@@ -22,8 +23,6 @@ import { AppState } from 'react-native';
 import { useMercureStore } from './store/mercureStore';
 import { saveToken } from '@/services/notificationApi';
 import { handleNotificationNavigation } from './utils/notification/notificationHandler';
-import { getApp } from '@react-native-firebase/app';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import { requestAndroidNotificationPermission } from './utils/notification/requestPermission';
 import * as Linking from 'expo-linking';
@@ -48,6 +47,7 @@ setBackgroundMessageHandler(messagingInstance, async (remoteMessage: any) => {
 
 export default function RootLayout() {
   const router = useRouter();
+  const authUser = useUserStore((state) => state.authUser);
   useSystemStore((state) => state.lang);
 
   useEffect(() => {
@@ -74,31 +74,31 @@ export default function RootLayout() {
   }, []);
 
   useEffect(() => {
-    
-    // 1. Request Permission & Get Token
-    const setupNotifications = async () => {
-      const hasPermission = await requestAndroidNotificationPermission();
-      if (!hasPermission) {
-        console.log("Notification permission denied");
-        return;
-      }
+    // A token must be registered after authentication. On a fresh install the
+    // auth store is restored asynchronously, so registering on mount could
+    // associate the device with the wrong user (or user id 1).
+    if (!authUser?.id) return;
 
-      const app = getApp();
-      const messaging = getMessaging(app);
-      const authStatus = await requestPermission(messaging);
-      const enabled = authStatus === AuthorizationStatus.AUTHORIZED || authStatus === AuthorizationStatus.PROVISIONAL;
+    let active = true;
+    const registerToken = async (token?: string) => {
+      if (!active) return;
+      try {
+        const hasPermission = await requestAndroidNotificationPermission();
+        if (!hasPermission) return;
 
-      if (enabled) {
-        const storageUser = await AsyncStorage.getItem('auth-user');
-        const user = storageUser ? JSON.parse(storageUser) : null;
-        const token = await getToken(messaging);
-        
-        await saveToken(token, user ? user.id : 1); 
-        console.log('Saved FCM Token:', token);
+        const authStatus = await requestPermission(messagingInstance);
+        const enabled = authStatus === AuthorizationStatus.AUTHORIZED || authStatus === AuthorizationStatus.PROVISIONAL;
+        if (!enabled) return;
+
+        const currentToken = token ?? await getToken(messagingInstance);
+        if (currentToken) await saveToken(currentToken, authUser.id);
+      } catch (error) {
+        console.error('Push notification setup failed:', error);
       }
     };
 
-    setupNotifications();
+    registerToken();
+    const unsubscribeTokenRefresh = onTokenRefresh(messagingInstance, (token) => registerToken(token));
 
     // 2. Handle Foreground Messages (App is OPEN)
     const unsubscribeOnMessage = onMessage(messagingInstance, async (remoteMessage: any) => {
@@ -107,6 +107,7 @@ export default function RootLayout() {
           title: remoteMessage.notification?.title ?? '',
           body: remoteMessage.notification?.body ?? '',
           data: remoteMessage.data,
+          channelId: 'high_importance_channel_v2',
           sound: 'default',
         },
         trigger: null,
@@ -128,10 +129,12 @@ export default function RootLayout() {
     });
 
     return () => {
+      active = false;
+      unsubscribeTokenRefresh();
       unsubscribeOnMessage();
       unsubscribeOnNotificationOpened();
     };
-  }, []);
+  }, [authUser?.id]);
 
   // 5. Handle Notification Tap (App was in FOREGROUND)
   useEffect(() => {

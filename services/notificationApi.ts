@@ -11,6 +11,10 @@ export const saveToken = async (token: string, userId: number) => {
             body: JSON.stringify({token: token, anonymousId: anonymousId, userId: userId})
         })
         
+        if (!response.ok) {
+            console.error('Device token registration failed:', response.status, response.statusText);
+            return null;
+        }
         const data = await response.json();
         
         return data;

@@ -15,6 +15,10 @@ import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
 import { useConversationStore } from '@/app/store/conversationStore';
 import { useUserStore } from '@/app/store/userStore';
 import API_CONFIG from '@/app/utils/config';
+import { pingServer } from '@/services/pingServer';
+
+const isOnline = (value: unknown) =>
+  value === true || value === 1 || value === '1' || value === 'true' || value === 'online';
 
 const ConversationList = () => {
   const navigation = useNavigation();
@@ -32,14 +36,21 @@ const ConversationList = () => {
   }, [navigation]);
 
   useFocusEffect(useCallback(() => {
-    if (authUser) fetchConversations();
+    if (!authUser) return;
+    const refreshStatuses = async () => {
+      await fetchConversations();
+      const firstConversation = useConversationStore.getState().conversationList[0];
+      await pingServer(firstConversation?.uuid ?? firstConversation?.user_id ?? firstConversation?.id);
+    };
+    refreshStatuses();
   }, [authUser, fetchConversations]));
 
   const filteredConversations = useMemo(() => {
+    if (!Array.isArray(conversations)) return [];
     const normalizedQuery = query.trim().toLowerCase();
     if (!normalizedQuery) return conversations;
     return conversations.filter((item) =>
-      `${item.fullName ?? ''} ${item.lastMessage?.text ?? ''}`.toLowerCase().includes(normalizedQuery),
+      `${item.fullName ?? ''} ${String(item.lastMessage?.text ?? '')}`.toLowerCase().includes(normalizedQuery),
     );
   }, [conversations, query]);
 
@@ -75,7 +86,8 @@ const ConversationList = () => {
           keyExtractor={(item, index) => String(item.id ?? item.uuid ?? index)}
           renderItem={({ item }) => {
             const unread = Number(item.unread ?? 0);
-            const preview = item.lastMessage?.text?.trim() || 'Start a conversation';
+            const preview = String(item.lastMessage?.text ?? '').trim() || 'Start a conversation';
+            const online = [item.isOnline, item.online, item.status, item.is_online].some(isOnline);
             return (
               <TouchableOpacity
                 style={styles.conversationItem}
@@ -84,7 +96,7 @@ const ConversationList = () => {
               >
                 <View style={styles.avatarWrap}>
                   <Image source={item.image ? { uri: `${API_CONFIG.BASE_URL}/uploads/${item.image}` } : require('@/assets/images/user.png')} style={styles.avatar} />
-                  <View style={[styles.onlineDot, { backgroundColor: item.isOnline ? '#22C55E' : '#CBD5E1' }]} />
+                  <View style={[styles.onlineDot, { backgroundColor: online ? '#22C55E' : '#CBD5E1' }]} />
                 </View>
                 <View style={styles.conversationBody}>
                   <View style={styles.nameRow}>

@@ -2,7 +2,10 @@ package com.monoranjan.bookspointer
 import com.facebook.react.common.assets.ReactFontManager
 
 import android.app.Application
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.res.Configuration
+import android.os.Build
 
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
@@ -43,6 +46,17 @@ class MainApplication : Application(), ReactApplication {
 
   override fun onCreate() {
     super.onCreate()
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      val channel = NotificationChannel(
+        "high_importance_channel_v2",
+        "High Importance",
+        NotificationManager.IMPORTANCE_HIGH
+      ).apply {
+        description = "Books Pointer message and activity notifications"
+        enableVibration(true)
+      }
+      getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
+    }
     // @generated begin xml-fonts-init - expo prebuild (DO NOT MODIFY) sync-da39a3ee5e6b4b0d3255bfef95601890afd80709
 
     // @generated end xml-fonts-init

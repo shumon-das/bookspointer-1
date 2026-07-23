@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { View, Text, TextInput, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform, StatusBar, Keyboard, Image, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform, Keyboard, Image, ActivityIndicator } from 'react-native';
 import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
 import { styles } from '@/styles/chatting.styles';
 import { useConversationStore } from '@/app/store/conversationStore';
@@ -77,8 +77,6 @@ const Chatting = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" />
-      
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton} hitSlop={8}>

@@ -5,7 +5,13 @@ import { NOTIFICATION_TYPE } from "@/constants/NotificationType";
 import { Router } from "expo-router";
 
 export const handleNotificationNavigation = (data: any, router: Router) => {
-  const notificationData = JSON.parse(data.data);
+  let notificationData: any;
+  try {
+    notificationData = typeof data?.data === "string" ? JSON.parse(data.data) : data?.data;
+  } catch (error) {
+    console.error("Invalid push notification data:", error);
+    return;
+  }
   // console.log(notificationData)
   if (!notificationData || !notificationData.type) return;
 
