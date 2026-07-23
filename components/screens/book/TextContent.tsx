@@ -11,6 +11,7 @@ const tagsStyles = {
     color: '#333',
     backgroundColor: '#fff',
     fontFamily: 'System',
+    whiteSpace: 'pre' as const,
   },
   img: {
     marginVertical: 10,
@@ -19,6 +20,7 @@ const tagsStyles = {
   p: {
     marginBottom: 8,
     lineHeight: 20,
+    whiteSpace: 'pre' as const,
   },
   a: {
     color: '#1e90ff',
@@ -53,6 +55,9 @@ const tagsStyles = {
     borderRadius: 8,
     backgroundColor: '#f3f4f6',
   },
+  div: {
+    whiteSpace: 'pre' as const,
+  }
 } as const;
 
 const TextContent = ({ content, isDetailsScreen=false, fontSize=16, textColor='black', backgroundColor='#fff' }: any) => {

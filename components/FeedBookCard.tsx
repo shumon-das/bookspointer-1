@@ -106,7 +106,10 @@ const FeedBookCard = memo(({ book, snackMessage }: { book: Book; snackMessage: (
             <TextContent content={book.content} fontSize={17} textColor="#334155" backgroundColor="transparent" />
           </View>
         ) : (
-          <Text style={styles.preview} numberOfLines={8}>{stripHtmlTags(book.content)}</Text>
+          // <Text style={styles.preview} numberOfLines={8}>{stripHtmlTags(book.content)}</Text>
+          <View style={{marginHorizontal: 10}}>
+              <TextContent content={book.content} />
+            </View>
         )}
       </TouchableOpacity>
 
