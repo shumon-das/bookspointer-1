@@ -28,7 +28,9 @@ export const labelsBN = {
     firstName: "নামের প্রথম অংশ",
     lastName: "নামের শেষ অংশ",
     email: "ইমেইল",
+    birthDate: "জন্ম তারিখ (YYYY-MM-DD)",
     noAccount: "একাউন্ট নেই?",
+    alreadyAccount: "একাউন্ট আছে?",
     invalidEmail: "ইমেইলটি সঠিক হয়নি। সঠিক ইমেইল দিয়ে আবার চেষ্টা করুন।",
     passswordConfirmNotMatch: "পাসওয়ার্ড আর কনফার্ম পাসওয়ার্ডে মিল নেই।",
     invalidLogin: "ইমেইল অথবা পাসওয়ার্ড ভুল হয়েছ। আবার চেষ্টা করুন।",
@@ -232,7 +234,12 @@ export const labelsBN = {
     block: "ব্লক করুন (Block)",
     readBanglaBooks: "বাংলা বইসমূহ পড়ুন",
     readEnglishBooks: "Read English Books",
-    authorNoDescription: "লেখকের সম্পর্কে কোন তথ্য নেই।"
+    authorNoDescription: "লেখকের সম্পর্কে কোন তথ্য নেই।",
+    born: "জন্ম",
+    died: "মৃত্যু",
+    birthWish: "জন্মদিনের শুভেচ্ছা",
+    deadWish: "শ্রদ্ধাঞ্জলি",
+    inLovingMemory: "মৃত্যু",
 }
 
 export const labelsEN = {
@@ -263,7 +270,9 @@ export const labelsEN = {
     firstName: "First Name",
     lastName: "Last Name",
     email: "Email",
+    birthDate: "Birth date (YYYY-MM-DD)",
     noAccount: "No account?",
+    alreadyAccount: "Already have an account?",
     invalidEmail: "The email is invalid. Please try again with a valid email.",
     passswordConfirmNotMatch: "Password and confirm password do not match.",
     invalidLogin: "Email or password is incorrect. Please try again.",
@@ -466,7 +475,12 @@ export const labelsEN = {
     block: "Block",
     readBanglaBooks: "বাংলা বইসমূহ পড়ুন",
     readEnglishBooks: "Read English Books",
-    authorNoDescription: "No information about the author."
+    authorNoDescription: "No information about the author.",
+    born: "Born",
+    died: "Died",
+    birthWish: "Birthday Wishes",
+    deadWish: "Tribute",
+    inLovingMemory: "In Loving Memory",
 }
 export const getLabels = (lang: string) => lang === 'bn' ? labelsBN : labelsEN;
 

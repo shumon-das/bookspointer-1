@@ -7,6 +7,7 @@ export interface User {
   lastName: string;
   fullName: string;
   email: string;
+  birthAt?: string;
   roles: string[];
   series: any[];
   totalBooks: number;
@@ -28,6 +29,7 @@ export interface User {
 interface UserDetails {
   id: string;
   description: string;
+  birthAt?: string | null;
   socials: any[];
 }
 

@@ -4,13 +4,14 @@ import { labels } from '@/app/utils/labels';
 import HtmlContent from "@/components/micro/HtmlContent";
 import { updateUserInfo } from "@/services/api";
 import { styles } from '@/styles/profileUpdate.styles';
+import { authStyles } from '@/styles/auth.styles';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect, useNavigation, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, KeyboardAvoidingView, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, KeyboardAvoidingView, Modal, Pressable, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { Snackbar } from 'react-native-paper';
 
 const ProfileUpdate = () => {
@@ -25,10 +26,14 @@ const ProfileUpdate = () => {
     const [lastName, setLastName] = useState('')
     const [lastNameEditable, setLastNameEditable] = useState(false)
     const [email, setEmail] = useState('')
+    const [birthAt, setBirthAt] = useState('')
+    const [birthAtError, setBirthAtError] = useState(false)
+    const [calendarVisible, setCalendarVisible] = useState(false)
+    const [yearPickerVisible, setYearPickerVisible] = useState(false)
+    const [calendarMonth, setCalendarMonth] = useState(() => new Date(new Date().getFullYear(), new Date().getMonth(), 1))
     const [emailEditable, setEmailEditable] = useState(false)
     const [description, setDescription] = useState('')
     const [socials, setSocials] = useState([{ facebook: "" }, { instagram: "" }, { telegram: "" }])
-    const [socialsExpanded, setSocialsExpanded] = useState(false);
     const [showSnackBar, setShowSnakBar] = useState(false);
     const [snackBarMessage, setSnakBarMessage] = useState('');
     const [isUpdating, setIsUpdating] = useState(false);
@@ -52,6 +57,7 @@ const ProfileUpdate = () => {
                 setFirstName(authUser.firstName || '')
                 setLastName(authUser.lastName || '')
                 setEmail(authUser.email || '')
+                setBirthAt(authUser.birthAt || authUser.details?.birthAt || '')
                 setDescription(authUser.details.description || '')
                 setSocials(authUser.details.socials ?? [{ facebook: '' }, { instagram: '' }, { telegram: '' }])
             }
@@ -60,6 +66,10 @@ const ProfileUpdate = () => {
     }, [])
 
     const updateUser = async () => {
+        if (birthAt && !isValidBirthDate(birthAt)) {
+            setBirthAtError(true)
+            return
+        }
         const token = await AsyncStorage.getItem('auth-token')
         if (!token) {
             alert(labels.pleaseLoginToContinue)
@@ -71,7 +81,9 @@ const ProfileUpdate = () => {
         user.firstName = firstName;
         user.lastName = lastName;
         user.email = email;
+        user.birthAt = birthAt;
         user.details.description = description;
+        user.details.birthAt = birthAt;
         user.details.socials = socials;
 
         const response = await updateUserInfo(user, token)
@@ -87,6 +99,48 @@ const ProfileUpdate = () => {
         }
         setIsUpdating(false);
     }
+
+    const isValidBirthDate = (value: string) => {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false
+        const date = new Date(`${value}T00:00:00`)
+        const today = new Date()
+        return !Number.isNaN(date.getTime()) && date <= today && date.getFullYear() === Number(value.slice(0, 4)) && date.getMonth() + 1 === Number(value.slice(5, 7)) && date.getDate() === Number(value.slice(8, 10))
+    }
+
+    const openCalendar = () => {
+        if (isValidBirthDate(birthAt)) {
+            const [year, month] = birthAt.split('-').map(Number)
+            setCalendarMonth(new Date(year, month - 1, 1))
+        } else {
+            const today = new Date()
+            setCalendarMonth(new Date(today.getFullYear(), today.getMonth(), 1))
+        }
+        setYearPickerVisible(false)
+        setCalendarVisible(true)
+    }
+
+    const selectBirthDate = (date: Date) => {
+        setBirthAt(`${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`)
+        setBirthAtError(false)
+        setYearPickerVisible(false)
+        setCalendarVisible(false)
+    }
+
+    const calendarDays = () => {
+        const firstDay = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), 1).getDay()
+        const daysInMonth = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 0).getDate()
+        return [...Array(firstDay).fill(null), ...Array.from({ length: daysInMonth }, (_, index) => index + 1)]
+    }
+
+    const isFutureDay = (day: number) => {
+        const selected = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), day)
+        const today = new Date()
+        today.setHours(23, 59, 59, 999)
+        return selected > today
+    }
+
+    const currentYear = new Date().getFullYear()
+    const birthYears = Array.from({ length: 121 }, (_, index) => currentYear - index)
 
     return (<KeyboardAvoidingView>
         <ScrollView nestedScrollEnabled={true} keyboardShouldPersistTaps="handled">
@@ -173,6 +227,20 @@ const ProfileUpdate = () => {
                 <View style={[styles.col, { flex: 1, alignItems: 'center' }]}>
                     <Text style={styles.text}>{email}</Text>
                 </View>
+            </View>
+
+            <View style={[styles.container, {marginTop: 5}]}>
+                <Pressable onPress={openCalendar}>
+                    <TextInput
+                        style={authStyles.input}
+                        value={birthAt}
+                        placeholder={labels.birthDate}
+                        placeholderTextColor="#999"
+                        editable={false}
+                        pointerEvents="none"
+                    />
+                </Pressable>
+                {birthAtError && <Text style={authStyles.error}>Enter a valid birth date (YYYY-MM-DD).</Text>}
             </View>
 
             <View style={[styles.col, { flexDirection: 'column', paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#ccc' }]}>
@@ -272,6 +340,53 @@ const ProfileUpdate = () => {
 
             <View style={{ height: 300 }}></View>
         </ScrollView>
+        <Modal visible={calendarVisible} transparent animationType="fade" onRequestClose={() => setCalendarVisible(false)}>
+            <Pressable style={authStyles.calendarBackdrop} onPress={() => setCalendarVisible(false)}>
+                <Pressable style={authStyles.calendarCard} onPress={(event) => event.stopPropagation()}>
+                    <View style={authStyles.calendarHeader}>
+                        <TouchableOpacity style={authStyles.calendarArrow} onPress={() => setCalendarMonth(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() - 1, 1))}><Text>‹</Text></TouchableOpacity>
+                        <TouchableOpacity style={authStyles.calendarYearButton} onPress={() => setYearPickerVisible((visible) => !visible)}>
+                            <Text style={authStyles.calendarMonth}>{calendarMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}⌄</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={authStyles.calendarArrow} onPress={() => setCalendarMonth(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 1))}><Text>›</Text></TouchableOpacity>
+                    </View>
+                    {yearPickerVisible ? (
+                        <ScrollView style={authStyles.calendarYearGrid} contentContainerStyle={authStyles.calendarGrid}>
+                            {birthYears.map((year) => {
+                                const selected = calendarMonth.getFullYear() === year
+                                return <TouchableOpacity key={year} style={[authStyles.calendarYearOption, selected && authStyles.calendarYearOptionSelected]} onPress={() => {
+                                    const month = year === currentYear && calendarMonth.getMonth() > new Date().getMonth() ? new Date().getMonth() : calendarMonth.getMonth()
+                                    setCalendarMonth(new Date(year, month, 1))
+                                    setYearPickerVisible(false)
+                                }}>
+                                    <Text style={[authStyles.calendarYearText, selected && authStyles.calendarYearTextSelected]}>{year}</Text>
+                                </TouchableOpacity>
+                            })}
+                        </ScrollView>
+                    ) : (
+                        <>
+                            <View style={authStyles.calendarWeekdays}>
+                                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => <Text key={day} style={authStyles.calendarWeekday}>{day}</Text>)}
+                            </View>
+                            <View style={authStyles.calendarGrid}>
+                                {calendarDays().map((day, index) => {
+                                    if (!day) return <View key={`empty-${index}`} style={authStyles.calendarDay} />
+                                    const dateValue = `${calendarMonth.getFullYear()}-${String(calendarMonth.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+                                    const selected = birthAt === dateValue
+                                    const disabled = isFutureDay(day)
+                                    return <TouchableOpacity key={dateValue} style={authStyles.calendarDay} onPress={() => selectBirthDate(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), day))} disabled={disabled}>
+                                        <View style={selected ? authStyles.calendarDaySelected : undefined}>
+                                            <Text style={[authStyles.calendarDayText, selected && authStyles.calendarDaySelectedText, disabled && authStyles.calendarDayDisabled]}>{day}</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                })}
+                            </View>
+                        </>
+                    )}
+                    <TouchableOpacity onPress={() => setCalendarVisible(false)}><Text style={authStyles.calendarCancel}>Cancel</Text></TouchableOpacity>
+                </Pressable>
+            </Pressable>
+        </Modal>
         <Snackbar visible={showSnackBar} onDismiss={() => setShowSnakBar(false)} duration={3000}>{snackBarMessage}</Snackbar>
     </KeyboardAvoidingView>)
 }

@@ -1,0 +1,197 @@
+import { StyleSheet } from 'react-native'
+
+export const authStyles = StyleSheet.create({
+  scrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: 24,
+    paddingTop: 22,
+    paddingBottom: 40,
+  },
+  header: {
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  logo: {
+    width: 92,
+    height: 92,
+    borderRadius: 46,
+    marginBottom: 14,
+  },
+  title: {
+    color: '#263238',
+    fontSize: 20,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  form: {
+    width: '100%',
+    maxWidth: 520,
+    alignSelf: 'center',
+  },
+  input: {
+    height: 52,
+    marginBottom: 14,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: '#d5dce0',
+    borderRadius: 12,
+    backgroundColor: '#fff',
+    color: '#263238',
+    fontSize: 15,
+    shadowColor: '#1d3945',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  button: {
+    minHeight: 52,
+    marginTop: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 8,
+    borderRadius: 12,
+    backgroundColor: '#085a80',
+  },
+  buttonDisabled: {
+    opacity: 0.7,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  error: {
+    marginTop: -7,
+    marginBottom: 10,
+    color: '#c62828',
+    fontSize: 12,
+  },
+  accountPrompt: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 18,
+  },
+  accountPromptText: {
+    color: '#68757b',
+    fontSize: 14,
+  },
+  accountLink: {
+    marginLeft: 5,
+    color: '#085a80',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  googleContainer: {
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  calendarBackdrop: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+    backgroundColor: 'rgba(15, 23, 42, 0.45)',
+  },
+  calendarCard: {
+    width: '100%',
+    maxWidth: 380,
+    padding: 20,
+    borderRadius: 20,
+    backgroundColor: '#fff',
+  },
+  calendarHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 18,
+  },
+  calendarMonth: {
+    color: '#263238',
+    fontSize: 17,
+    fontWeight: '700',
+  },
+  calendarYearButton: {
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+  calendarYearGrid: {
+    maxHeight: 300,
+  },
+  calendarYearOption: {
+    width: '25%',
+    paddingVertical: 12,
+    alignItems: 'center',
+    borderRadius: 10,
+  },
+  calendarYearOptionSelected: {
+    backgroundColor: '#085a80',
+  },
+  calendarYearText: {
+    color: '#263238',
+    fontSize: 14,
+  },
+  calendarYearTextSelected: {
+    color: '#fff',
+    fontWeight: '700',
+  },
+  calendarArrow: {
+    width: 38,
+    height: 38,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 19,
+    backgroundColor: '#eef5f8',
+  },
+  calendarWeekdays: {
+    flexDirection: 'row',
+    marginBottom: 8,
+  },
+  calendarWeekday: {
+    flex: 1,
+    color: '#78909c',
+    fontSize: 12,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  calendarGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  calendarDay: {
+    width: '14.2857%',
+    height: 42,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  calendarDayText: {
+    color: '#263238',
+    fontSize: 14,
+  },
+  calendarDaySelected: {
+    width: 34,
+    height: 34,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 17,
+    backgroundColor: '#085a80',
+  },
+  calendarDaySelectedText: {
+    color: '#fff',
+    fontWeight: '700',
+  },
+  calendarDayDisabled: {
+    color: '#c6ced2',
+  },
+  calendarCancel: {
+    alignSelf: 'flex-end',
+    marginTop: 14,
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    color: '#085a80',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+})

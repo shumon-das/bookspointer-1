@@ -1,7 +1,7 @@
 import { View, Text, ScrollView, Image, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native'
 import React, { useState } from 'react'
 import GoogleLogin from '../GoogleLogin'
-import { styles } from '@/styles/writeBook.styles'
+import { authStyles } from '@/styles/auth.styles'
 import { labels } from '@/app/utils/labels'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useUserStore } from '@/app/store/userStore'
@@ -56,26 +56,26 @@ const Login = ({onLoginSuccess}: {onLoginSuccess: () => void}) => {
     }
     
   return (
-    <ScrollView>
-        <View>
+    <ScrollView contentContainerStyle={authStyles.scrollContent} keyboardShouldPersistTaps="handled">
+        <View style={authStyles.header}>
             <Image
                 source={require('@/assets/images/logo.png')}
-                style={{ width: 100, height: 100, borderRadius: 50, alignSelf: 'center', marginTop: 20 }}
+                style={authStyles.logo}
             />
-            <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', marginBottom: 30 }}>
+            <Text style={authStyles.title}>
                 {labels.welcomeMessage}
             </Text>
         </View>
-        <View style={{ width: '90%', marginHorizontal: 'auto' }}>
+        <View style={authStyles.form}>
             <TextInput
-                style={styles.input}
+                style={authStyles.input}
                 onChangeText={onChangeEmail}
                 value={email}
                 placeholder="email"
                 placeholderTextColor="#999"
             />
             <TextInput
-                style={styles.input}
+                style={authStyles.input}
                 onChangeText={onChangePassword}
                 value={password}
                 placeholder="password"
@@ -83,20 +83,20 @@ const Login = ({onLoginSuccess}: {onLoginSuccess: () => void}) => {
                 secureTextEntry={true}
             />
 
-            <TouchableOpacity style={[styles.button, {flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}]} onPress={handleLogin} disabled={loading}>
+            <TouchableOpacity style={[authStyles.button, loading && authStyles.buttonDisabled]} onPress={handleLogin} disabled={loading}>
             {loading && <ActivityIndicator color="#fff" />}
-            <Text style={styles.buttonText}>Login</Text>
+            <Text style={authStyles.buttonText}>Login</Text>
             </TouchableOpacity>
 
-            <View style={{flexDirection: 'row', justifyContent: 'center', marginTop: 10}}>
-            <Text style={{paddingHorizontal: 5}}>{labels.noAccount}</Text>
+            <View style={authStyles.accountPrompt}>
+            <Text style={authStyles.accountPromptText}>{labels.noAccount}</Text>
             <TouchableOpacity onPress={() => router.push('/auth/registration')}>
-                <Text style={{color: 'blue'}}>{labels.register}</Text>
+                <Text style={authStyles.accountLink}>{labels.register}</Text>
             </TouchableOpacity>
             </View>
         </View>
 
-        <View>
+        <View style={authStyles.googleContainer}>
             <GoogleLogin />
         </View>
     </ScrollView>

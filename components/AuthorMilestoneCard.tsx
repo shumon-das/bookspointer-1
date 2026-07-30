@@ -4,6 +4,8 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { API_CONFIG } from '@/app/utils/config';
 import { useAuthorsStore } from '@/app/store/authorStore';
+import labels from '@/app/utils/labels';
+import { englishDateToBengaliDate } from '@/app/utils/englishDateToBengaliDate';
 
 type AuthorMilestone = {
   id: number; uuid?: string; fullName: string; image?: string | null; url?: string | null;
@@ -27,6 +29,7 @@ export default function AuthorMilestoneCard({ author }: { author: AuthorMileston
   const image = author.image?.startsWith('http') ? author.image : API_CONFIG.BASE_URL + '/uploads/' + (author.image || 'user.png');
   const description = cleanDescription(author.description);
   const openAuthor = () => {
+    console.log('Opening author profile for:', author.fullName, 'UUID:', author.uuid);
     useAuthorsStore.getState().setCurrentlyVisitedAuthor(author);
     router.push({ pathname: '/screens/author/author-profile', params: { authorUuid: author.uuid || '', url: author.url || '' } });
   };
@@ -39,15 +42,15 @@ export default function AuthorMilestoneCard({ author }: { author: AuthorMileston
           <View style={styles.star}><Ionicons name="sparkles" size={16} color="#fff" /></View>
         </View>
         <View style={styles.content}>
-          <Text style={styles.eyebrow}>{isMemorial ? 'IN LOVING MEMORY' : 'AUTHOR SPOTLIGHT'}</Text>
+          <Text style={styles.eyebrow}>{isMemorial ? labels.deadWish : labels.birthWish}</Text>
           <Text numberOfLines={1} style={styles.name}>{author.fullName}</Text>
           {!!message && <Text numberOfLines={2} style={styles.message}>{message}</Text>}
           <View style={styles.dates}>
-            {!!author.birthAt && <Text style={[styles.date, { marginRight: 6 }]}>Born {formatDate(author.birthAt)}</Text>}
-            {!!author.deadAt && <Text style={styles.date}>{isMemorial ? 'Remembered' : 'Died'} {formatDate(author.deadAt)}</Text>}
+            {!!author.birthAt && <Text style={[styles.date, { marginRight: 6 }]}>{labels.born}: {englishDateToBengaliDate(author.birthAt)}</Text>}
+            {!!author.deadAt && <Text style={styles.date}>{isMemorial ? labels.inLovingMemory : labels.died}: {englishDateToBengaliDate(author.deadAt)}</Text>}
           </View>
         </View>
-        <Ionicons name="arrow-forward" size={25} color="#d97706" />
+        {/* <Ionicons name="arrow-forward" size={25} color="#d97706" /> */}
       </View>
       {!!description && <Text style={styles.description}>{description}</Text>}
     </TouchableOpacity>
@@ -60,6 +63,6 @@ const styles = StyleSheet.create({
   mainRow: { flexDirection: 'row', alignItems: 'center', padding: 16, gap: 12 }, avatarWrap: { position: 'relative', padding: 3, borderRadius: 50, backgroundColor: '#fbbf24' },
   avatar: { width: 76, height: 76, borderRadius: 38, borderWidth: 4, borderColor: '#fff', backgroundColor: '#f3f4f6' }, star: { position: 'absolute', right: -2, bottom: -2, width: 28, height: 28, borderRadius: 15, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: '#fff', backgroundColor: '#f59e0b' },
   content: { flex: 1, minWidth: 0 }, eyebrow: { marginBottom: 3, color: '#b45309', fontSize: 10, fontWeight: '800', letterSpacing: 1.2 }, name: { color: '#0f172a', fontSize: 18, fontWeight: '800' }, message: { marginTop: 3, color: '#be123c', fontSize: 13, fontWeight: '600' },
-  dates: { flexDirection: 'row', justifyContent: 'flex-start' }, date: { paddingVertical: 5, borderRadius: 14, overflow: 'hidden', color: '#475569', backgroundColor: 'rgba(255,255,255,0.8)', fontSize: 11, fontWeight: '700' },
+  dates: { flexDirection: 'row', justifyContent: 'flex-start' }, date: { paddingVertical: 5, borderRadius: 14, overflow: 'hidden', color: '#475569', backgroundColor: 'rgba(255,255,255,0.8)', fontSize: 10, fontWeight: '700' },
   description: { borderTopWidth: 1, borderTopColor: '#f3dfb6', paddingHorizontal: 16, paddingVertical: 12, color: '#475569', fontSize: 13, lineHeight: 19 },
 });
