@@ -1,6 +1,7 @@
 import BookCard from "@/components/BookCard";
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, View, RefreshControl, Text } from "react-native";
+import { useFocusEffect } from "expo-router";
 import { Snackbar } from "react-native-paper";
 import QuoteCard from "@/components/QuoteCard";
 import { useNetworkStatus } from "@/components/network/networkConnectionStatus";
@@ -32,7 +33,7 @@ export default function Index() {
   const [authorHighlight, setAuthorHighlight] = useState<any | null>(null)
 
   const loading = useHomeStore(state => state.loading)
-  const { feedBooks, fetchFeedBooks, fetchCacheBooks, clearFeedBooks } = useHomeStore()
+  const { feedBooks, fetchFeedBooks, fetchCacheBooks, refreshFeedBooks } = useHomeStore()
   const syncAllUsers = useSyncAllUsersStore()
 
   const fetchAllUsersFromDbWhoHaveBooks = async () => {
@@ -40,23 +41,19 @@ export default function Index() {
   }
   useEffect(() => {
     fetchAuthorHighlight().then(setAuthorHighlight).catch((error) => console.error("Failed to load author highlight:", error));
-    if (isOnline && feedBooks.length === 0) {
-      console.log('online')
-      fetchFeedBooks(true, APP_VERSION);
-    } else {
-      console.log('offline', feedBooks.length)
-      fetchCacheBooks()
-      return;
-    }
-    fetchAllUsersFromDbWhoHaveBooks()
   }, [isOnline]);
 
-  useEffect(() => {
-    if (lang) {
-      clearFeedBooks()
-      fetchFeedBooks(isOnline, APP_VERSION)
-    }
-  }, [lang])
+  useFocusEffect(
+    useCallback(() => {
+      if (isInitializing || isOnline === null) return;
+
+      if (isOnline) {
+        void refreshFeedBooks(APP_VERSION).then(() => fetchAllUsersFromDbWhoHaveBooks());
+      } else {
+        void fetchCacheBooks();
+      }
+    }, [isInitializing, isOnline, lang, refreshFeedBooks, fetchCacheBooks])
+  );
 
   const handleSnackMessage = (value: string) => {
     setSnackMessage(value);
