@@ -45,8 +45,8 @@ const HeaderBackground = ({author, authorScreen}: {author: User | null, authorSc
   };
 
   return (
-    <View style={{position: 'relative'}}>
-        <Image source={cover} style={styles.headerBackgroundImage} />
+    <View style={styles.headerBackground}>
+        <Image source={cover} resizeMode="cover" style={styles.headerBackgroundImage} />
         {isAuthUser && <TouchableOpacity onPress={pickCoverImage} disabled={isPickingRef.current} style={styles.userImageCamera}>
             <AntDesign name="camera" size={20} color="gray" />
         </TouchableOpacity>}

@@ -1,27 +1,32 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleProp, View, Text, StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useEffect } from 'react';
 import { useRouter } from 'expo-router';
 import { useNotificationStore } from '@/app/store/notificationStore';
 
-const NotificationBadge = () => {
+interface NotificationBadgeProps {
+  color?: string;
+  containerStyle?: StyleProp<ViewStyle>;
+}
+
+const NotificationBadge = ({ color = 'white', containerStyle }: NotificationBadgeProps) => {
   const router = useRouter();
-  const notificationStore = useNotificationStore();
-  const badgeCount = useNotificationStore(state => state.badgeCount)
+  const badgeCount = useNotificationStore((state) => state.badgeCount);
+  const getNoViewNotificationCount = useNotificationStore((state) => state.getNoViewNotificationCount);
   
   useEffect(() => {
-    notificationStore.getNoViewNotificationCount();
-  }, []);
+    void getNoViewNotificationCount();
+  }, [getNoViewNotificationCount]);
 
-  return (<TouchableOpacity onPress={() => router.push('/screens/notifications')}>
-    <View style={styles.iconContainer}>
+  return (<TouchableOpacity onPress={() => router.push('/screens/notifications')} accessibilityRole="button">
+    <View style={[styles.iconContainer, containerStyle]}>
       {badgeCount > 0 && (
         <View style={styles.badge}>
           <Text style={styles.badgeText}>{badgeCount}</Text>
         </View>
       )}
 
-      <MaterialIcons name="notifications" size={24} color="white" />
+      <MaterialIcons name="notifications" size={21} color={color} />
     </View>
   </TouchableOpacity>)
 };

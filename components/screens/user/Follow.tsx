@@ -17,9 +17,10 @@ interface FollowProps {
     onFollowUnfollow: (value: boolean) => void
     onPressSearch: (value: boolean) => void,
     onTryLogin: (value: boolean) => void
+    showMessage?: boolean
 }
 
-const Follow = ({author, onFollowUnfollow, onPressSearch, onTryLogin}: FollowProps) => {
+const Follow = ({author, onFollowUnfollow, onPressSearch, onTryLogin, showMessage = true}: FollowProps) => {
   const [isFollowing, setIsFollowing] = useState(false)
   const [loading, setLoading] = useState(false)
   const router = useRouter();
@@ -109,9 +110,9 @@ const Follow = ({author, onFollowUnfollow, onPressSearch, onTryLogin}: FollowPro
           <TouchableOpacity style={styles.followButton} onPress={toggleFollow}>
             <Text style={styles.followMessageTextBtn}>{isFollowing ? "Following" : "Follow"}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.messageButton} onPress={onPressMessage}>
+          {showMessage && <TouchableOpacity style={styles.messageButton} onPress={onPressMessage}>
             <Text style={styles.messageMessageTextBtn}>Message</Text>
-          </TouchableOpacity>
+          </TouchableOpacity>}
       </View>
     </View>
   )

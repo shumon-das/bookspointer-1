@@ -12,7 +12,7 @@ import { useHomeStore } from "../store/homeStore";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import AppUpdateBanner from "@/components/screens/home/AppUpdateBanner";
 import { useSystemStore } from "../store/systemStore";
-import FeedBookCard from "@/components/FeedBookCard";
+import FeedBookCard, { type FeedSnackbarMessage } from "@/components/FeedBookCard";
 import ThreeDotsLoader from "@/components/micro/ThreeDotsLoader";
 import AuthorMilestoneCard from "@/components/AuthorMilestoneCard";
 import { fetchAuthorHighlight } from "@/services/api";
@@ -28,6 +28,7 @@ export default function Index() {
 
   const [toastVisible, setToastVisible] = useState(false)
   const [snackMessage, setSnackMessage] = useState('')
+  const [snackAction, setSnackAction] = useState<FeedSnackbarMessage['action']>()
   const [refreshing, setRefreshing] = useState(false);
   const [showOfflineMessage, setShowOfflineMessage] = useState(false)
   const [authorHighlight, setAuthorHighlight] = useState<any | null>(null)
@@ -55,11 +56,11 @@ export default function Index() {
     }, [isInitializing, isOnline, lang, refreshFeedBooks, fetchCacheBooks])
   );
 
-  const handleSnackMessage = (value: string) => {
-    setSnackMessage(value);
+  const handleSnackMessage = useCallback((notice: FeedSnackbarMessage) => {
+    setSnackMessage(notice.message);
+    setSnackAction(notice.action);
     setToastVisible(true);
-    setTimeout(() => setToastVisible(false), 2000);
-  };
+  }, []);
 
   const renderItem = useCallback(({ item, index }: { item: any, index: number }) => {
     if (item.title === 'ads-item' && index != 0) {
@@ -127,7 +128,7 @@ export default function Index() {
         }}
         style={styles.list}
       />
-      <Snackbar visible={toastVisible} onDismiss={() => setToastVisible(false)} duration={2000}>
+      <Snackbar visible={toastVisible} onDismiss={() => setToastVisible(false)} duration={snackAction ? 5000 : 2000} action={snackAction ? { label: snackAction.label, onPress: () => { setToastVisible(false); snackAction.onPress(); } } : undefined}>
         {snackMessage}
       </Snackbar>
     </View>

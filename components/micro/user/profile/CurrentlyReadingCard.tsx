@@ -65,15 +65,17 @@ const CurrentlyReadingCard = React.memo(({ book }: { book: any }) => {
                         <ShareButton
                             title="Check this out!"
                             message={book.book_title}
-                            url={`https://bookspointer.com${book.url}`}
+                            url={`https://bookspointer.com${book.book_url || ''}`}
                             style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}
                         />
                     </View>
                 </View>
             </View>
-            <Text style={styles.bookCategory}>{book.category}</Text>
+            {book.category ? <Text style={styles.bookCategory}>{book.category}</Text> : null}
         </View>
     )
 })
+
+CurrentlyReadingCard.displayName = 'CurrentlyReadingCard';
 
 export default CurrentlyReadingCard

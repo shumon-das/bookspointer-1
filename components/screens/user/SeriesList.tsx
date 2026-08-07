@@ -12,13 +12,26 @@ const SeriesList = ({author, isUser, onPressCreateSeries}:{author: User|null, is
   const authUserUuid = useUserStore((state) => state.authUser?.uuid);
   // The profile can initially be hydrated from a book card's lightweight
   // createdBy object, before the full user response supplies `series`.
-  const series = author?.series ?? [];
+  const storedSeries = author?.series ?? [];
   const canCreateSeries = !!authUserUuid && authUserUuid === author?.uuid;
+  const isAllBooksSeries = (name: string) => ['বইসমূহ', 'All Books', labels.allBooks].includes(name);
+  const series = [
+    { name: labels.allBooks, queryName: 'All Books', count: author?.totalBooks ?? 0, isAllBooks: true },
+    ...storedSeries
+      .map((item: any) => typeof item === 'string' ? { name: item } : item)
+      .filter((item: any) => !isAllBooksSeries(item.name ?? item.seriesName ?? ''))
+      .map((item: any) => ({
+        name: item.name ?? item.seriesName,
+        queryName: item.name ?? item.seriesName,
+        count: item.count ?? item.bookCount ?? item.totalBooks ?? 0,
+        isAllBooks: false,
+      })),
+  ];
   
   const renderItem = (index: number) => {
-    const item = series[index] ?? {};
-    const seriesName = item.name ?? item.seriesName ?? labels.allBooks;
-    const bookCount = item.count ?? item.bookCount ?? item.totalBooks ?? 0;
+    const item = series[index];
+    const seriesName = item.name;
+    const bookCount = item.count;
 
     return <View style={styles.series} key={index}>
       <Text style={styles.text}>{seriesName}</Text>
@@ -27,7 +40,7 @@ const SeriesList = ({author, isUser, onPressCreateSeries}:{author: User|null, is
       </Text>
       <TouchableOpacity style={styles.viewSeries} onPress={() => author && router.push({
           pathname: isUser ? '/screens/user/user-series' : '/screens/author/author-series', 
-          params: {authorUuid: author.uuid, url: author.url, series: seriesName}
+          params: {authorUuid: author.uuid, url: author.url, series: item.queryName}
         })}>
         <Text style={styles.viewSeriesText}>{labels.visitSeries}</Text>
       </TouchableOpacity>

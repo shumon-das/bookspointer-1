@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
-import React from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { ActivityIndicator, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { API_CONFIG } from '@/app/utils/config';
 import { useAuthorsStore } from '@/app/store/authorStore';
@@ -24,17 +24,21 @@ const cleanDescription = (value?: string | null) => {
 };
 export default function AuthorMilestoneCard({ author }: { author: AuthorMilestone }) {
   const router = useRouter();
+  const [opening, setOpening] = useState(false);
   const isMemorial = author.milestoneType === 'memorial';
   const message = isMemorial ? author.deadWish : author.birthWish;
   const image = author.image?.startsWith('http') ? author.image : API_CONFIG.BASE_URL + '/uploads/' + (author.image || 'user.png');
   const description = cleanDescription(author.description);
   const openAuthor = () => {
-    console.log('Opening author profile for:', author.fullName, 'UUID:', author.uuid);
-    useAuthorsStore.getState().setCurrentlyVisitedAuthor(author);
-    router.push({ pathname: '/screens/author/author-profile', params: { authorUuid: author.uuid || '', url: author.url || '' } });
+    if (opening) return;
+    setOpening(true);
+    setTimeout(() => {
+      useAuthorsStore.getState().setCurrentlyVisitedAuthor(author);
+      router.push({ pathname: '/screens/author/author-profile', params: { authorUuid: author.uuid || '', url: author.url || '' } });
+    }, 70);
   };
   return (
-    <TouchableOpacity activeOpacity={0.9} onPress={openAuthor} style={styles.card}>
+    <TouchableOpacity disabled={opening} activeOpacity={0.86} onPress={openAuthor} style={styles.card}>
       <View style={styles.glowTop} /><View style={styles.glowBottom} />
       <View style={styles.mainRow}>
         <View style={styles.avatarWrap}>
@@ -50,9 +54,10 @@ export default function AuthorMilestoneCard({ author }: { author: AuthorMileston
             {!!author.deadAt && <Text style={styles.date}>{isMemorial ? labels.inLovingMemory : labels.died}: {englishDateToBengaliDate(author.deadAt)}</Text>}
           </View>
         </View>
-        {/* <Ionicons name="arrow-forward" size={25} color="#d97706" /> */}
+        <Ionicons name="chevron-forward" size={22} color="#d97706" />
       </View>
       {!!description && <Text style={styles.description}>{description}</Text>}
+      {opening && <View pointerEvents="none" style={styles.openingOverlay}><ActivityIndicator size="small" color="#9a3412" /></View>}
     </TouchableOpacity>
   );
 }
@@ -65,4 +70,5 @@ const styles = StyleSheet.create({
   content: { flex: 1, minWidth: 0 }, eyebrow: { marginBottom: 3, color: '#b45309', fontSize: 10, fontWeight: '800', letterSpacing: 1.2 }, name: { color: '#0f172a', fontSize: 18, fontWeight: '800' }, message: { marginTop: 3, color: '#be123c', fontSize: 13, fontWeight: '600' },
   dates: { flexDirection: 'row', justifyContent: 'flex-start' }, date: { paddingVertical: 5, borderRadius: 14, overflow: 'hidden', color: '#475569', backgroundColor: 'rgba(255,255,255,0.8)', fontSize: 10, fontWeight: '700' },
   description: { borderTopWidth: 1, borderTopColor: '#f3dfb6', paddingHorizontal: 16, paddingVertical: 12, color: '#475569', fontSize: 13, lineHeight: 19 },
+  openingOverlay: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255, 250, 240, 0.72)' },
 });

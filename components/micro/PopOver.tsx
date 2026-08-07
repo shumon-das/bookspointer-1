@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { View, Text, TouchableOpacity, Dimensions, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, Dimensions } from 'react-native';
 import Modal from 'react-native-modal';
 import { styles } from '@/styles/popOver.styles';
 
@@ -9,11 +9,12 @@ const POPOVER_HEIGHT_ESTIMATE = 150; // Estimate or calculate based on menus.len
 
 interface PopOverProps {
   icon: React.ReactElement;
-  menus: { index?: number; label: string; icon?: React.ReactElement }[];
+  menus: { index?: number; name?: string; label: string; icon?: React.ReactElement }[];
   action: (item: any) => any;
+  variant?: 'default' | 'feed';
 }
 
-const PopOver = ({ icon, menus, action }: PopOverProps) => {
+const PopOver = ({ icon, menus, action, variant = 'default' }: PopOverProps) => {
   const [isVisible, setIsVisible] = useState(false);
   const [buttonPosition, setButtonPosition] = useState({ x: 0, y: 0, w: 0, h: 0 });
   const buttonRef = useRef<any>(null);
@@ -49,39 +50,33 @@ const PopOver = ({ icon, menus, action }: PopOverProps) => {
 
   return (
     <View>
-      <TouchableOpacity onPress={openMenu} ref={buttonRef} style={{ paddingHorizontal: 5 }}>
+      <TouchableOpacity accessibilityRole="button" accessibilityLabel="More actions" activeOpacity={0.72} onPress={openMenu} ref={buttonRef} style={styles.trigger}>
         {icon}
       </TouchableOpacity>
 
       <Modal
         isVisible={isVisible}
         onBackdropPress={() => setIsVisible(false)}
-        backdropOpacity={0.1}
+        backdropOpacity={0.16}
         animationIn="fadeIn"
         animationOut="fadeOut"
-        animationInTiming={1} 
-        animationOutTiming={1}
-        backdropTransitionInTiming={1}
-        backdropTransitionOutTiming={1}
-        style={{ margin: 0 }} // Ensure modal covers full screen so absolute positioning works
+        animationInTiming={150}
+        animationOutTiming={120}
+        backdropTransitionInTiming={150}
+        backdropTransitionOutTiming={120}
+        style={{ margin: 0 }}
       >
-        <View style={[styles.popoverBox, getPopoverStyles()]}>
-          <FlatList
-            data={menus}
-            keyExtractor={(item) => item.label}
-            renderItem={({ item }) => (
-              <TouchableOpacity 
-                style={styles.menuItem} 
-                onPress={() => {
-                  setIsVisible(false);
-                  action(item);
-                }}
-              >
-                {item.icon && <View style={{marginRight: 5}}>{item.icon}</View>}
-                <Text>{item.label}</Text>
-              </TouchableOpacity>
-            )}
-          />
+        <View style={[styles.popoverBox, variant === 'feed' && styles.feedPopoverBox, getPopoverStyles()]}>
+          {menus.map((item, index) => {
+            const destructive = ['report', 'block', 'delete'].includes(item.name ?? '');
+            return <TouchableOpacity key={`${item.name ?? item.label}-${index}`} activeOpacity={0.72} style={[styles.menuItem, variant === 'feed' && styles.feedMenuItem, destructive && styles.menuItemDanger]} onPress={() => {
+              setIsVisible(false);
+              action(item);
+            }}>
+              {item.icon && <View style={styles.menuIcon}>{item.icon}</View>}
+              <Text style={[styles.menuText, variant === 'feed' && styles.feedMenuText, destructive && styles.menuTextDanger]}>{item.label}</Text>
+            </TouchableOpacity>;
+          })}
         </View>
       </Modal>
     </View>

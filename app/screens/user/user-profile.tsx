@@ -26,34 +26,43 @@ configureReanimatedLogger({
 
 const UserProfile = () => {
     const navigation = useNavigation();
-    useEffect(() => navigation.setOptions({ headerShown: false }), []);
+    useEffect(() => navigation.setOptions({ headerShown: false }), [navigation]);
     const [refreshing, setRefreshing] = useState(false);
     const {isOnline, isInitializing} = useNetworkStatus(() => {
         console.log('✅ Online again, syncing data...');
     });
 
-    const [author, setAuthor] = useState<AuthUser|null>(null);
-    const [loading, setLoading] = useState(false);
+    const cachedAuthor = useUserStore((state) => state.authUser);
+    const [author, setAuthor] = useState<AuthUser|null>(() => useUserStore.getState().authUser);
 
-    const getAuthorFromDb = async () => {
-        if (isInitializing) return;
-        setLoading(true);
-        const fetchAuthUser = await useUserStore.getState().fetchAuthUserFromDb();
-        setAuthor(fetchAuthUser);
-        setLoading(false);
-    }
-
-    const fetchAuthUser = async () => {
-        // setLoading(true);
-        const fetchAuthUser = await useUserStore.getState().fetchAuthUserByAPi();
-        setAuthor(fetchAuthUser);
-        // setLoading(false);
-    }
-    
     useEffect(() => {
-        setAuthor(useUserStore.getState().authUser);
-        getAuthorFromDb();
-        fetchAuthUser();
+        if (cachedAuthor) {
+            setAuthor(cachedAuthor);
+        }
+    }, [cachedAuthor]);
+
+    useEffect(() => {
+        if (isInitializing) return;
+
+        let isActive = true;
+        const hydrateAndRefresh = async () => {
+            let cachedUser = useUserStore.getState().authUser;
+            if (!cachedUser) {
+                cachedUser = await useUserStore.getState().fetchAuthUserFromDb();
+                if (!isActive) return;
+                if (cachedUser) setAuthor(cachedUser);
+            }
+
+            if (isOnline) {
+                // The cached profile stays visible while the server response updates the store.
+                void useUserStore.getState().fetchAuthUserByAPi();
+            }
+        };
+
+        void hydrateAndRefresh();
+        return () => {
+            isActive = false;
+        };
     }, [isOnline, isInitializing]);
 
     const sheetRef = useRef<any>(null);
@@ -61,18 +70,30 @@ const UserProfile = () => {
 
     const handleBottomSheet = (value: boolean) => {
         createSeriesSheetRef.current?.close()
-        value ? sheetRef.current?.snapToIndex(1) : sheetRef.current?.close()
+        if (value) {
+            sheetRef.current?.snapToIndex(1);
+        } else {
+            sheetRef.current?.close();
+        }
     }
 
     const handleCreateSeriesSheet = (value: boolean) => {
         sheetRef.current?.close()
-        value ? createSeriesSheetRef.current?.snapToIndex(1) : createSeriesSheetRef.current?.close()
+        if (value) {
+            createSeriesSheetRef.current?.snapToIndex(1);
+        } else {
+            createSeriesSheetRef.current?.close();
+        }
     }
 
-    const onRefresh = useCallback(() => {
+    const onRefresh = useCallback(async () => {
         setRefreshing(true);
-        fetchAuthUser();
-        setRefreshing(false);
+        try {
+            const refreshedUser = await useUserStore.getState().fetchAuthUserByAPi();
+            if (refreshedUser) setAuthor(refreshedUser);
+        } finally {
+            setRefreshing(false);
+        }
     }, []);
 
     if (!author) {
@@ -106,7 +127,7 @@ const UserProfile = () => {
                 <View style={styles.section}>
                     <FollowersCount author={author} changedValue={null} />
                 </View>
-                {refreshing || loading && <View style={styles.floatingLoading}>
+                {refreshing && <View style={styles.floatingLoading}>
                     <ActivityIndicator size="large" color="#e63946" />
                 </View>}
                 <View style={styles.section}>

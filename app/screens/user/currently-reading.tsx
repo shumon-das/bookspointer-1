@@ -1,93 +1,68 @@
 import { View, Text, ActivityIndicator, FlatList, RefreshControl } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { AuthUser } from '@/components/types/User';
-import { useUserStore } from '@/app/store/userStore';
+import React, { useCallback, useEffect, useState } from 'react'
 import CurrentlyReadingCard from '@/components/micro/user/profile/CurrentlyReadingCard';
 import { useNavigation } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
 import SearchInput from '@/components/micro/SearchInput';
 import { styles } from '@/styles/libraryBooks.styles';
 import labels from '@/app/utils/labels';
+import { fetchActivities, ReadingActivity } from '@/app/utils/user/fecthActivities';
+
+const isCompleted = (activity: ReadingActivity) => activity.reading_status === 'completed'
+    || (Number(activity.total_pages) > 0 && Number(activity.active_page) >= Number(activity.total_pages));
 
 const CurrentlyReading = () => {
     const navigation = useNavigation();
-    useEffect(() => navigation.setOptions({ headerShown: false }), []);
-    const [author, setAuthor] = useState<AuthUser | null>(null);
+    useEffect(() => navigation.setOptions({ headerShown: false }), [navigation]);
     const [loading, setLoading] = useState(true);
-    const [currentlyReading, setCurrentlyReading] = useState([] as any[]);
-    const [filteredReading, setFilteredReading] = useState([] as any[]);
-    const [isFilterNotFound, setIsFilterNotFound] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
+    const [currentlyReading, setCurrentlyReading] = useState<ReadingActivity[]>([]);
+    const [filteredReading, setFilteredReading] = useState<ReadingActivity[]>([]);
+    const [isFilterNotFound, setIsFilterNotFound] = useState(false);
+    const [error, setError] = useState('');
 
-    const getAuthorFromDb = async () => {
-        setLoading(true);
-        const authUser = await useUserStore.getState().fetchAuthUserFromDb() as AuthUser;
-        setAuthor(authUser);
-        setLoading(false);
-    }
-
-    const fetchBooksFromDb = async () => {
-        setRefreshing(true);
-        const books = await useUserStore.getState().fetchCurrentlyReadingBooks();
-        setCurrentlyReading(books);
-        setRefreshing(false);
-    }
-
-    useEffect(() => {
-        getAuthorFromDb();
-        fetchBooksFromDb();
+    const loadActivities = useCallback(async (refresh = false) => {
+        if (refresh) setRefreshing(true);
+        else setLoading(true);
+        setError('');
+        try {
+            const data = await fetchActivities();
+            setCurrentlyReading(data.activities.filter(activity => !isCompleted(activity)));
+            setFilteredReading([]);
+            setIsFilterNotFound(false);
+        } catch (cause: any) {
+            setCurrentlyReading([]);
+            setError(cause?.message || 'Could not load currently reading books.');
+        } finally {
+            setLoading(false);
+            setRefreshing(false);
+        }
     }, []);
 
-    if (!author) {
-        return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Text>User not found</Text>
-            </View>
-        )
-    }
+    useFocusEffect(useCallback(() => { void loadActivities(); }, [loadActivities]));
 
-    const filteredContent = () => {
-        if (isFilterNotFound) return [];
-        return filteredReading.length > 0 ? filteredReading : currentlyReading;
-    }
-    
+    const content = isFilterNotFound ? [] : filteredReading.length > 0 ? filteredReading : currentlyReading;
+
     return (
-        <View style={{backgroundColor: '#f9f0eb'}}>
+        <View style={{ flex: 1, backgroundColor: '#f9f0eb' }}>
             <View>
-                <View style={{width: '100%', height: 35, backgroundColor: 'dimgrey'}}></View>
+                <View style={{ width: '100%', height: 35, backgroundColor: 'dimgrey' }} />
                 <Text style={styles.forYours}>{labels.currentlyReading}</Text>
                 <Text style={styles.basedOnYourReadHistory}>{labels.currentlyReadingDescription}</Text>
-                <View style={{width: "100%", height: 50, backgroundColor: '#f9f0eb', justifyContent: "center", alignItems: "center", margin: 'auto'}}>
-                    <View style={{width: '90%'}}>
-                    <SearchInput 
-                        items={currentlyReading} 
-                        filterField='title' 
-                        onFiltered={(items) => setFilteredReading(items)} 
-                        isNotFound={(value: boolean) => setIsFilterNotFound(value)}
-                    />
+                <View style={{ width: '100%', height: 50, backgroundColor: '#f9f0eb', justifyContent: 'center', alignItems: 'center' }}>
+                    <View style={{ width: '90%' }}>
+                        <SearchInput items={currentlyReading} filterField="book_title" onFiltered={items => setFilteredReading(items)} isNotFound={setIsFilterNotFound} />
                     </View>
                 </View>
             </View>
+            {error ? <Text style={{ color: '#b91c1c', marginHorizontal: 20, marginBottom: 10 }}>{error}</Text> : null}
             <FlatList
-                data={filteredContent()}
+                data={content}
                 renderItem={({ item }) => <CurrentlyReadingCard book={item} />}
-                keyExtractor={(item) => item.book_id}
-                refreshControl={
-                    <RefreshControl refreshing={refreshing} onRefresh={async () => {
-                        await fetchBooksFromDb()
-                    }} />
-                }
-                ListFooterComponent={() => (
-                    <View style={{ height: 200 }} />
-                )}
-                ListEmptyComponent={() => (
-                    loading 
-                    ? (<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                        <ActivityIndicator size="large" color="#e63946" />
-                    </View>)
-                    : <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                        <Text>{labels.noBooksFound}</Text>
-                    </View>
-                )}
+                keyExtractor={item => String(item.book_id)}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => void loadActivities(true)} />}
+                ListFooterComponent={<View style={{ height: 200 }} />}
+                ListEmptyComponent={loading ? <View style={{ paddingTop: 50, alignItems: 'center' }}><ActivityIndicator size="large" color="#e63946" /></View> : <View style={{ paddingTop: 50, alignItems: 'center' }}><Text>{labels.noBooksFound}</Text></View>}
             />
         </View>
     )

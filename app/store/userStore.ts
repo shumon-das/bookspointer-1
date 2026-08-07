@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import API_CONFIG from '../utils/config';
+import { API_CONFIG } from '../utils/config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthUser, User } from '@/components/types/User';
 import { getAnonymousId } from '../utils/annonymous';
@@ -41,11 +41,6 @@ export const useUserStore = create<UserState>((set, get) => ({
       return JSON.parse(user);
     }
 
-    const authUser = await get().fetchAuthUserByAPi();
-    if (authUser) {
-      set({ authUser: authUser });
-    }
-
     return null;
   },
   fetchAuthUserByAPi: async (): Promise<AuthUser|null> => {
@@ -61,7 +56,15 @@ export const useUserStore = create<UserState>((set, get) => ({
           'Authorization': `Bearer ${token}`
         }
       });
+      if (!response.ok) {
+        throw new Error(`Unable to refresh the signed-in user (${response.status}).`);
+      }
+
       const data = await response.json();
+      if (!data?.data) {
+        return get().authUser;
+      }
+
       set({ authUser: data.data });
       await AsyncStorage.setItem('auth-user', JSON.stringify(data.data));
       return data.data;

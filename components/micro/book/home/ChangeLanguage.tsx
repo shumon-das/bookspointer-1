@@ -1,76 +1,86 @@
-import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native'
-import React from 'react'
-import labels from '@/app/utils/labels';
 import { useSystemStore } from '@/app/store/systemStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import React from 'react';
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-const ChangeLanguage = () => {
+interface ChangeLanguageProps {
+  variant?: 'default' | 'light';
+}
+
+const ChangeLanguage = ({ variant = 'default' }: ChangeLanguageProps) => {
   const userLang = useSystemStore((state) => state.lang);
+  const loading = useSystemStore((state) => state.loading);
+  const isLight = variant === 'light';
 
   const changeLanguage = async () => {
     useSystemStore.getState().setLoading(true);
     const newLang = userLang === 'en' ? 'bn' : 'en';
-    await AsyncStorage.setItem('user-lang', newLang)
-    useSystemStore.setState({lang: newLang});
+    await AsyncStorage.setItem('user-lang', newLang);
+    useSystemStore.setState({ lang: newLang });
     useSystemStore.getState().setLoading(false);
   };
 
-  if (useSystemStore.getState().loading) return <ActivityIndicator />
+  if (loading) {
+    return (
+      <View style={styles.loader}>
+        <ActivityIndicator size="small" color={isLight ? '#ffffff' : '#0a5d7d'} />
+      </View>
+    );
+  }
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity 
-        onPress={changeLanguage} 
-        style={styles.button}
-        activeOpacity={0.7}
-      >
-        <Text style={styles.buttonText}>
-          <Text style={userLang === 'en' ? styles.activeText : styles.inactiveText}>
-            English
-          </Text>
-          <Text style={styles.inactiveText}> | </Text>
-          <Text style={userLang === 'bn' ? styles.activeText : styles.inactiveText}>
-            বাংলা
-          </Text>
-        </Text>
-      </TouchableOpacity>
-
-      {/* Small Label Below */}
-      <Text style={styles.smallLabel}>
-        {userLang === 'en' ? labels.readBanglaBooks : labels.readEnglishBooks}
-      </Text>
-    </View>
+    <TouchableOpacity onPress={changeLanguage} activeOpacity={0.75} style={[styles.switch, isLight && styles.switchLight]} accessibilityRole="button">
+      <Text style={[styles.language, isLight && styles.languageLight, userLang === 'en' && styles.languageActive, isLight && userLang === 'en' && styles.languageActiveLight]}>EN</Text>
+      <View style={[styles.divider, isLight && styles.dividerLight]} />
+      <Text style={[styles.language, isLight && styles.languageLight, userLang === 'bn' && styles.languageActive, isLight && userLang === 'bn' && styles.languageActiveLight]}>বাংলা</Text>
+    </TouchableOpacity>
   );
 };
 
+export default ChangeLanguage;
+
 const styles = StyleSheet.create({
-  container: {
-    width: 90,
-    height: 50,
-    flexDirection: 'column',
-    justifyContent: 'center',
+  switch: {
+    width: 66,
+    height: 34,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 12,
+    backgroundColor: '#f3ece7',
   },
-  button: {
-    paddingVertical: 2,
-    paddingHorizontal: 5,
+  switchLight: {
+    backgroundColor: 'rgba(255, 255, 255, 0.14)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.16)',
   },
-  buttonText: {
-    fontSize: 14,
+  language: {
+    color: '#90877f',
+    fontSize: 9,
+    fontWeight: '700',
   },
-  activeText: {
-    color: '#3b82f6',
-    fontSize: 12
+  languageActive: {
+    color: '#0a5d7d',
   },
-  inactiveText: {
-    color: '#cad1dfff',
-    fontSize: 12
+  languageLight: {
+    color: 'rgba(255, 255, 255, 0.58)',
   },
-  smallLabel: {
-    fontSize: 10,
-    textAlign: 'center',
-    color: '#c1ccdfff',
+  languageActiveLight: {
+    color: '#ffffff',
+  },
+  divider: {
+    width: 1,
+    height: 13,
+    marginHorizontal: 4,
+    backgroundColor: '#d7ccc3',
+  },
+  dividerLight: {
+    backgroundColor: 'rgba(255, 255, 255, 0.28)',
+  },
+  loader: {
+    width: 66,
+    height: 34,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
-
-export default ChangeLanguage

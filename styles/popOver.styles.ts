@@ -1,43 +1,50 @@
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
+  trigger: {
+    width: 34,
+    height: 34,
     alignItems: 'center',
-  },
-  button: {
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    backgroundColor: '#007AFF',
-    borderRadius: 6,
-  },
-  buttonText: {
-    color: '#fff',
-  },
-  popoverContainer: {
-    justifyContent: 'flex-start', // top position
-    alignItems: 'flex-end',       // right position
-    margin: 0,
-    paddingTop: 120,              // adjust to move popover vertically
-    paddingRight: 40,             // adjust to move popover horizontally
+    justifyContent: 'center',
+    borderRadius: 17,
+    backgroundColor: '#f2f4f7',
+    borderWidth: 1,
+    borderColor: '#e4e8ee',
   },
   popoverBox: {
     backgroundColor: '#fff',
-    borderRadius: 10,
-    paddingVertical: 8,
-    width: 150,
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
+    borderRadius: 16,
+    padding: 6,
+    width: 190,
+    elevation: 10,
+    shadowColor: '#253041',
+    shadowOpacity: 0.22,
+    shadowOffset: { width: 0, height: 7 },
+    shadowRadius: 16,
+  },
+  feedPopoverBox: {
+    width: 168,
+    padding: 5,
+    borderRadius: 14,
   },
   menuItem: {
-    paddingVertical: 8,
-    paddingHorizontal: 15,
+    minHeight: 46,
+    paddingHorizontal: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    borderBottomColor: '#f0f2f5',
     flexDirection: 'row',
     alignItems: 'center',
   },
+  feedMenuItem: {
+    minHeight: 50,
+    paddingHorizontal: 11,
+    borderBottomWidth: 0,
+    borderRadius: 10,
+    marginVertical: 1,
+  },
+  menuItemDanger: { backgroundColor: '#fff8f7' },
+  menuIcon: { width: 28, alignItems: 'center', marginRight: 8 },
+  menuText: { color: '#253041', fontSize: 14, fontWeight: '700' },
+  feedMenuText: { fontSize: 10, fontWeight: '800' },
+  menuTextDanger: { color: '#c24131' },
 });

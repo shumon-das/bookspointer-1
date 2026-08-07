@@ -2,7 +2,7 @@ import { Feather, FontAwesome, Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, Keyboard, Modal, Pressable, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Keyboard, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useCategoryStore } from '@/app/store/categories';
 import { useUserStore } from '@/app/store/userStore';
 import API_CONFIG from '@/app/utils/config';
@@ -52,7 +52,7 @@ export default function WriteNewBook() {
     } catch (exception: any) { setError(exception?.message || 'Network error. Please try again.'); } finally { setSubmitting(false); }
   };
 
-  return <View style={styles.page}><StatusBar hidden />
+  return <View style={styles.page}>
     <ScrollView contentContainerStyle={styles.padding} keyboardShouldPersistTaps="handled">
       <View style={styles.card}>
         <View style={styles.formHeader}>

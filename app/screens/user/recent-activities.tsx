@@ -1,82 +1,52 @@
-import { View, Text, ActivityIndicator, FlatList } from 'react-native'
-import React, { useEffect, useLayoutEffect, useState } from 'react'
-import { AuthUser } from '@/components/types/User';
-import { useUserStore } from '@/app/store/userStore';
+import { View, Text, ActivityIndicator, FlatList, RefreshControl } from 'react-native'
+import React, { useCallback, useLayoutEffect, useState } from 'react'
 import { formatActivity, icons } from '@/helper/activities';
 import { useNavigation } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
 import labels from '@/app/utils/labels';
+import { fetchActivities, RecentActivity } from '@/app/utils/user/fecthActivities';
 
 const RecentActivities = () => {
     const navigation = useNavigation();
-    useLayoutEffect(() => { navigation.setOptions({ headerShown: true, title: labels.resentActivity });}, []);
-    const [author, setAuthor] = useState<AuthUser | null>(null);
+    useLayoutEffect(() => { navigation.setOptions({ headerShown: true, title: labels.resentActivity }); }, [navigation]);
     const [loading, setLoading] = useState(true);
-    const [recentActivities, setRecentActivities] = useState([] as any[]);
-    
-    const getAuthorFromDb = async () => {
-            setLoading(true);
-            const authUser = await useUserStore.getState().fetchAuthUserFromDb() as AuthUser;
-            setAuthor(authUser);
-            setRecentActivities(authUser.recentActivities);
+    const [refreshing, setRefreshing] = useState(false);
+    const [recentActivities, setRecentActivities] = useState<RecentActivity[]>([]);
+    const [error, setError] = useState('');
+
+    const loadActivities = useCallback(async (refresh = false) => {
+        if (refresh) setRefreshing(true);
+        else setLoading(true);
+        setError('');
+        try {
+            const data = await fetchActivities();
+            setRecentActivities(data.recentActivities);
+        } catch (cause: any) {
+            setRecentActivities([]);
+            setError(cause?.message || 'Could not load recent activities.');
+        } finally {
             setLoading(false);
+            setRefreshing(false);
         }
-    
-    useEffect(() => {
-        getAuthorFromDb();
     }, []);
-    
-    if (loading) {
-        return (
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                    <ActivityIndicator size="large" color="#e63946" />
-                </View>
-            )
-        }
-    
-        if (!author) {
-            return (
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                    <Text>Activities not found</Text>
-                </View>
-            )
-        }
-    
-    const renderItem = (activity: any) => {
-        console.log(Object.keys(activity));
-        return (
-            <View key={activity.last_activity_at} style={{}}>
-                <View style={{
-                    flexDirection: 'row', 
-                    alignItems: 'center', 
-                    gap: 10, 
-                    marginHorizontal: 20, 
-                    borderBottomWidth: 1, 
-                    borderBottomColor: '#ccc', 
-                    paddingVertical: 10
-                }}>
-                    <Text>{icons[activity.type]}</Text>
-                    <Text>{formatActivity(activity)}</Text>
-                </View>
-            </View>
-        )
-    }
-  return (
-    <View>
-        <FlatList
-            data={recentActivities}
-            renderItem={({ item}) => renderItem(item)}
-            keyExtractor={(item) => item.book_id}
-            ListFooterComponent={() => (
-                <View style={{ height: 200 }} />
-            )}
-            ListEmptyComponent={() => (
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                    <Text>No activities found</Text>
-                </View>
-            )}
-        />
-    </View>
-  )
+
+    useFocusEffect(useCallback(() => { void loadActivities(); }, [loadActivities]));
+
+    if (loading) return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><ActivityIndicator size="large" color="#e63946" /></View>;
+
+    return (
+        <View style={{ flex: 1 }}>
+            {error ? <Text style={{ color: '#b91c1c', margin: 20 }}>{error}</Text> : null}
+            <FlatList
+                data={recentActivities}
+                renderItem={({ item }) => <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginHorizontal: 20, borderBottomWidth: 1, borderBottomColor: '#ccc', paddingVertical: 10 }}><View>{icons[item.type] ?? <Text>•</Text>}</View><Text style={{ flex: 1 }}>{formatActivity(item)}</Text></View>}
+                keyExtractor={(item, index) => `${item.type}-${item.target_id ?? item.book_id ?? 'activity'}-${item.last_activity_at ?? index}-${index}`}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => void loadActivities(true)} />}
+                ListFooterComponent={<View style={{ height: 200 }} />}
+                ListEmptyComponent={<View style={{ paddingTop: 50, alignItems: 'center' }}><Text>No activities found</Text></View>}
+            />
+        </View>
+    )
 }
 
 export default RecentActivities

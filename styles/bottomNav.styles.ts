@@ -1,12 +1,6 @@
 import { StyleSheet } from "react-native"
 
 export const styles = StyleSheet.create({
-    tabbarItem: {
-        paddingVertical: 6
-    },
-    tabbarItemIcon: {
-        marginHorizontal: 'auto'
-    },
     header: {
         flexDirection: 'row', 
         alignItems: 'center',

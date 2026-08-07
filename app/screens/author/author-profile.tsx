@@ -92,12 +92,13 @@ const Author = () => {
                         <UserImageAndName author={author} isAuthor={true} />
                     </View>
                 </View>
-                <View style={styles.section}>
+                <View style={[styles.section, {marginRight: 10}]}>
                     <Follow 
                         author={author} 
                         onFollowUnfollow={(value) => setFollowersCountChange(value)} 
                         onPressSearch={handleBottomSheet}
                         onTryLogin={handleLoginBottomSheet}
+                        showMessage={false}
                     />
                 </View>
                 <View style={styles.section}>

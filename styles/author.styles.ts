@@ -1,9 +1,17 @@
 import { Dimensions, StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
-    headerBackgroundImage: {
-        height: 170,
+    headerBackground: {
+        position: 'relative',
         width: '100%',
+        height: 170,
+        overflow: 'hidden',
+        backgroundColor: '#e8ddd7',
+    },
+    headerBackgroundImage: {
+        width: '100%',
+        height: '100%',
+        resizeMode: 'cover',
     },
     cover: {
         position: 'relative'

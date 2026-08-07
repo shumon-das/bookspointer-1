@@ -42,9 +42,8 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     borderBottomWidth: 0.5,
-    borderBottomColor: "gray",
-    paddingVertical: 15,
-    backgroundColor: 'white',
+    borderBottomColor: "lightgray",
+    paddingVertical: 10,
     alignItems: 'center',
     paddingHorizontal: 10
   },

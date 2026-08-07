@@ -6,9 +6,11 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { ActivityIndicator } from 'react-native-paper';
 import { isBookDownloaded, saveEncryptedBook } from '@/helper/details';
 import { createBookMetaTable, insertBookMeta } from '@/app/utils/database/bookMetaDb';
+import { useRouter } from 'expo-router';
 
 
-const DownloadButton = ({ bookId, title, author, uuid, onDownloaded, variant }: {bookId: number; title: string; author: string; uuid: string, onDownloaded: (isSave: Boolean) => void; variant?: 'feed'}) => {
+const DownloadButton = ({ bookId, title, author, uuid, onDownloaded, variant }: {bookId: number; title: string; author: string; uuid: string, onDownloaded: (isSave: boolean) => void; variant?: 'feed'}) => {
+  const router = useRouter();
   const [loading, setLoading] = useState(false)
   const [downloaded, setDownloaded] = useState(false)
 
@@ -28,7 +30,7 @@ const DownloadButton = ({ bookId, title, author, uuid, onDownloaded, variant }: 
       const book = await fullBook(uuid);
       const downloadPath = await saveEncryptedBook(bookId, book.content);
       if (downloadPath) {
-        const savedMeta = await insertBookMeta(bookId, book.uuid, book.title, book.author.fullName, book.category.label, 1, downloadPath);
+        await insertBookMeta(bookId, book.uuid, book.title, book.author.fullName, book.category.label, 1, downloadPath);
       }
   
       setDownloaded(true)
@@ -40,27 +42,28 @@ const DownloadButton = ({ bookId, title, author, uuid, onDownloaded, variant }: 
     }
   };
 
+  const onPress = () => {
+    if (downloaded) {
+      router.push('/download');
+      return;
+    }
+    void onDownload();
+  };
+
   const renderIcon = () => {
     const feed = variant === 'feed';
     return <>
-        {downloaded 
-            ? <>
-                <View style={feed ? { alignItems: 'center' } : undefined}><View style={feed ? { width: 30, height: 30, borderRadius: 10, backgroundColor: '#eaf0ff', alignItems: 'center', justifyContent: 'center' } : undefined}><FontAwesome name="download" size={14} color={'#5267d8'} /></View><Text style={{fontSize: 10, color: '#5267d8', fontWeight: feed ? '700' : undefined, marginTop: feed ? 3 : undefined}}>{labels.downloadedAlready}</Text></View>
-              </>
-            : (<>
-                <TouchableOpacity onPress={onDownload} style={feed ? { alignItems: 'center' } : undefined}>
-                  <View style={feed ? { width: 30, height: 30, borderRadius: 10, backgroundColor: '#eef2f7', alignItems: 'center', justifyContent: 'center' } : undefined}><FontAwesome name="download" size={14} color={'#526173'} /></View>
-                  <Text style={{fontSize: 10, color: '#526173', fontWeight: feed ? '700' : undefined, marginTop: feed ? 3 : undefined}}>{labels.download}</Text>
-                </TouchableOpacity>
-              </>)
-        }
+        <TouchableOpacity onPress={onPress} style={feed ? { width: '100%', minHeight: 44, alignItems: 'center', justifyContent: 'center' } : undefined}>
+          <View style={feed ? { width: 26, height: 26, borderRadius: 8, backgroundColor: downloaded ? '#eaf0ff' : '#eef2f7', alignItems: 'center', justifyContent: 'center' } : undefined}><FontAwesome name="download" size={13} color={downloaded ? '#5267d8' : '#526173'} /></View>
+          <Text numberOfLines={1} style={{fontSize: 9, color: downloaded ? '#5267d8' : '#526173', fontWeight: feed ? '700' : undefined, marginTop: feed ? 2 : undefined}}>{downloaded ? labels.downloadedAlready : labels.download}</Text>
+        </TouchableOpacity>
     </>
   }
 
   return (
-    <View>
+    <View style={variant === 'feed' ? { width: '100%' } : undefined}>
       { loading 
-        ? <ActivityIndicator size="small" color="#0000ff" className="mt-10 self-center" />
+        ? <View style={variant === 'feed' ? { width: '100%', minHeight: 44, alignItems: 'center', justifyContent: 'center' } : undefined}><ActivityIndicator size="small" color="#5267d8" /></View>
         : (renderIcon())
       }
     </View>

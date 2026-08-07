@@ -1,8 +1,9 @@
-import FeedBookCard from "@/components/FeedBookCard";
+import FeedBookCard, { type FeedSnackbarMessage } from "@/components/FeedBookCard";
 import { fetchBooks } from "@/services/api";
 import { useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, StyleSheet, View, Text } from "react-native";
+import { Snackbar } from 'react-native-paper';
 
 export default function CategoryBooks() {
   const {category, categoryLabel} = useLocalSearchParams();
@@ -18,6 +19,7 @@ export default function CategoryBooks() {
   const [hasMore, setHasMore] = useState(true);
   const [toastVisible, setToastVisible] = useState(false)
   const [snackMessage, setSnackMessage] = useState('')
+  const [snackAction, setSnackAction] = useState<FeedSnackbarMessage['action']>()
 
   useFocusEffect(useCallback(() => {
     if (categoryLabel) {
@@ -61,8 +63,9 @@ export default function CategoryBooks() {
         }
       };
 
-  const handleSnackMessage = (value: string) => {
-    setSnackMessage(value);
+  const handleSnackMessage = (notice: FeedSnackbarMessage) => {
+    setSnackMessage(notice.message);
+    setSnackAction(notice.action);
     setToastVisible(true);
   };
 
@@ -92,6 +95,9 @@ export default function CategoryBooks() {
             </View>}
             style={styles.list}
           />
+          <Snackbar visible={toastVisible} onDismiss={() => setToastVisible(false)} duration={snackAction ? 5000 : 2000} action={snackAction ? { label: snackAction.label, onPress: () => { setToastVisible(false); snackAction.onPress(); } } : undefined}>
+            {snackMessage}
+          </Snackbar>
         </>
       )}
     </View>

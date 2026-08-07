@@ -1,5 +1,4 @@
 import { Book } from '@/components/types/Book';
-import { stripHtmlTags } from '@/app/utils/htmlNormalizer';
 import TextContent from '@/components/screens/book/TextContent';
 import { category, popoverAction } from '@/app/utils/bookCard';
 import { userRole } from '@/app/utils/userRole';
@@ -7,13 +6,13 @@ import { useBookDetailsStore } from '@/app/store/bookDetailsStore';
 import { useReviewStore } from '@/app/store/reviewStore';
 import { useUserStore } from '@/app/store/userStore';
 import { labels } from '@/app/utils/labels';
-import englishNumberToBengali from '@/app/utils/englishNumberToBengali';
-import API_CONFIG from '@/app/utils/config';
+import { englishNumberToBengali } from '@/app/utils/englishNumberToBengali';
+import { API_CONFIG } from '@/app/utils/config';
 import { styles as cardStyles } from '@/styles/bookCard.styles';
 import DownloadButton from '@/components/micro/bookCardFooter/DownloadButton';
 import ShareButton from '@/components/micro/bookCardFooter/ShareButton';
 import AddToLibrary from '@/components/micro/bookCardFooter/AddToLibraryButton';
-import PopOver from '@/components/micro/PopOver';
+import FeedBookActions from '@/components/micro/bookCardFooter/FeedBookActions';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Foundation } from '@expo/vector-icons';
@@ -54,7 +53,9 @@ const getReviewCount = (book: Book) => {
   return Array.isArray((book as any).reviews) ? (book as any).reviews.length : 0;
 };
 
-const FeedBookCard = memo(({ book, snackMessage }: { book: Book; snackMessage: (message: string) => void }) => {
+export type FeedSnackbarMessage = { message: string; action?: { label: string; onPress: () => void } };
+
+const FeedBookCard = memo(({ book, snackMessage }: { book: Book; snackMessage: (notice: FeedSnackbarMessage) => void }) => {
   const router = useRouter();
   const authUser = useUserStore((state) => state.authUser);
   const lang = useSystemStore((state) => state.lang);
@@ -89,7 +90,7 @@ const FeedBookCard = memo(({ book, snackMessage }: { book: Book; snackMessage: (
             </View>
           </View>
         </TouchableOpacity>
-        <View style={styles.menu}><PopOver icon={<MaterialIcons name="more-vert" size={24} color="black" />} menus={popoverMenus} action={(item) => popoverAction(item, loggedInUser, book, router)} /></View>
+        <View style={styles.menu}><FeedBookActions bookTitle={book.title} actions={popoverMenus} onAction={(item) => popoverAction(item, loggedInUser, book, router)} /></View>
       </View>
 
       <TouchableOpacity onPress={openDetails} activeOpacity={0.8}>
@@ -114,11 +115,11 @@ const FeedBookCard = memo(({ book, snackMessage }: { book: Book; snackMessage: (
       </TouchableOpacity>
 
       <View style={[cardStyles.postFooter, styles.footer]}>
-        <View style={[styles.footerAction, styles.footerDivider]}><DownloadButton variant="feed" bookId={book.id} title={book.title} author={book.author.fullName} uuid={book.uuid} onDownloaded={() => snackMessage(labels.downloadedAlready)} /></View>
+        <View style={[styles.footerAction, styles.footerDivider]}><DownloadButton variant="feed" bookId={book.id} title={book.title} author={book.author.fullName} uuid={book.uuid} onDownloaded={() => snackMessage({ message: labels.downloadedAlready })} /></View>
         <View style={[styles.footerAction, styles.footerDivider]}><ShareButton variant="feed" title="Check this out!" message={book.title} url={`https://bookspointer.com${book.url}`} /></View>
-        <View style={[styles.footerAction, styles.footerDivider]}><AddToLibrary variant="feed" book={book} /></View>
+        <View style={[styles.footerAction, styles.footerDivider]}><AddToLibrary variant="feed" book={book} onChanged={(isSaved) => snackMessage({ message: isSaved ? labels.saveBookIntoLibrary : labels.removedBookFromLibrary, action: { label: labels.viewYourLibrary, onPress: () => router.push('/screens/user/library-books') } })} /></View>
         <TouchableOpacity style={[styles.footerAction, styles.reviewAction]} activeOpacity={0.7} onPress={() => { useReviewStore.getState().setSelectedBook(book); router.push({ pathname: '/screens/book/single-book-reviews-redesign' }); }}>
-          <Foundation name="comment-quotes" size={17} color="#5267d8" />
+          <Foundation name="comment-quotes" size={15} color="#5267d8" />
           <Text style={styles.reviewText}>{englishNumberToBengali(getReviewCount(book))} {labels.review}</Text>
         </TouchableOpacity>
       </View>
@@ -134,16 +135,16 @@ const styles = StyleSheet.create({
   header: { alignItems: 'center' },
   authorRow: { flexDirection: 'row', alignItems: 'center' },
   authorDetails: { maxWidth: 220 },
-  menu: { paddingHorizontal: 20 },
+  menu: { marginLeft: 12, marginRight: 12 },
   body: { flexDirection: 'row', padding: 10 },
   bookImage: { width: 64, height: 78, borderRadius: 6, backgroundColor: '#eee' },
   textBody: { flex: 1, paddingLeft: 12, justifyContent: 'center' },
   preview: { color: '#333', fontSize: 15, lineHeight: 21, paddingHorizontal: 10, paddingBottom: 10 },
   poemPreview: { marginHorizontal: 10, marginBottom: 10, paddingHorizontal: 16, paddingVertical: 14, borderRadius: 16, backgroundColor: '#fffaf3', borderLeftWidth: 3, borderLeftColor: '#d49a54' },
-  footer: { minHeight: 66, paddingHorizontal: 4, paddingVertical: 0, borderTopWidth: 1, borderTopColor: '#edf0f4', backgroundColor: '#fff' },
-  footerAction: { flex: 1, minHeight: 50, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 3 },
+  footer: { minHeight: 52, paddingHorizontal: 4, paddingVertical: 2, borderTopWidth: 1, borderTopColor: '#edf0f4', backgroundColor: '#fff' },
+  footerAction: { flex: 1, minHeight: 44, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 2 },
   footerDivider: { borderRightWidth: 1, borderRightColor: '#edf0f4' },
   reviewIcon: { textAlign: 'center' },
-  reviewAction: { backgroundColor: '#f3f5ff', borderRadius: 12, marginLeft: 4 },
-  reviewText: { color: '#5267d8', fontSize: 10, fontWeight: '800', marginTop: 3, textAlign: 'center' },
+  reviewAction: { backgroundColor: '#f3f5ff', borderRadius: 10, marginLeft: 3 },
+  reviewText: { color: '#5267d8', fontSize: 9, fontWeight: '800', marginTop: 2, textAlign: 'center' },
 });

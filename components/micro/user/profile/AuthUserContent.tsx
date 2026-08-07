@@ -5,11 +5,12 @@ import RecommendedBooks from '../recomendation/RecommendedBooks'
 import { router } from 'expo-router';
 import labels from '@/app/utils/labels';
 import { Entypo, Ionicons } from '@expo/vector-icons';
+import CurrentlyReadingCarousel from './CurrentlyReadingCarousel';
 
 const AuthUserContent = ({author}: {author: AuthUser}) => {
     const screens = [
         {title: labels.userBookTypes.library, icon: <Ionicons name="bookmark-sharp" size={20} color="black" />, onPress: () => router.push('/screens/user/library-books')},
-        {title: labels.currentlyReading, icon: <Entypo name="open-book" size={20} color="black" />, onPress: () => router.push('/screens/user/currently-reading')},
+        // {title: labels.currentlyReading, icon: <Entypo name="open-book" size={20} color="black" />, onPress: () => router.push('/screens/user/currently-reading')},
         {title: labels.review, icon: 'reviews', onPress: () => router.push('/screens/user/reviews')},
         {title: labels.readingComplete, icon: <Entypo name="open-book" size={20} color="black" />, onPress: () => router.push('/screens/user/reading-completed')},
         {title: labels.resentActivity, icon: <Entypo name="open-book" size={20} color="black" />, onPress: () => router.push('/screens/user/recent-activities')},
@@ -17,6 +18,7 @@ const AuthUserContent = ({author}: {author: AuthUser}) => {
     return (
        <View>
            <RecommendedBooks author={author} recommendedBooks={author.recommendedBooks ?? []} />
+           <CurrentlyReadingCarousel />
            <View style={styles.container}>
                {screens.map((item, index) => (
                     <TouchableOpacity key={index} onPress={item.onPress} style={styles.item}>

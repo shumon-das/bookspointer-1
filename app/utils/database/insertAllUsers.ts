@@ -22,6 +22,9 @@ export const createTable = async () => {
 }
 
 export const inserSingleUser = async (user: any) => {
+    if (!user?.id || typeof user.uuid !== 'string' || !user.uuid.trim()) {
+        throw new Error('Cannot save a user without a valid id and uuid.');
+    }
     try {
         await db.runAsync(
             `INSERT OR REPLACE INTO users (user_id, uuid, full_name, user_data, created_at)
@@ -36,16 +39,26 @@ export const inserSingleUser = async (user: any) => {
 
 export const insertAllUsers = async (users: any[]) => {
     try {
-        // await db.withTransactionAsync(async () => {
-            for (const user of users) {
-                await db.runAsync(
+        const validUsers = (Array.isArray(users) ? users : []).filter((user) => user?.id && typeof user.uuid === 'string' && user.uuid.trim());
+        const skipped = (Array.isArray(users) ? users.length : 0) - validUsers.length;
+
+        if (skipped > 0) {
+            console.warn(`Skipped ${skipped} creator record(s) without a valid id or uuid during local sync.`);
+        }
+
+        await db.withExclusiveTransactionAsync(async (transaction) => {
+            for (const user of validUsers) {
+                const fullName = typeof user.fullName === 'string' && user.fullName.trim()
+                    ? user.fullName
+                    : [user.firstName, user.lastName].filter(Boolean).join(' ') || 'Unknown user';
+                await transaction.runAsync(
                     `INSERT OR REPLACE INTO users (user_id, uuid, full_name, user_data, created_at)
                      VALUES (?, ?, ?, ?, ?)`,
-                    [user.id, user.uuid, user.fullName, JSON.stringify(user), Date.now()]
+                    [user.id, user.uuid, fullName, JSON.stringify(user), Date.now()]
                 );
             }
-        // });
-        console.log(`Successfully synced ${users.length} users`);
+        });
+        console.log(`Successfully synced ${validUsers.length} users${skipped ? ` (${skipped} skipped)` : ''}`);
     } catch (e) {
         console.error('Insert all users transaction failed', e);
         throw e;

@@ -1,60 +1,52 @@
-import { View, Text, ActivityIndicator, FlatList } from 'react-native'
-import React, { useEffect, useLayoutEffect, useState } from 'react'
-import { AuthUser } from '@/components/types/User';
-import { useUserStore } from '@/app/store/userStore';
+import { View, Text, ActivityIndicator, FlatList, RefreshControl } from 'react-native'
+import React, { useCallback, useLayoutEffect, useState } from 'react'
 import ReadingCompletedCard from '@/components/micro/user/profile/ReadingCompletedCard';
 import { useNavigation } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
 import labels from '@/app/utils/labels';
+import { fetchActivities, ReadingActivity } from '@/app/utils/user/fecthActivities';
+
+const isCompleted = (activity: ReadingActivity) => activity.reading_status === 'completed'
+    || (Number(activity.total_pages) > 0 && Number(activity.active_page) >= Number(activity.total_pages));
 
 const ReadingCompleted = () => {
     const navigation = useNavigation();
-    useLayoutEffect(() => { navigation.setOptions({ headerShown: true, title: labels.readingComplete });}, []);
-    const [author, setAuthor] = useState<AuthUser | null>(null);
+    useLayoutEffect(() => { navigation.setOptions({ headerShown: true, title: labels.readingComplete }); }, [navigation]);
     const [loading, setLoading] = useState(true);
-    const [readingCompleted, setReadingCompleted] = useState([] as any[]);
+    const [refreshing, setRefreshing] = useState(false);
+    const [readingCompleted, setReadingCompleted] = useState<ReadingActivity[]>([]);
+    const [error, setError] = useState('');
 
-    const getAuthorFromDb = async () => {
-        setLoading(true);
-        const authUser = await useUserStore.getState().fetchAuthUserFromDb() as AuthUser;
-        setAuthor(authUser);
-        setReadingCompleted(authUser.activities.filter((a: any) => a.reading_status === 'completed'));
-        setLoading(false);
-    }
-
-    useEffect(() => {
-        getAuthorFromDb();
+    const loadActivities = useCallback(async (refresh = false) => {
+        if (refresh) setRefreshing(true);
+        else setLoading(true);
+        setError('');
+        try {
+            const data = await fetchActivities();
+            setReadingCompleted(data.activities.filter(isCompleted));
+        } catch (cause: any) {
+            setReadingCompleted([]);
+            setError(cause?.message || 'Could not load completed books.');
+        } finally {
+            setLoading(false);
+            setRefreshing(false);
+        }
     }, []);
 
-    if (loading) {
-        return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <ActivityIndicator size="large" color="#e63946" />
-            </View>
-        )
-    }
+    useFocusEffect(useCallback(() => { void loadActivities(); }, [loadActivities]));
 
-    if (!author) {
-        return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Text>User not found</Text>
-            </View>
-        )
-    }
+    if (loading) return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><ActivityIndicator size="large" color="#e63946" /></View>;
 
     return (
-        <View>
+        <View style={{ flex: 1 }}>
+            {error ? <Text style={{ color: '#b91c1c', margin: 20 }}>{error}</Text> : null}
             <FlatList
                 data={readingCompleted}
                 renderItem={({ item }) => <ReadingCompletedCard book={item} />}
-                keyExtractor={(item) => item.book_id}
-                ListFooterComponent={() => (
-                    <View style={{ height: 200 }} />
-                )}
-                ListEmptyComponent={() => (
-                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                        <Text>No books found</Text>
-                    </View>
-                )}
+                keyExtractor={item => String(item.book_id)}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => void loadActivities(true)} />}
+                ListFooterComponent={<View style={{ height: 200 }} />}
+                ListEmptyComponent={<View style={{ paddingTop: 50, alignItems: 'center' }}><Text>No completed books found</Text></View>}
             />
         </View>
     )
